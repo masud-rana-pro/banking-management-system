@@ -1,0 +1,68 @@
+{
+  "notes": [
+    "Use the terminal create payloads first and save each returned id as terminal_01_id ... terminal_13_id.",
+    "Branch ids verified from DB: 1-10 exist.",
+    "User ids verified from DB: 1, 2, 3 exist in users table.",
+    "terminal_reconciliation table is expected to be created automatically by Spring Boot on backend startup because ddl-auto=update is enabled."
+  ],
+  "terminals": [
+    { "terminalCode": "ATMM5-001", "terminalName": "Paltan ATM Booth", "terminalType": "ATM", "branchId": 1, "locationNote": "Ground floor public booth", "ipAddress": "10.20.1.11", "serialNo": "M5-ATM-001", "vendorName": "NCR", "installDate": "2026-05-02", "status": "ACTIVE" },
+    { "terminalCode": "CDMM5-002", "terminalName": "Gulshan CDM Unit", "terminalType": "CDM", "branchId": 2, "locationNote": "Customer service corner", "ipAddress": "10.20.1.12", "serialNo": "M5-CDM-002", "vendorName": "GRG", "installDate": "2026-05-03", "status": "ACTIVE" },
+    { "terminalCode": "ATMM5-003", "terminalName": "Dhanmondi ATM Kiosk", "terminalType": "ATM", "branchId": 3, "locationNote": "Outside branch entrance", "ipAddress": "10.20.1.13", "serialNo": "M5-ATM-003", "vendorName": "Diebold", "installDate": "2026-05-04", "status": "ACTIVE" },
+    { "terminalCode": "ATMM5-004", "terminalName": "Uttara ATM Plaza", "terminalType": "ATM", "branchId": 4, "locationNote": "Roadside glass booth", "ipAddress": "10.20.1.14", "serialNo": "M5-ATM-004", "vendorName": "NCR", "installDate": "2026-05-05", "status": "MAINTENANCE" },
+    { "terminalCode": "CDMM5-005", "terminalName": "Mirpur CDM Lobby", "terminalType": "CDM", "branchId": 5, "locationNote": "Inside cash zone", "ipAddress": "10.20.1.15", "serialNo": "M5-CDM-005", "vendorName": "GRG", "installDate": "2026-05-06", "status": "ACTIVE" },
+    { "terminalCode": "ATMM5-006", "terminalName": "Agrabad ATM", "terminalType": "ATM", "branchId": 6, "locationNote": "Corporate banking gate", "ipAddress": "10.20.1.16", "serialNo": "M5-ATM-006", "vendorName": "Diebold", "installDate": "2026-05-07", "status": "ACTIVE" },
+    { "terminalCode": "ATMM5-007", "terminalName": "EPZ ATM Booth", "terminalType": "ATM", "branchId": 7, "locationNote": "Factory entry corridor", "ipAddress": "10.20.1.17", "serialNo": "M5-ATM-007", "vendorName": "NCR", "installDate": "2026-05-08", "status": "OUT_OF_SERVICE" },
+    { "terminalCode": "ATMCDMM5-008", "terminalName": "Sylhet Smart Terminal", "terminalType": "ATM_CDM", "branchId": 8, "locationNote": "24/7 self service room", "ipAddress": "10.20.1.18", "serialNo": "M5-ATMCDM-008", "vendorName": "GRG", "installDate": "2026-05-09", "status": "ACTIVE" },
+    { "terminalCode": "ATMM5-009", "terminalName": "Rajshahi ATM Pod", "terminalType": "ATM", "branchId": 9, "locationNote": "Rear parking lobby", "ipAddress": "10.20.1.19", "serialNo": "M5-ATM-009", "vendorName": "NCR", "installDate": "2026-05-10", "status": "ACTIVE" },
+    { "terminalCode": "CDMM5-010", "terminalName": "Khulna Deposit Terminal", "terminalType": "CDM", "branchId": 10, "locationNote": "Deposit enclosure", "ipAddress": "10.20.1.20", "serialNo": "M5-CDM-010", "vendorName": "Diebold", "installDate": "2026-05-11", "status": "ACTIVE" },
+    { "terminalCode": "ATMM5-011", "terminalName": "Paltan Annex ATM", "terminalType": "ATM", "branchId": 1, "locationNote": "ATM zone second unit", "ipAddress": "10.20.1.21", "serialNo": "M5-ATM-011", "vendorName": "NCR", "installDate": "2026-05-12", "status": "INACTIVE" },
+    { "terminalCode": "ATMM5-012", "terminalName": "Gulshan Premium ATM", "terminalType": "ATM", "branchId": 2, "locationNote": "VIP access area", "ipAddress": "10.20.1.22", "serialNo": "M5-ATM-012", "vendorName": "GRG", "installDate": "2026-05-13", "status": "ACTIVE" },
+    { "terminalCode": "ATMCDMM5-013", "terminalName": "Mirpur Smart Kiosk", "terminalType": "ATM_CDM", "branchId": 5, "locationNote": "Main foyer self-service", "ipAddress": "10.20.1.23", "serialNo": "M5-ATMCDM-013", "vendorName": "Diebold", "installDate": "2026-05-14", "status": "ACTIVE" }
+  ],
+  "cashBins": [
+    { "terminalId": "{{terminal_01_id}}", "binNo": "BIN-A1", "denomination": 1000, "maxCapacity": 2000, "currentCount": 400, "status": "ACTIVE" },
+    { "terminalId": "{{terminal_02_id}}", "binNo": "BIN-B1", "denomination": 500, "maxCapacity": 1800, "currentCount": 150, "status": "LOW_CASH" },
+    { "terminalId": "{{terminal_03_id}}", "binNo": "BIN-C1", "denomination": 1000, "maxCapacity": 2200, "currentCount": 1100, "status": "ACTIVE" },
+    { "terminalId": "{{terminal_04_id}}", "binNo": "BIN-D1", "denomination": 500, "maxCapacity": 1600, "currentCount": 200, "status": "LOW_CASH" },
+    { "terminalId": "{{terminal_05_id}}", "binNo": "BIN-E1", "denomination": 100, "maxCapacity": 2500, "currentCount": 2500, "status": "FULL" },
+    { "terminalId": "{{terminal_06_id}}", "binNo": "BIN-F1", "denomination": 1000, "maxCapacity": 2100, "currentCount": 900, "status": "ACTIVE" },
+    { "terminalId": "{{terminal_07_id}}", "binNo": "BIN-G1", "denomination": 500, "maxCapacity": 1700, "currentCount": 80, "status": "LOW_CASH" },
+    { "terminalId": "{{terminal_08_id}}", "binNo": "BIN-H1", "denomination": 1000, "maxCapacity": 2400, "currentCount": 1200, "status": "ACTIVE" },
+    { "terminalId": "{{terminal_09_id}}", "binNo": "BIN-I1", "denomination": 500, "maxCapacity": 1500, "currentCount": 700, "status": "ACTIVE" },
+    { "terminalId": "{{terminal_10_id}}", "binNo": "BIN-J1", "denomination": 100, "maxCapacity": 2300, "currentCount": 300, "status": "LOW_CASH" },
+    { "terminalId": "{{terminal_11_id}}", "binNo": "BIN-K1", "denomination": 1000, "maxCapacity": 1900, "currentCount": 50, "status": "INACTIVE" },
+    { "terminalId": "{{terminal_12_id}}", "binNo": "BIN-L1", "denomination": 500, "maxCapacity": 2000, "currentCount": 2000, "status": "FULL" },
+    { "terminalId": "{{terminal_13_id}}", "binNo": "BIN-M1", "denomination": 1000, "maxCapacity": 2600, "currentCount": 1300, "status": "ACTIVE" }
+  ],
+  "replenishments": [
+    { "terminalId": "{{terminal_01_id}}", "replenishmentDate": "2026-05-15", "binNo": "BIN-A1", "quantityAdded": 150, "performedBy": 1, "remarks": "Morning cash load for branch opening", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_02_id}}", "replenishmentDate": "2026-05-15", "binNo": "BIN-B1", "quantityAdded": 300, "performedBy": 2, "remarks": "Low cash recovery", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_03_id}}", "replenishmentDate": "2026-05-16", "binNo": "BIN-C1", "quantityAdded": 200, "performedBy": 3, "remarks": "Scheduled replenishment", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_04_id}}", "replenishmentDate": "2026-05-16", "binNo": "BIN-D1", "quantityAdded": 120, "performedBy": 1, "remarks": "Maintenance trial load", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_05_id}}", "replenishmentDate": "2026-05-17", "binNo": "BIN-E1", "quantityAdded": 50, "performedBy": 2, "remarks": "Cancelled due to machine jam", "status": "CANCELLED" },
+    { "terminalId": "{{terminal_06_id}}", "replenishmentDate": "2026-05-17", "binNo": "BIN-F1", "quantityAdded": 250, "performedBy": 3, "remarks": "Weekly cash balancing", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_07_id}}", "replenishmentDate": "2026-05-18", "binNo": "BIN-G1", "quantityAdded": 400, "performedBy": 1, "remarks": "Emergency low cash refill", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_08_id}}", "replenishmentDate": "2026-05-18", "binNo": "BIN-H1", "quantityAdded": 180, "performedBy": 2, "remarks": "Smart terminal cassette top-up", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_09_id}}", "replenishmentDate": "2026-05-19", "binNo": "BIN-I1", "quantityAdded": 140, "performedBy": 3, "remarks": "Afternoon reload", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_10_id}}", "replenishmentDate": "2026-05-19", "binNo": "BIN-J1", "quantityAdded": 500, "performedBy": 1, "remarks": "Deposit machine working cash load", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_11_id}}", "replenishmentDate": "2026-05-20", "binNo": "BIN-K1", "quantityAdded": 90, "performedBy": 2, "remarks": "Inactive terminal internal test", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_12_id}}", "replenishmentDate": "2026-05-20", "binNo": "BIN-L1", "quantityAdded": 60, "performedBy": 3, "remarks": "Peak hour additional cash", "status": "COMPLETED" },
+    { "terminalId": "{{terminal_13_id}}", "replenishmentDate": "2026-05-21", "binNo": "BIN-M1", "quantityAdded": 220, "performedBy": 1, "remarks": "Smart kiosk weekend cash load", "status": "COMPLETED" }
+  ],
+  "reconciliations": [
+    { "terminalId": "{{terminal_01_id}}", "reconDate": "2026-05-22", "systemAmount": 550000, "physicalAmount": 550000, "approvedBy": 1, "remarks": "Matched at day close" },
+    { "terminalId": "{{terminal_02_id}}", "reconDate": "2026-05-22", "systemAmount": 225000, "physicalAmount": 224500, "approvedBy": 2, "remarks": "Short by one note bundle" },
+    { "terminalId": "{{terminal_03_id}}", "reconDate": "2026-05-22", "systemAmount": 1300000, "physicalAmount": 1300000, "approvedBy": 3, "remarks": "Perfect match" },
+    { "terminalId": "{{terminal_04_id}}", "reconDate": "2026-05-23", "systemAmount": 160000, "physicalAmount": 159500, "approvedBy": null, "remarks": "Pending variance review" },
+    { "terminalId": "{{terminal_05_id}}", "reconDate": "2026-05-23", "systemAmount": 250000, "physicalAmount": 250000, "approvedBy": 1, "remarks": "Matched after jam recovery" },
+    { "terminalId": "{{terminal_06_id}}", "reconDate": "2026-05-23", "systemAmount": 1150000, "physicalAmount": 1149000, "approvedBy": 2, "remarks": "Minor variance adjusted" },
+    { "terminalId": "{{terminal_07_id}}", "reconDate": "2026-05-24", "systemAmount": 240000, "physicalAmount": 239500, "approvedBy": null, "remarks": "Out of service variance held" },
+    { "terminalId": "{{terminal_08_id}}", "reconDate": "2026-05-24", "systemAmount": 1380000, "physicalAmount": 1380000, "approvedBy": 3, "remarks": "Smart terminal matched" },
+    { "terminalId": "{{terminal_09_id}}", "reconDate": "2026-05-24", "systemAmount": 420000, "physicalAmount": 420500, "approvedBy": 1, "remarks": "Excess cash approved" },
+    { "terminalId": "{{terminal_10_id}}", "reconDate": "2026-05-25", "systemAmount": 80000, "physicalAmount": 80000, "approvedBy": 2, "remarks": "Deposit unit reconciled" },
+    { "terminalId": "{{terminal_11_id}}", "reconDate": "2026-05-25", "systemAmount": 50000, "physicalAmount": 49500, "approvedBy": null, "remarks": "Inactive machine pending approval" },
+    { "terminalId": "{{terminal_12_id}}", "reconDate": "2026-05-25", "systemAmount": 1000000, "physicalAmount": 1000000, "approvedBy": 3, "remarks": "Matched and approved" },
+    { "terminalId": "{{terminal_13_id}}", "reconDate": "2026-05-26", "systemAmount": 1520000, "physicalAmount": 1519500, "approvedBy": 1, "remarks": "Smart kiosk minor variance approved" }
+  ]
+}

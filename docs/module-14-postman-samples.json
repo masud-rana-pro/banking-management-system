@@ -1,0 +1,65 @@
+{
+  "module": "14",
+  "name": "Financing Management",
+  "baseUrls": {
+    "dashboard": "http://localhost:8080/api/financing",
+    "products": "http://localhost:8080/api/financing-products",
+    "applications": "http://localhost:8080/api/financing-applications"
+  },
+  "productCreateSamples": [
+    { "productCode": "FNP-00001", "productName": "Murabaha SME Asset", "financingType": "MURABAHA", "minimumAmount": 50000, "maximumAmount": 500000, "tenureMonths": 12, "profitRule": "Flat 11.50% Murabaha markup with equal monthly installments" },
+    { "productCode": "FNP-00002", "productName": "Murabaha Transport Support", "financingType": "MURABAHA", "minimumAmount": 80000, "maximumAmount": 700000, "tenureMonths": 18, "profitRule": "Flat 12.00% Murabaha markup with monthly recovery" },
+    { "productCode": "FNP-00003", "productName": "Murabaha Retail Asset", "financingType": "MURABAHA", "minimumAmount": 40000, "maximumAmount": 350000, "tenureMonths": 10, "profitRule": "Flat 10.75% markup with equal schedule recovery" },
+    { "productCode": "FNP-00004", "productName": "Ijarah Equipment Lease", "financingType": "IJARAH", "minimumAmount": 150000, "maximumAmount": 900000, "tenureMonths": 24, "profitRule": "Lease rental equivalent to 13.25% yearly profit rate" },
+    { "productCode": "FNP-00005", "productName": "Ijarah Fleet Lease", "financingType": "IJARAH", "minimumAmount": 250000, "maximumAmount": 1200000, "tenureMonths": 30, "profitRule": "Lease rental equivalent to 12.80% yearly profit rate" },
+    { "productCode": "FNP-00006", "productName": "Salam Agro Input", "financingType": "SALAM", "minimumAmount": 60000, "maximumAmount": 450000, "tenureMonths": 9, "profitRule": "Advance commodity purchase support at 9.80% expected margin" },
+    { "productCode": "FNP-00007", "productName": "Istisna Construction Support", "financingType": "ISTISNA", "minimumAmount": 200000, "maximumAmount": 1000000, "tenureMonths": 20, "profitRule": "Istisna production margin 14.10% over delivery period" },
+    { "productCode": "FNP-00008", "productName": "Musharaka Trade Expansion", "financingType": "MUSHARAKA", "minimumAmount": 100000, "maximumAmount": 800000, "tenureMonths": 16, "profitRule": "Shared profit allocation benchmark 15.25% for monthly settlement" },
+    { "productCode": "FNP-00009", "productName": "Mudaraba Working Capital", "financingType": "MUDARABA", "minimumAmount": 90000, "maximumAmount": 650000, "tenureMonths": 14, "profitRule": "Mudaraba partner share benchmark 14.40% with scheduled recovery" },
+    { "productCode": "FNP-00010", "productName": "Murabaha Medical Equipment", "financingType": "MURABAHA", "minimumAmount": 75000, "maximumAmount": 550000, "tenureMonths": 12, "profitRule": "Flat 11.90% Murabaha markup with equal installments" },
+    { "productCode": "FNP-00011", "productName": "Murabaha Education Asset", "financingType": "MURABAHA", "minimumAmount": 30000, "maximumAmount": 300000, "tenureMonths": 8, "profitRule": "Student asset support at 9.50% annualized markup" },
+    { "productCode": "FNP-00012", "productName": "Ijarah Generator Lease", "financingType": "IJARAH", "minimumAmount": 120000, "maximumAmount": 650000, "tenureMonths": 18, "profitRule": "Lease rental equivalent to 12.35% yearly profit rate" },
+    { "productCode": "FNP-00013", "productName": "Murabaha Shop Renovation", "financingType": "MURABAHA", "minimumAmount": 55000, "maximumAmount": 480000, "tenureMonths": 11, "profitRule": "Flat 10.60% markup for renovation asset financing" },
+    { "productCode": "FNP-00014", "productName": "Salam Commodity Purchase", "financingType": "SALAM", "minimumAmount": 95000, "maximumAmount": 720000, "tenureMonths": 13, "profitRule": "Advance commodity purchase margin 10.90% with staged recovery" },
+    { "productCode": "FNP-00015", "productName": "Istisna Workshop Build", "financingType": "ISTISNA", "minimumAmount": 180000, "maximumAmount": 950000, "tenureMonths": 22, "profitRule": "Production support margin 13.80% with milestone recovery" }
+  ],
+  "applicationCreateSamples": [
+    { "customerId": 1, "productId": 1, "branchId": 1, "requestedAmount": 250000, "assetDescription": "Motorbike purchase for courier service delivery support", "purpose": "Transport support for small delivery business", "remarks": "Documents received and waiting for verification" },
+    { "customerId": 2, "productId": 2, "branchId": 2, "requestedAmount": 420000, "assetDescription": "Pickup van for district logistics support", "purpose": "Expand local transport capacity for trading activity", "remarks": "Asset visit completed and quotation matched" },
+    { "customerId": 3, "productId": 3, "branchId": 1, "requestedAmount": 180000, "assetDescription": "Display freezer and retail shelving for grocery outlet", "purpose": "Retail outlet asset enhancement before Ramadan peak season", "remarks": "Moved to shariah review after asset confirmation" },
+    { "customerId": 4, "productId": 4, "branchId": 1, "requestedAmount": 520000, "assetDescription": "Rice milling machine on lease support", "purpose": "Production capacity improvement for seasonal demand", "remarks": "Approved for disbursement queue" },
+    { "customerId": 5, "productId": 5, "branchId": 2, "requestedAmount": 780000, "assetDescription": "Mini truck lease for supply chain movement", "purpose": "Fleet support for corporate distribution route", "remarks": "Approved after review board confirmation" },
+    { "customerId": 6, "productId": 6, "branchId": 1, "requestedAmount": 210000, "assetDescription": "Seed, fertilizer and irrigation pump package", "purpose": "Advance crop support before planting season", "remarks": "Disbursed and schedule generated" },
+    { "customerId": 7, "productId": 7, "branchId": 2, "requestedAmount": 680000, "assetDescription": "Brick and steel procurement for site work", "purpose": "Construction support for client warehouse expansion", "remarks": "Repayment started and one overdue installment exists" },
+    { "customerId": 8, "productId": 8, "branchId": 1, "requestedAmount": 460000, "assetDescription": "Wholesale goods inventory for shared venture", "purpose": "Trade inventory support for Musharaka cycle", "remarks": "Partial repayment collected and monitoring continues" },
+    { "customerId": 9, "productId": 9, "branchId": 3, "requestedAmount": 340000, "assetDescription": "Working capital float for distribution partnership", "purpose": "Short-cycle trade support with scheduled recovery", "remarks": "All installments settled and financing closed" },
+    { "customerId": 10, "productId": 10, "branchId": 2, "requestedAmount": 290000, "assetDescription": "Dental unit and suction machine purchase", "purpose": "Medical setup support for neighborhood clinic", "remarks": "Closed after full schedule settlement" },
+    { "customerId": 11, "productId": 11, "branchId": 1, "requestedAmount": 145000, "assetDescription": "Laptop and projector package for training center", "purpose": "Education support asset financing for skills center", "remarks": "Approved and awaiting customer account selection" },
+    { "customerId": 12, "productId": 12, "branchId": 3, "requestedAmount": 380000, "assetDescription": "Standby generator for backup power continuity", "purpose": "Energy backup financing for small production unit", "remarks": "Submitted and document review pending" },
+    { "customerId": 13, "productId": 13, "branchId": 2, "requestedAmount": 160000, "assetDescription": "Counter redesign and shelving for retail shop", "purpose": "Store improvement to increase customer capacity", "remarks": "Verified and waiting for review board slot" },
+    { "customerId": 14, "productId": 14, "branchId": 1, "requestedAmount": 510000, "assetDescription": "Bulk food commodity purchase ahead of seasonal demand", "purpose": "Commodity financing support for wholesale sale cycle", "remarks": "Recently disbursed and first installment not yet due" },
+    { "customerId": 15, "productId": 15, "branchId": 3, "requestedAmount": 730000, "assetDescription": "Workshop structure and finishing materials", "purpose": "Workshop completion financing under Istisna structure", "remarks": "Collection active with mixed repayment performance" }
+  ],
+  "verifySamples": [
+    { "assetValue": 248000, "verificationNote": "Quotation and market price verified with supplier visit", "verifiedBy": "Verifier A", "remarks": "Asset value acceptable" },
+    { "assetValue": 418000, "verificationNote": "Vehicle quotation, chassis details and dealer statement confirmed", "verifiedBy": "Verifier B", "remarks": "Transport asset verified" },
+    { "assetValue": 178000, "verificationNote": "Retail asset list and supplier invoice reviewed", "verifiedBy": "Verifier C", "remarks": "Ready for shariah review" }
+  ],
+  "workflowActionSamples": {
+    "submit": { "remarks": "Submitted from Postman sample flow", "performedBy": "SYSTEM_USER" },
+    "review": { "remarks": "Moved to shariah review from Postman sample flow", "performedBy": "SYSTEM_REVIEWER" },
+    "approve": { "remarks": "Approved from Postman sample flow", "performedBy": "SYSTEM_REVIEWER" },
+    "reject": { "remarks": "Rejected due to document mismatch", "performedBy": "SYSTEM_REVIEWER" },
+    "return": { "remarks": "Returned for quotation correction", "performedBy": "SYSTEM_REVIEWER" }
+  },
+  "disbursementSamples": [
+    { "disbursementDate": "2026-01-21", "disbursedAmount": 210000, "creditedAccountId": 6, "disbursedBy": "Disburser A", "remarks": "Salam agro financing disbursed" },
+    { "disbursementDate": "2026-01-22", "disbursedAmount": 680000, "creditedAccountId": 7, "disbursedBy": "Disburser B", "remarks": "Construction support disbursed" },
+    { "disbursementDate": "2026-01-31", "disbursedAmount": 730000, "creditedAccountId": 15, "disbursedBy": "Disburser G", "remarks": "Workshop support disbursed" }
+  ],
+  "repaymentSamples": [
+    { "paymentAmount": 100000, "paymentDate": "2026-03-25", "remarks": "Partial installment recovery", "collectedBy": "Collector A" },
+    { "paymentAmount": 180000, "paymentDate": "2026-04-20", "remarks": "Full installment settlement", "collectedBy": "Collector B" },
+    { "paymentAmount": 76000, "paymentDate": "2026-05-12", "remarks": "Closing repayment sample", "collectedBy": "Collector C" }
+  ]
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zakat Profile Sheet</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band"><div class="doc-top-line"></div><div class="doc-top-title">Zakat Profile Sheet</div><div class="doc-top-line"></div></div>
+  <div class="doc-accent"></div>
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Zakat Year</span>
+      <span class="doc-chip" th:text="${item.zakatYear}">2026</span>
+      <div class="doc-chip-meta">Customer: <strong th:text="${item.customerCode}">CUS-0001</strong></div>
+      <div class="doc-chip-meta">Issued: <strong th:text="${issuedDate}">16 May 2026</strong></div>
+    </div>
+  </div>
+  <div class="metric-grid">
+    <div class="metric-card"><span>Nisab Amount</span><strong th:text="${#numbers.formatDecimal(item.nisabAmount,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Eligible Asset</span><strong th:text="${#numbers.formatDecimal(item.eligibleAssetAmount,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Zakat Amount</span><strong th:text="${#numbers.formatDecimal(item.zakatAmount,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Status</span><strong th:text="${item.calculationStatus}">PROFILED</strong></div>
+  </div>
+
+  <div class="certificate-panel">
+    <div class="certificate-kicker">Zakat Assessment Certificate</div>
+    <h1>Certificate of Zakat Assessment</h1>
+    <p>
+      This certifies that the zakat assessment for
+      <strong th:text="${item.customerName}">Customer</strong>
+      bearing customer code
+      <strong th:text="${item.customerCode}">CUS-0001</strong>
+      has been calculated for zakat year
+      <strong th:text="${item.zakatYear}">2026</strong>.
+      Assessed zakat payable:
+      <strong th:text="${'BDT ' + #numbers.formatDecimal(item.zakatAmount,1,'COMMA',2,'POINT')}">BDT 0.00</strong>.
+    </p>
+  </div>
+
+  <div class="info-layout">
+    <div class="info-card">
+      <div class="card-title">Profile Detail</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Customer Name</span><strong th:text="${item.customerName}">Customer</strong></div>
+        <div class="info-row"><span>Customer Code</span><strong th:text="${item.customerCode}">CUS-0001</strong></div>
+        <div class="info-row"><span>Zakat Year</span><strong th:text="${item.zakatYear}">2026</strong></div>
+        <div class="info-row"><span>Status</span><strong th:text="${item.calculationStatus}">PROFILED</strong></div>
+        <div class="info-row"><span>Nisab Amount</span><strong th:text="${'BDT ' + #numbers.formatDecimal(item.nisabAmount,1,'COMMA',2,'POINT')}">BDT 0.00</strong></div>
+        <div class="info-row"><span>Eligible Asset</span><strong th:text="${'BDT ' + #numbers.formatDecimal(item.eligibleAssetAmount,1,'COMMA',2,'POINT')}">BDT 0.00</strong></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Audit Detail</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Created At</span><strong th:text="${item.createdAt != null ? #temporals.format(item.createdAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+        <div class="info-row"><span>Updated At</span><strong th:text="${item.updatedAt != null ? #temporals.format(item.updatedAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+        <div class="info-row"><span>Proof Document</span><strong th:text="${item.proofDocumentName != null ? item.proofDocumentName : '-'}">-</strong></div>
+        <div class="info-row"><span>Remarks</span><strong th:text="${item.remarks != null ? item.remarks : '-'}">-</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="signature-strip">
+    <div class="signature-box"><span>Prepared By</span><strong>Zakat Desk</strong></div>
+    <div class="signature-box"><span>Reviewed By</span><strong>Charity Control</strong></div>
+    <div class="signature-box"><span>Authorized Copy</span><strong>System Generated</strong></div>
+  </div>
+  <div class="doc-footer">
+    <div>This sheet is generated for zakat calculation review, compliance review and customer advisory reference.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

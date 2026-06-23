@@ -1,0 +1,60 @@
+{
+  "info": {
+    "name": "SBMS Module 3 - Lookup Config",
+    "_postman_id": "module-3-lookup-config",
+    "description": "Sample requests for Playbook Module 3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    { "name": "01 Dashboard Summary", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/dashboard-summary" } },
+    { "name": "02 Type List", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/types/list" } },
+    { "name": "03 Type View", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/types/1" } },
+    {
+      "name": "04 Create Type",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"typeCode\": \"INVESTMENT_CLASS\",\n  \"typeName\": \"Investment Class\",\n  \"description\": \"Lookup for investment account class\",\n  \"status\": \"ACTIVE\"\n}" },
+        "url": "{{baseUrl}}/api/lookups/types/create"
+      }
+    },
+    {
+      "name": "05 Update Type",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"typeCode\": \"INVESTMENT_CLASS\",\n  \"typeName\": \"Investment Class Updated\",\n  \"description\": \"Updated description\",\n  \"status\": \"ACTIVE\"\n}" },
+        "url": "{{baseUrl}}/api/lookups/types/1"
+      }
+    },
+    { "name": "06 Value List", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/values/list" } },
+    { "name": "07 Value List By Type", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/values/list?lookupTypeId=1" } },
+    { "name": "08 Value Search", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/values/list?keyword=Risk" } },
+    { "name": "09 Value View", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/values/1" } },
+    {
+      "name": "10 Create Value",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"lookupTypeId\": 1,\n  \"valueCode\": \"SATELLITE\",\n  \"valueLabel\": \"Satellite Branch\",\n  \"valueBnLabel\": \"স্যাটেলাইট শাখা\",\n  \"sortOrder\": 3,\n  \"extraData\": \"{\\\"seed\\\":\\\"manual\\\"}\",\n  \"status\": \"ACTIVE\"\n}" },
+        "url": "{{baseUrl}}/api/lookups/values/create"
+      }
+    },
+    {
+      "name": "11 Update Value",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"lookupTypeId\": 1,\n  \"valueCode\": \"URBAN\",\n  \"valueLabel\": \"Urban Branch Updated\",\n  \"valueBnLabel\": \"শহর শাখা আপডেট\",\n  \"sortOrder\": 1,\n  \"extraData\": \"{\\\"seed\\\":\\\"manual\\\"}\",\n  \"status\": \"ACTIVE\"\n}" },
+        "url": "{{baseUrl}}/api/lookups/values/1"
+      }
+    },
+    { "name": "12 Values By Type Code", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/values/by-type/NOTIFICATION_CHANNEL" } },
+    { "name": "13 Dropdown Active Values", "request": { "method": "GET", "url": "{{baseUrl}}/api/lookups/dropdown/WORKFLOW_STAGE" } },
+    { "name": "14 Archive Value", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/lookups/values/1" } },
+    { "name": "15 Restore Value", "request": { "method": "PUT", "url": "{{baseUrl}}/api/lookups/values/1/restore" } }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ]
+}

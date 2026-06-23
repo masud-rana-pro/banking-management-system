@@ -1,0 +1,178 @@
+﻿[
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for Admin01",
+        "Role":  "UNKNOWN",
+        "Status":  "FAIL",
+        "Details":  "Unable to extract OTP preview for password reset: Admin01",
+        "Timestamp":  "2026-05-16T01:18:08"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for branch.manager01",
+        "Role":  "UNKNOWN",
+        "Status":  "FAIL",
+        "Details":  "Unable to extract OTP preview for password reset: branch.manager01",
+        "Timestamp":  "2026-05-16T01:18:08"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for ops.officer01",
+        "Role":  "UNKNOWN",
+        "Status":  "FAIL",
+        "Details":  "Unable to extract OTP preview for password reset: ops.officer01",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for investment.officer01",
+        "Role":  "UNKNOWN",
+        "Status":  "FAIL",
+        "Details":  "Unable to extract OTP preview for password reset: investment.officer01",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for shariah.board01",
+        "Role":  "UNKNOWN",
+        "Status":  "FAIL",
+        "Details":  "Unable to extract OTP preview for password reset: shariah.board01",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for customer.seed01",
+        "Role":  "UNKNOWN",
+        "Status":  "FAIL",
+        "Details":  "Unable to extract OTP preview for password reset: customer.seed01",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "RBAC",
+        "Step":  "Admin users list",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "RBAC",
+        "Step":  "Customer users list denied",
+        "Role":  "CUSTOMER",
+        "Status":  "PASS",
+        "Details":  "Expected denial HTTP 401",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "RBAC",
+        "Step":  "Admin roles list",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "User Provisioning",
+        "Step":  "Create branch staff user",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "User Provisioning",
+        "Step":  "Create teller user",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Reporting",
+        "Step":  "Generate KPI report",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Monthly Closing",
+        "Step":  "Create or refresh run",
+        "Role":  "BRANCH_MANAGER",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Financing",
+        "Step":  "List financing applications",
+        "Role":  "INVESTMENT_OFFICER",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Contracts",
+        "Step":  "List contracts",
+        "Role":  "INVESTMENT_OFFICER",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Shariah",
+        "Step":  "List shariah cases",
+        "Role":  "SHARIAH_BOARD_MEMBER",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Zakat",
+        "Step":  "List zakat profiles",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Zakat",
+        "Step":  "List charity payouts",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "ATM",
+        "Step":  "List ATM terminals",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Security",
+        "Step":  "List workflow pending queue",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Security",
+        "Step":  "Verification dashboard summary",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    },
+    {
+        "Process":  "Security",
+        "Step":  "Integration dashboard summary",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "FAIL",
+        "Details":  "HTTP 401 :: ",
+        "Timestamp":  "2026-05-16T01:18:09"
+    }
+]

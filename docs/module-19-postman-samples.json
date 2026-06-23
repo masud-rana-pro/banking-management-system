@@ -1,0 +1,74 @@
+{
+  "module": "19",
+  "name": "Integration Management",
+  "baseUrl": "http://localhost:8080/api/integrations",
+  "createProviderSamples": [
+    {
+      "providerCode": "INT-CUSTOM-01",
+      "providerName": "Custom Email Provider",
+      "providerType": "EMAIL",
+      "baseUrl": "https://custom-email.sandbox.local/api",
+      "authType": "API_KEY",
+      "apiKey": "custom-email-key",
+      "username": null,
+      "password": "custom-email-pass",
+      "timeoutSec": 25
+    },
+    {
+      "providerCode": "INT-CUSTOM-02",
+      "providerName": "Custom SMS Provider",
+      "providerType": "SMS",
+      "baseUrl": "https://custom-sms.sandbox.local/send",
+      "authType": "API_KEY",
+      "apiKey": "custom-sms-key",
+      "username": null,
+      "password": "custom-sms-pass",
+      "timeoutSec": 20
+    },
+    {
+      "providerCode": "INT-CUSTOM-03",
+      "providerName": "Custom Payment Provider",
+      "providerType": "PAYMENT",
+      "baseUrl": "https://custom-payment.sandbox.local/api",
+      "authType": "USERNAME_PASSWORD",
+      "apiKey": null,
+      "username": "payuser",
+      "password": "paypass",
+      "timeoutSec": 40
+    }
+  ],
+  "testProviderSamples": [
+    {
+      "providerId": 1,
+      "referenceModule": "NOTIFICATION",
+      "referenceId": 1901,
+      "requestPayload": "{\"event\":\"CUSTOMER_WELCOME\",\"channel\":\"EMAIL\"}"
+    },
+    {
+      "providerId": 4,
+      "referenceModule": "PAYMENT",
+      "referenceId": 1902,
+      "requestPayload": "{\"transaction\":\"DISBURSEMENT\",\"amount\":50000}"
+    },
+    {
+      "providerId": 13,
+      "referenceModule": "SECURITY",
+      "referenceId": 1903,
+      "requestPayload": "{\"screening\":\"AML\",\"customerId\":12}"
+    }
+  ],
+  "retrySamples": [
+    {
+      "logId": 10,
+      "expectedBefore": "RETRY_PENDING"
+    },
+    {
+      "logId": 12,
+      "expectedBefore": "RETRY_PENDING"
+    },
+    {
+      "logId": 14,
+      "expectedBefore": "FAILED"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>ATM / CDM Reconciliation Report</title>
+    <style th:text="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Islamic Banking Document Template</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent" style="background:linear-gradient(90deg,#0c5d44,#d4af37,#1f6d57);"></div>
+
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" th:alt="${bankName}" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}"></div>
+                <div class="doc-bank-sub" th:text="${bankAddress}"></div>
+                <div class="doc-bank-sub" th:text="${bankContact}"></div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Report Type</div>
+            <div class="doc-chip">ATM Reconciliation</div>
+            <div class="doc-chip-meta" th:text="|REC-${response.id}|"></div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Self-Service Channel</div>
+            <h1>ATM / CDM Reconciliation Report</h1>
+            <div class="hero-note">Official reconciliation report for ATM/CDM cash verification, variance control and operational authorization.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Terminal</span><strong th:text="${response.terminalCode}"></strong></div>
+            <div><span>Recon Date</span><strong th:text="${response.reconDate}"></strong></div>
+            <div><span>Status</span><strong th:text="${response.status}"></strong></div>
+        </div>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric-card"><span>System Amount</span><strong th:text="${response.systemAmount}"></strong></div>
+        <div class="metric-card"><span>Physical Amount</span><strong th:text="${response.physicalAmount}"></strong></div>
+        <div class="metric-card"><span>Variance</span><strong th:text="${response.varianceAmount}"></strong></div>
+        <div class="metric-card"><span>Approved By</span><strong th:text="${approvedByDisplay}"></strong></div>
+    </div>
+
+    <div class="visual-section">
+        <div class="visual-card">
+            <h3>Cash Reconciliation Snapshot</h3>
+            <p>System and physical cash posture for the reconciliation date.</p>
+            <div class="legend-row"><span>System Cash</span><strong th:text="${response.systemAmount}"></strong></div>
+            <div class="legend-row"><span>Physical Cash</span><strong th:text="${response.physicalAmount}"></strong></div>
+            <div class="legend-row"><span>Variance</span><strong th:text="${response.varianceAmount}"></strong></div>
+        </div>
+        <div class="visual-card">
+            <h3>Control Note</h3>
+            <p>Use this document for branch review, ATM operations review and cash variance escalation where needed.</p>
+            <div class="legend-row"><span>Terminal Name</span><strong th:text="${response.terminalName}"></strong></div>
+            <div class="legend-row"><span>Approved At</span><strong th:text="${response.approvedAt != null ? response.approvedAt : '-'}"></strong></div>
+            <div class="legend-row"><span>Created At</span><strong th:text="${response.createdAt != null ? response.createdAt : '-'}"></strong></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Reconciliation Detail</div>
+        <table>
+            <tbody>
+            <tr><th>Terminal Code</th><td th:text="${response.terminalCode}"></td></tr>
+            <tr><th>Terminal Name</th><td th:text="${response.terminalName}"></td></tr>
+            <tr><th>Reconciliation Date</th><td th:text="${response.reconDate}"></td></tr>
+            <tr><th>System Amount</th><td th:text="${response.systemAmount}"></td></tr>
+            <tr><th>Physical Amount</th><td th:text="${response.physicalAmount}"></td></tr>
+            <tr><th>Variance Amount</th><td th:text="${response.varianceAmount}"></td></tr>
+            <tr><th>Approved By</th><td th:text="${approvedByDisplay}"></td></tr>
+            <tr><th>Approved At</th><td th:text="${response.approvedAt != null ? response.approvedAt : '-'}"></td></tr>
+            <tr><th>Status</th><td th:text="${response.status}"></td></tr>
+            <tr><th>Remarks</th><td th:text="${response.remarks != null ? response.remarks : '-'}"></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="signature-strip">
+        <div class="signature-box"><span>Prepared By</span><strong>Terminal Operations</strong></div>
+        <div class="signature-box"><span>Checked By</span><strong th:text="${approvedByDisplay}"></strong></div>
+        <div class="signature-box"><span>Authorized Signature</span><strong>ATM Control</strong></div>
+    </div>
+
+    <div class="doc-footer">
+        <div>Generated from SBMS | ATM reconciliation preview / print / download copy</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "notes": [
+    "Verification add-on uses /api/auth and /api/verifications together.",
+    "Use verifyOtp only after sendEmailVerificationOtp, sendMobileVerificationOtp, providerTest or forgotPassword returns a requestId.",
+    "contact_verification_status is updated automatically after successful verifyOtp for VERIFY_EMAIL and VERIFY_MOBILE purposes."
+  ],
+  "sendEmailVerificationOtp": [
+    { "customerId": 1, "referenceModule": "CUSTOMER", "referenceId": 1, "contactValue": "masud.jee68@gmail.com", "remarks": "Customer email verification resend" },
+    { "customerId": 3, "referenceModule": "CUSTOMER", "referenceId": 3, "contactValue": "rahim1@gmail.com", "remarks": "Customer onboarding email verification" },
+    { "customerId": 5, "referenceModule": "CUSTOMER", "referenceId": 5, "contactValue": "alamin@gmail.com", "remarks": "Expired email OTP regeneration" },
+    { "customerId": 7, "referenceModule": "CUSTOMER", "referenceId": 7, "contactValue": "nadia@gmail.com", "remarks": "Email verification health check" },
+    { "customerId": 9, "referenceModule": "CUSTOMER", "referenceId": 9, "contactValue": "farhana@gmail.com", "remarks": "Pending email verification follow-up" }
+  ],
+  "sendMobileVerificationOtp": [
+    { "customerId": 2, "referenceModule": "CUSTOMER", "referenceId": 2, "contactValue": "01723294032", "remarks": "Customer mobile verification resend" },
+    { "customerId": 4, "referenceModule": "CUSTOMER", "referenceId": 4, "contactValue": "01710000002", "remarks": "Failed mobile OTP recovery" },
+    { "customerId": 6, "referenceModule": "CUSTOMER", "referenceId": 6, "contactValue": "01710000014", "remarks": "Pending mobile verification follow-up" },
+    { "customerId": 8, "referenceModule": "CUSTOMER", "referenceId": 8, "contactValue": "01710000016", "remarks": "Verified mobile audit test" },
+    { "customerId": 10, "referenceModule": "CUSTOMER", "referenceId": 10, "contactValue": "01710000018", "remarks": "Failed mobile verification replay" }
+  ],
+  "verifyOtp": [
+    { "requestId": "{{email_request_id}}", "otpCode": "{{otp_from_provider_response}}", "ipAddress": "127.0.0.1", "deviceInfo": "Postman", "createdBy": "SYSTEM_ADMIN" },
+    { "requestId": "{{mobile_request_id}}", "otpCode": "{{otp_from_provider_response}}", "ipAddress": "127.0.0.1", "deviceInfo": "Postman", "createdBy": "SYSTEM_ADMIN" }
+  ],
+  "providerTest": [
+    { "channelType": "EMAIL", "purpose": "PROVIDER_TEST", "contactValue": "qa.provider@test.local", "referenceModule": "GENERAL", "referenceId": 201, "remarks": "Email provider simulator check" },
+    { "channelType": "SMS", "purpose": "PROVIDER_TEST", "contactValue": "01710009999", "referenceModule": "GENERAL", "referenceId": 202, "remarks": "SMS provider simulator check" }
+  ],
+  "forgotPassword": [
+    { "identifier": "Admin01", "channelType": "EMAIL" },
+    { "identifier": "branch.manager01", "channelType": "SMS" }
+  ],
+  "resetPassword": [
+    { "requestId": "{{password_reset_request_id}}", "otpCode": "{{otp_from_provider_response}}", "newPassword": "Admin@123!", "confirmPassword": "Admin@123!" }
+  ]
+}

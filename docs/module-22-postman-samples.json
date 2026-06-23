@@ -1,0 +1,28 @@
+{
+  "info": {
+    "name": "SBMS Module 22 - Workflow Support",
+    "_postman_id": "module-22-workflow-support",
+    "description": "Sample requests for Playbook Module 22",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    { "name": "01 Dashboard Summary", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/dashboard-summary" } },
+    { "name": "02 Dashboard Summary By Actor", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/dashboard-summary?actor=SYSTEM" } },
+    { "name": "03 Workflow History List", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/history/list" } },
+    { "name": "04 Workflow History Filter By Module", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/history/list?moduleName=KYC" } },
+    { "name": "05 Workflow History Search", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/history/list?keyword=approval" } },
+    { "name": "06 Workflow History View", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/history/1" } },
+    { "name": "07 Pending Approval Queue", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/pending" } },
+    { "name": "08 Pending Queue Search", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/pending?keyword=branch" } },
+    { "name": "09 My Submissions Default Actor", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/my-submissions" } },
+    { "name": "10 My Submissions SYSTEM", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/my-submissions?actionBy=SYSTEM" } },
+    { "name": "11 My Submissions OPS Officer", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/my-submissions?actionBy=OPS_OFFICER" } },
+    { "name": "12 Completed History Search", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/history/list?keyword=completed" } },
+    { "name": "13 Returned Queue Search", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/pending?keyword=clarification" } },
+    { "name": "14 Financing Workflow View", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/history/list?moduleName=FINANCING" } },
+    { "name": "15 Account Workflow View", "request": { "method": "GET", "url": "{{baseUrl}}/api/workflows/history/list?moduleName=ACCOUNT" } }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ]
+}

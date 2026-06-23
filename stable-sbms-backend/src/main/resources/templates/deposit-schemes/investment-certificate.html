@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Islamic Investment Certificate</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell certificate-shell">
+  <div class="doc-top-band">
+    <div class="doc-top-line"></div>
+    <div class="doc-top-title">Islamic Investment Certificate</div>
+    <div class="doc-top-line"></div>
+  </div>
+  <div class="doc-accent"></div>
+
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Certificate No</span>
+      <span class="doc-chip" th:text="${item.enrollmentNo}">DSE-00001</span>
+      <div class="doc-chip-meta">Scheme: <strong th:text="${item.schemeCode}">DPS-00001</strong></div>
+      <div class="doc-chip-meta">Issued: <strong th:text="${issuedDate}">16 May 2026</strong></div>
+    </div>
+  </div>
+
+  <div class="certificate-panel">
+    <div class="certificate-frame">
+      <div class="certificate-title">Islamic Investment Certificate</div>
+      <div class="certificate-sub">This is to certify that the following customer is enrolled under an approved Islamic deposit investment program.</div>
+
+      <div class="certificate-person" th:text="${item.customerName}">MD. JAHID HASAN</div>
+      <div class="certificate-sub">
+        Customer Code:
+        <strong th:text="${item.customerCode}">CUS-0001</strong>
+        &#160;|&#160; Linked Account:
+        <strong th:text="${item.linkedAccountNumber}">1234567890</strong>
+      </div>
+
+      <div class="certificate-amount">
+        BDT <span th:text="${#numbers.formatDecimal(item.maturityAmount,1,'COMMA',2,'POINT')}">500,000.00</span>
+      </div>
+
+      <div class="certificate-body">
+        Under the
+        <strong th:text="${item.schemeName}">Mudarabah Term Deposit</strong>
+        scheme, an installment amount of
+        <strong th:text="${#numbers.formatDecimal(item.installmentAmount,1,'COMMA',2,'POINT')}">10,000.00</strong>
+        is scheduled over
+        <strong th:text="${item.tenureMonths}">12</strong>
+        months with a declared projected profit ratio of
+        <strong th:text="${#numbers.formatDecimal(item.schemeProfitRatio,1,'COMMA',2,'POINT')} + '%'">8.50%</strong>.
+        The investment starts on
+        <strong th:text="${item.startDate}">2026-01-01</strong>
+        and matures on
+        <strong th:text="${item.maturityDate}">2026-12-31</strong>.
+      </div>
+
+      <div class="seal-mark">SB</div>
+
+      <div class="certificate-meta">
+        <div class="metric-card"><span>Scheme Type</span><strong th:text="${item.schemeType}">MUDARABAH</strong></div>
+        <div class="metric-card"><span>Profit Frequency</span><strong th:text="${item.schemeProfitFrequency}">MONTHLY</strong></div>
+        <div class="metric-card"><span>Paid Installments</span><strong th:text="${item.paidInstallments}">3</strong></div>
+        <div class="metric-card"><span>Status</span><strong th:text="${item.enrollmentStatus}">ACTIVE</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="signature-strip">
+    <div class="signature-box"><span>Prepared By</span><strong>Operations Officer</strong></div>
+    <div class="signature-box"><span>Authorized By</span><strong>Branch Manager</strong></div>
+    <div class="signature-box"><span>Issued Date</span><strong th:text="${issuedDate}">16 May 2026</strong></div>
+  </div>
+
+  <div class="doc-footer">
+    <div>This certificate is system generated and may be used for customer service, review and investment confirmation.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

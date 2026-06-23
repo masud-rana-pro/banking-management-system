@@ -1,0 +1,48 @@
+{
+  "module": "16",
+  "name": "Shariah Review",
+  "baseUrls": {
+    "reviews": "http://localhost:8080/api/shariah-reviews"
+  },
+  "caseCreateSamples": [
+    { "referenceModule": "FINANCING", "referenceId": 1, "submittedBy": "Review Officer 01", "remarks": "Murabaha transport case submitted and waiting for full board checklist completion." },
+    { "referenceModule": "FINANCING", "referenceId": 2, "submittedBy": "Review Officer 02", "remarks": "Vehicle asset case prepared for approval board." },
+    { "referenceModule": "FINANCING", "referenceId": 3, "submittedBy": "Review Officer 03", "remarks": "Retail asset case submitted with quotation concern." },
+    { "referenceModule": "FINANCING", "referenceId": 4, "submittedBy": "Review Officer 04", "remarks": "Correction likely required on charity clause wording." },
+    { "referenceModule": "CONTRACT", "referenceId": 5, "submittedBy": "Review Officer 05", "remarks": "Contract wording prepared for certificate clearance." },
+    { "referenceModule": "CONTRACT", "referenceId": 6, "submittedBy": "Review Officer 06", "remarks": "Board checklist updated and waiting final decision." },
+    { "referenceModule": "FINANCING", "referenceId": 7, "submittedBy": "Review Officer 07", "remarks": "Collateral and supplier validation completed." },
+    { "referenceModule": "CONTRACT", "referenceId": 8, "submittedBy": "Review Officer 08", "remarks": "Contract template revision needs board review." },
+    { "referenceModule": "DEPOSIT_SCHEME", "referenceId": 1, "submittedBy": "Review Officer 09", "remarks": "Savings scheme disclosure ready for approval." },
+    { "referenceModule": "FINANCING", "referenceId": 10, "submittedBy": "Review Officer 10", "remarks": "Medical equipment case submitted with supplier note." },
+    { "referenceModule": "CONTRACT", "referenceId": 11, "submittedBy": "Review Officer 11", "remarks": "Corporate card contract queued for board." },
+    { "referenceModule": "CARD_ISSUE", "referenceId": 1, "submittedBy": "Review Officer 12", "remarks": "Card issue undertaking prepared for compliance sign-off." },
+    { "referenceModule": "ACCOUNT_OPENING", "referenceId": 13, "submittedBy": "Review Officer 13", "remarks": "Account opening clause needs board confirmation." },
+    { "referenceModule": "FINANCING", "referenceId": 14, "submittedBy": "Review Officer 14", "remarks": "Commodity financing purpose note under review." },
+    { "referenceModule": "GENERAL", "referenceId": 15, "submittedBy": "Review Officer 15", "remarks": "General advisory case included for annual report scope." }
+  ],
+  "checklistSaveSample": {
+    "reviewedBy": "Board Member Template",
+    "remarks": "Checklist prepared and board note updated.",
+    "checklistItems": [
+      { "itemId": 1, "selected": true, "note": "Purpose aligns with approved structure." },
+      { "itemId": 3, "selected": true, "note": "Contract wording checked against board template." },
+      { "itemId": 15, "selected": true, "note": "Board note and certificate language ready." }
+    ]
+  },
+  "approveSamples": [
+    { "decisionBy": "Board Member A", "remarks": "Approved after full purpose, asset and clause review.", "checklistItems": [{ "itemId": 1, "selected": true, "note": "Purpose aligned." }, { "itemId": 2, "selected": true, "note": "Asset halal verified." }, { "itemId": 15, "selected": true, "note": "Certificate note ready." }] },
+    { "decisionBy": "Board Member B", "remarks": "Approved with compliant disclosure and charity routing.", "checklistItems": [{ "itemId": 7, "selected": true, "note": "Charity note compliant." }, { "itemId": 8, "selected": true, "note": "Customer disclosure visible." }, { "itemId": 15, "selected": true, "note": "Archive note completed." }] },
+    { "decisionBy": "Board Member C", "remarks": "Approved after supplier validation and ownership evidence review.", "checklistItems": [{ "itemId": 9, "selected": true, "note": "Ownership evidence attached." }, { "itemId": 10, "selected": true, "note": "Supplier validation complete." }, { "itemId": 11, "selected": true, "note": "Risk note acceptable." }] }
+  ],
+  "rejectSamples": [
+    { "decisionBy": "Board Member D", "remarks": "Rejected due to inconsistent supplier document trail.", "checklistItems": [{ "itemId": 10, "selected": true, "note": "Supplier trail mismatch." }, { "itemId": 5, "selected": true, "note": "Documentation incomplete." }] },
+    { "decisionBy": "Board Member E", "remarks": "Rejected because financing purpose wording conflicts with approved structure.", "checklistItems": [{ "itemId": 1, "selected": true, "note": "Purpose not aligned." }, { "itemId": 4, "selected": true, "note": "Profit method note conflicted." }] },
+    { "decisionBy": "Board Member F", "remarks": "Rejected because ownership evidence was not produced.", "checklistItems": [{ "itemId": 9, "selected": true, "note": "Ownership evidence missing." }, { "itemId": 5, "selected": true, "note": "Documents incomplete." }] }
+  ],
+  "returnSamples": [
+    { "decisionBy": "Board Member G", "remarks": "Return for revised charity clause and customer disclosure wording.", "checklistItems": [{ "itemId": 7, "selected": true, "note": "Charity note needs revision." }, { "itemId": 8, "selected": true, "note": "Customer disclosure to be updated." }] },
+    { "decisionBy": "Board Member H", "remarks": "Return for updated board note and revised template language.", "checklistItems": [{ "itemId": 3, "selected": true, "note": "Template wording outdated." }, { "itemId": 15, "selected": true, "note": "Board note incomplete." }] },
+    { "decisionBy": "Board Member I", "remarks": "Return for corrected early settlement and declaration wording.", "checklistItems": [{ "itemId": 13, "selected": true, "note": "Early settlement wording needs update." }, { "itemId": 8, "selected": true, "note": "Declaration wording requires correction." }] }
+  ]
+}

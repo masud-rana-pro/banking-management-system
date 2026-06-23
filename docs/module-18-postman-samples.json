@@ -1,0 +1,65 @@
+{
+  "module": "18",
+  "name": "Notification & Alerts",
+  "baseUrl": "http://localhost:8080/api/notifications",
+  "createTemplateSamples": [
+    {
+      "templateCode": "NTF-CUSTOM-01",
+      "templateName": "Custom Email Template",
+      "channelType": "EMAIL",
+      "subjectText": "Custom Subject",
+      "bodyText": "Custom managed email body for operational notification."
+    },
+    {
+      "templateCode": "NTF-CUSTOM-02",
+      "templateName": "Custom SMS Template",
+      "channelType": "SMS",
+      "subjectText": null,
+      "bodyText": "Custom SMS alert body."
+    },
+    {
+      "templateCode": "NTF-CUSTOM-03",
+      "templateName": "Custom Push Template",
+      "channelType": "PUSH",
+      "subjectText": "Push Subject",
+      "bodyText": "Push message body for mobile app alert."
+    }
+  ],
+  "createEventRuleSamples": [
+    {
+      "eventCode": "EVT-CUSTOM-01",
+      "eventName": "Custom Customer Event",
+      "referenceModule": "CUSTOMER"
+    },
+    {
+      "eventCode": "EVT-CUSTOM-02",
+      "eventName": "Custom Account Event",
+      "referenceModule": "ACCOUNT"
+    },
+    {
+      "eventCode": "EVT-CUSTOM-03",
+      "eventName": "Custom Financing Event",
+      "referenceModule": "FINANCING"
+    }
+  ],
+  "listUrls": {
+    "dashboardSummary": "/dashboard-summary",
+    "templates": "/templates/list",
+    "eventRules": "/event-rules/list",
+    "logs": "/logs/list"
+  },
+  "retrySamples": [
+    {
+      "logId": 9,
+      "expectedBefore": "RETRY_QUEUED"
+    },
+    {
+      "logId": 12,
+      "expectedBefore": "RETRY_QUEUED"
+    },
+    {
+      "logId": 14,
+      "expectedBefore": "FAILED"
+    }
+  ]
+}

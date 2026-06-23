@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Cash Report</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band"><div class="doc-top-line"></div><div class="doc-top-title">Daily Cash Report</div><div class="doc-top-line"></div></div>
+  <div class="doc-accent"></div>
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Report Date</span>
+      <span class="doc-chip" th:text="${issuedDate}">16 May 2026</span>
+      <div class="doc-chip-meta">Branch: <strong th:text="${branch != null ? branch.branchName : 'All Branches'}">All Branches</strong></div>
+      <div class="doc-chip-meta">Entry / Source: <strong th:text="${selectedEntryType + ' / ' + selectedSourceType}">ALL / ALL</strong></div>
+    </div>
+  </div>
+  <div class="metric-grid">
+    <div class="metric-card"><span>Total Rows</span><strong th:text="${items.size()}">0</strong></div>
+    <div class="metric-card"><span>Total Debit</span><strong th:text="${#numbers.formatDecimal(totalDebit,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Total Credit</span><strong th:text="${#numbers.formatDecimal(totalCredit,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Closing Balance</span><strong th:text="${#numbers.formatDecimal(closingBalance,1,'COMMA',2,'POINT')}">0.00</strong></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Cash Ledger Detail</div>
+    <table>
+      <thead>
+      <tr>
+        <th>Ledger Date</th>
+        <th>Branch</th>
+        <th>Entry Type</th>
+        <th>Source Type</th>
+        <th>Reference</th>
+        <th>Debit</th>
+        <th>Credit</th>
+        <th>Balance After</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="row : ${items}">
+        <td th:text="${row.ledgerDate}">2026-05-16</td>
+        <td th:text="${branch != null ? branch.branchCode + ' - ' + branch.branchName : 'Branch #' + row.branchId}">Branch</td>
+        <td th:text="${row.entryType}">DEBIT</td>
+        <td th:text="${row.sourceType}">VAULT_OPENING</td>
+        <td th:text="${row.referenceNo != null ? row.referenceNo : '-'}">-</td>
+        <td th:text="${#numbers.formatDecimal(row.debitAmount,1,'COMMA',2,'POINT')}">0.00</td>
+        <td th:text="${#numbers.formatDecimal(row.creditAmount,1,'COMMA',2,'POINT')}">0.00</td>
+        <td th:text="${#numbers.formatDecimal(row.balanceAfter,1,'COMMA',2,'POINT')}">0.00</td>
+      </tr>
+      <tr th:if="${items.isEmpty()}"><td colspan="8" class="empty-row">No cash ledger rows found for the selected filter.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="signature-strip">
+    <div class="signature-box"><span>Prepared By</span><strong>Branch Operations</strong></div>
+    <div class="signature-box"><span>Checked By</span><strong>Cash Control</strong></div>
+    <div class="signature-box"><span>Authorized By</span><strong>Branch Manager</strong></div>
+  </div>
+  <div class="doc-footer">
+    <div>This report is system generated for cash review, branch audit and daily balancing.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

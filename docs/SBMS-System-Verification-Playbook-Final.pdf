@@ -1,0 +1,4693 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 5467
+>>
+stream
+0.200025 w
+0 G
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 22 Tf
+25.2999999999999972 TL
+0.067 0.29 0.204 rg
+48. 769.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 729.8899999999999864 Td
+(Date: 16 May 2026) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 712.8899999999999864 Td
+(Workspace: I:\\SBMS Copy) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 683.8899999999999864 Td
+(Purpose) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 651.8899999999999864 Td
+(This playbook is the practical verification manual for the current SBMS system. It is written so that you can:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 628.8899999999999864 Td
+(• understand what is already usable in the system) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 612.8899999999999864 Td
+(• verify end-to-end business processes role by role) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 596.8899999999999864 Td
+(• test module by module without missing key workflow steps) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 580.8899999999999864 Td
+(• confirm RBAC, document generation, export, mail, OTP, workflow, and audit behavior) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 564.8899999999999864 Td
+(• record pass/fail results in a structured way) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 536.8899999999999864 Td
+(Scope Summary) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 504.8899999999999864 Td
+(Current verification scope covers:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 481.8899999999999864 Td
+(• 22 major application modules) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 465.8899999999999864 Td
+(• 4 cross-cutting support layers) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 449.8899999999999864 Td
+(• 8 main operational roles) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 433.8899999999999864 Td
+(• 20 major business process families) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 417.8899999999999864 Td
+(• generated document, preview, print, download, export, and dashboard flows) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 389.8899999999999864 Td
+(Practical Process Count) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 357.8899999999999864 Td
+(For verification purposes, treat the current system as 20 major process families:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 334.8899999999999864 Td
+(1. Login, OTP, password reset) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 318.8899999999999864 Td
+(2. Role and permission administration) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 302.8899999999999864 Td
+(3. User administration) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 286.8899999999999864 Td
+(4. Lookup and configuration management) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 270.8899999999999864 Td
+(5. Branch and branch assignment operations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 254.8899999999999864 Td
+(6. ATM/CDM operational control) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 238.8899999999999864 Td
+(7. Customer onboarding and profile management) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 222.8899999999999864 Td
+(8. KYC verification and approval) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 206.8899999999999864 Td
+(9. Account opening and account lifecycle) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 190.8899999999999864 Td
+(10. Teller transactions and reversal) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 174.8899999999999864 Td
+(11. Profit ratio, schedule and posting) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 158.8899999999999864 Td
+(12. Card lifecycle and PIN/event operations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 142.8899999999999864 Td
+(13. Statement request, preview and export) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 126.8899999999999864 Td
+(14. Deposit scheme enrollment and profit distribution) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 110.8899999999999864 Td
+(15. Financing tracking, review, disbursement and recovery) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 94.8899999999999864 Td
+(16. Contract generation and signing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 78.8899999999999864 Td
+(17. Shariah review workflow) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 1) Tj
+ET
+endstream
+endobj
+5 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 5137
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+58. 777.8899999999999864 Td
+(18. Zakat and charity operations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 761.8899999999999864 Td
+(19. Reporting, monthly closing and exports) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 745.8899999999999864 Td
+(20. Security, workflow, notification, integration and audit control) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 717.8899999999999864 Td
+(Main Roles To Verify) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 685.8899999999999864 Td
+(Use these roles as the primary UAT actors:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 662.8899999999999864 Td
+(1. SYSTEM_ADMIN) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 646.8899999999999864 Td
+(2. BRANCH_MANAGER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 630.8899999999999864 Td
+(3. BRANCH_STAFF) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 614.8899999999999864 Td
+(4. TELLER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 598.8899999999999864 Td
+(5. OPERATIONS_OFFICER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 582.8899999999999864 Td
+(6. INVESTMENT_OFFICER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 566.8899999999999864 Td
+(7. SHARIAH_BOARD_MEMBER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 550.8899999999999864 Td
+(8. CUSTOMER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 528.8899999999999864 Td
+(Also verify support roles where available:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 505.8899999999999864 Td
+(• COMPLIANCE_OFFICER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 489.8899999999999864 Td
+(• MIS_OFFICER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 473.8899999999999864 Td
+(• INTERNAL_AUDITOR) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 457.8899999999999864 Td
+(• RECOVERY_OFFICER) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 441.8899999999999864 Td
+(• TREASURY_FINANCE_OFFICER) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 413.8899999999999864 Td
+(What Each Role Should Do) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 381.8899999999999864 Td
+(System Admin) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 355.8899999999999864 Td
+(• create and manage users, roles, permissions, lookups, providers and system settings) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 339.8899999999999864 Td
+(• monitor audit, security, workflow, notification and integration surfaces) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 323.8899999999999864 Td
+(• should not perform normal business approval unless explicitly configured) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 301.8899999999999864 Td
+(Branch Staff) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 275.8899999999999864 Td
+(• create customer and account-opening intake records) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 259.8899999999999864 Td
+(• collect documents) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 243.8899999999999864 Td
+(• support enrollment, branch operations and service requests) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 221.8899999999999864 Td
+(Teller) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 195.8899999999999864 Td
+(• post deposit, withdrawal, transfer intake and cheque clearing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 179.8899999999999864 Td
+(• view transaction journal) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 163.8899999999999864 Td
+(• use only teller-level operational actions) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 141.8899999999999864 Td
+(Operations Officer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 115.8899999999999864 Td
+(• verify KYC) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 99.8899999999999864 Td
+(• review account-opening requests) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 83.8899999999999864 Td
+(• perform account/customer status actions) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 2) Tj
+ET
+endstream
+endobj
+7 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 8 0 R
+>>
+endobj
+8 0 obj
+<<
+/Length 5646
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+60. 777.8899999999999864 Td
+(• manage contract generation and operational review queues) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 755.8899999999999864 Td
+(Investment Officer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 729.8899999999999864 Td
+(• create financing products and applications) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 713.8899999999999864 Td
+(• verify and review financing files) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 697.8899999999999864 Td
+(• disburse and collect repayment) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 681.8899999999999864 Td
+(• use recovery queue and related reports) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 659.8899999999999864 Td
+(Shariah Board Member) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 633.8899999999999864 Td
+(• review submitted Shariah cases) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 617.8899999999999864 Td
+(• approve, reject or return) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 601.8899999999999864 Td
+(• sign contracts after customer signature where applicable) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 579.8899999999999864 Td
+(Branch Manager) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 553.8899999999999864 Td
+(• approve branch-level operations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 537.8899999999999864 Td
+(• manage vault closing and branch oversight) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 521.8899999999999864 Td
+(• sign off branch operational flows and monthly closing submission) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 499.8899999999999864 Td
+(Customer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 473.8899999999999864 Td
+(• view own profile, accounts, financing, schemes, contracts and statements) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 457.8899999999999864 Td
+(• receive OTP and automated mails) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 441.8899999999999864 Td
+(• use only customer-facing read/request surfaces) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 413.8899999999999864 Td
+(Global Verification Rules) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 381.8899999999999864 Td
+(For every module, verify these seven items:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 358.8899999999999864 Td
+(1. Dashboard: cards, recent activity, queue blocks, route guard) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 342.8899999999999864 Td
+(2. Create/Edit: form validation, save flow, success/error handling) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 326.8899999999999864 Td
+(3. List: search, filter, pagination, action column, export if applicable) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 310.8899999999999864 Td
+(4. View: detail surface, images/documents, related navigation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 294.8899999999999864 Td
+(5. Workflow: verify, approve, reject, return, close, sign or disburse if applicable) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 278.8899999999999864 Td
+(6. RBAC: correct role sees correct route, button and backend result) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 262.8899999999999864 Td
+(7. Audit/Document: actor trail, preview/print/download/export, mail/notification side effects if expected) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 234.8899999999999864 Td
+(Test Environment Preparation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 202.8899999999999864 Td
+(Before full verification, confirm:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 179.8899999999999864 Td
+(• backend starts clean) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 163.8899999999999864 Td
+(• frontend builds and loads clean) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 147.8899999999999864 Td
+(• MySQL schema is updated for latest columns) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 131.8899999999999864 Td
+(• sample users exist for each role) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 115.8899999999999864 Td
+(• branch, customer, account, financing and lookup seed data exist) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 99.8899999999999864 Td
+(• mail configuration is set if email verification is being tested) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 83.8899999999999864 Td
+(• uploaded file storage path is accessible) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 3) Tj
+ET
+endstream
+endobj
+9 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 10 0 R
+>>
+endobj
+10 0 obj
+<<
+/Length 4890
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+48. 777.8899999999999864 Td
+(Suggested Verification Sequence) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 745.8899999999999864 Td
+(Run verification in this order:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 722.8899999999999864 Td
+(1. Auth and OTP) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 706.8899999999999864 Td
+(2. Admin RBAC foundation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 690.8899999999999864 Td
+(3. Branch and ATM operations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 674.8899999999999864 Td
+(4. Customer and KYC onboarding) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 658.8899999999999864 Td
+(5. Account opening and lifecycle) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 642.8899999999999864 Td
+(6. Transactions) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 626.8899999999999864 Td
+(7. Profit and statements) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 610.8899999999999864 Td
+(8. Deposit schemes) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 594.8899999999999864 Td
+(9. Financing, contracts and Shariah) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 578.8899999999999864 Td
+(10. Zakat and charity) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 562.8899999999999864 Td
+(11. Reports and monthly closing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 546.8899999999999864 Td
+(12. Security, workflow, notifications and integrations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 530.8899999999999864 Td
+(13. Customer-facing read-only flows) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 502.8899999999999864 Td
+(Module-Wise Playbook) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 464.8899999999999864 Td
+(Module 1: Auth) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 432.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 415.8899999999999864 Td
+(• login, OTP, forgot password, reset password) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 393.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 376.8899999999999864 Td
+(• all users) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 354.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 337.8899999999999864 Td
+(• valid login works) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 321.8899999999999864 Td
+(• invalid password is rejected) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 305.8899999999999864 Td
+(• OTP screen appears where configured) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 289.8899999999999864 Td
+(• resend OTP works) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 273.8899999999999864 Td
+(• expired OTP is rejected) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 257.8899999999999864 Td
+(• reset password updates credentials) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 235.8899999999999864 Td
+(Pass criteria:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 218.8899999999999864 Td
+(• only login and password recovery require OTP) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 202.8899999999999864 Td
+(• business action pages do not ask OTP) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 174.8899999999999864 Td
+(Module 2: Role & Permission Management) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 142.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 125.8899999999999864 Td
+(• control access model) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 103.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 86.8899999999999864 Td
+(• system admin) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 4) Tj
+ET
+endstream
+endobj
+11 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 12 0 R
+>>
+endobj
+12 0 obj
+<<
+/Length 4971
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+48. 777.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 760.8899999999999864 Td
+(• create role) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 744.8899999999999864 Td
+(• map permission bundle) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 728.8899999999999864 Td
+(• view role detail) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 712.8899999999999864 Td
+(• archive/restore if allowed) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 696.8899999999999864 Td
+(• verify menu/button visibility changes for assigned users) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 668.8899999999999864 Td
+(Module 3: User Management) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 636.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 619.8899999999999864 Td
+(• user create, branch mapping, role assignment, lock/unlock, reset password) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 597.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 580.8899999999999864 Td
+(• system admin) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 558.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 541.8899999999999864 Td
+(• create user) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 525.8899999999999864 Td
+(• assign branch-bound role) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 509.8899999999999864 Td
+(• assign/unassign roles) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 493.8899999999999864 Td
+(• lock/unlock user) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 477.8899999999999864 Td
+(• admin reset password mail) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 461.8899999999999864 Td
+(• welcome mail for new user) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 433.8899999999999864 Td
+(Module 4: Lookup / Config) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 401.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 384.8899999999999864 Td
+(• maintain master data) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 362.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 345.8899999999999864 Td
+(• system admin) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 323.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 306.8899999999999864 Td
+(• create and update lookup values) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 290.8899999999999864 Td
+(• archive/restore if supported) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 274.8899999999999864 Td
+(• verify dropdown usage in dependent modules) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 246.8899999999999864 Td
+(Module 5: Branch Management) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 214.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 197.8899999999999864 Td
+(• branch master, assignment, teller limit, vault, cash ledger) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 175.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 158.8899999999999864 Td
+(• branch manager, operations officer, system admin) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 136.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 119.8899999999999864 Td
+(• branch create/edit/view/list) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 103.8899999999999864 Td
+(• branch assignment to users) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 87.8899999999999864 Td
+(• teller limit create/update) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 71.8899999999999864 Td
+(• vault open and close) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 5) Tj
+ET
+endstream
+endobj
+13 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 14 0 R
+>>
+endobj
+14 0 obj
+<<
+/Length 5014
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+60. 777.8899999999999864 Td
+(• cash ledger list and export) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 761.8899999999999864 Td
+(• branch daily cash report PDF) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 745.8899999999999864 Td
+(• vault balance report PDF) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 723.8899999999999864 Td
+(Documents:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 706.8899999999999864 Td
+(• daily cash report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 690.8899999999999864 Td
+(• vault balance report) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 662.8899999999999864 Td
+(Module 6: ATM / CDM) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 630.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 613.8899999999999864 Td
+(• terminal, cash bin, replenishment, reconciliation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 591.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 574.8899999999999864 Td
+(• branch manager, operations officer, branch staff) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 552.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 535.8899999999999864 Td
+(• terminal create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 519.8899999999999864 Td
+(• cash bin create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 503.8899999999999864 Td
+(• replenishment create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 487.8899999999999864 Td
+(• reconciliation create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 471.8899999999999864 Td
+(• preview/download/print for terminal profile, cash bin profile, replenishment report, reconciliation report) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 443.8899999999999864 Td
+(Module 7: Customer Management) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 411.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 394.8899999999999864 Td
+(• customer profile, identity and address management) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 372.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 355.8899999999999864 Td
+(• branch staff, operations officer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 333.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 316.8899999999999864 Td
+(• customer create/edit/view/list) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 300.8899999999999864 Td
+(• image upload and preview) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 284.8899999999999864 Td
+(• identity document upload and preview) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 268.8899999999999864 Td
+(• status action according to RBAC) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 252.8899999999999864 Td
+(• linked navigation to KYC and account opening) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 224.8899999999999864 Td
+(Module 8: KYC) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 192.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 175.8899999999999864 Td
+(• KYC document review and approval flow) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 153.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 136.8899999999999864 Td
+(• operations officer, branch manager, compliance reviewer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 114.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 97.8899999999999864 Td
+(• KYC profile create/list/view/history) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 81.8899999999999864 Td
+(• document upload and preview) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 6) Tj
+ET
+endstream
+endobj
+15 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 16 0 R
+>>
+endobj
+16 0 obj
+<<
+/Length 5116
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+60. 777.8899999999999864 Td
+(• verify, approve, reject, return) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 761.8899999999999864 Td
+(• decision mail) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 745.8899999999999864 Td
+(• queue and dashboard counts) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 717.8899999999999864 Td
+(Module 9: Account Types, Account Opening Requests, Accounts) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 685.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 668.8899999999999864 Td
+(• account product config, onboarding workflow, live account lifecycle) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 646.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 629.8899999999999864 Td
+(• branch staff, operations officer, branch manager) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 607.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 590.8899999999999864 Td
+(• account type create/edit/archive) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 574.8899999999999864 Td
+(• account opening request create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 558.8899999999999864 Td
+(• account opening form PDF preview/download/print) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 542.8899999999999864 Td
+(• verify, approve, reject, return) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 526.8899999999999864 Td
+(• account create/activate/block/freeze/close) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 510.8899999999999864 Td
+(• customer mail on approval/status decision) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 482.8899999999999864 Td
+(Module 10: Transactions) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 450.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 433.8899999999999864 Td
+(• deposit, withdrawal, transfer, cheque clearing, reversal, journal) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 411.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 394.8899999999999864 Td
+(• teller, operations officer, branch manager) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 372.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 355.8899999999999864 Td
+(• deposit) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 339.8899999999999864 Td
+(• withdrawal) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 323.8899999999999864 Td
+(• transfer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 307.8899999999999864 Td
+(• cheque clearing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 291.8899999999999864 Td
+(• reversal) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 275.8899999999999864 Td
+(• journal view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 259.8899999999999864 Td
+(• transaction confirmation mail) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 243.8899999999999864 Td
+(• transaction voucher PDF preview/download/print) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 215.8899999999999864 Td
+(Module 11: Profit) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 183.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 166.8899999999999864 Td
+(• ratio, schedule, posting, posting history) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 144.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 127.8899999999999864 Td
+(• treasury/finance officer, operations officer, MIS officer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 105.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 88.8899999999999864 Td
+(• ratio create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 72.8899999999999864 Td
+(• schedule create/list/view) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 7) Tj
+ET
+endstream
+endobj
+17 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 18 0 R
+>>
+endobj
+18 0 obj
+<<
+/Length 4907
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+60. 777.8899999999999864 Td
+(• posting run) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 761.8899999999999864 Td
+(• posting list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 745.8899999999999864 Td
+(• failed posting behavior) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 729.8899999999999864 Td
+(• profit posting advice PDF preview/download/print) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 701.8899999999999864 Td
+(Module 12: Cards) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 669.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 652.8899999999999864 Td
+(• issue, activate, block, unblock, renew, replace, PIN/event monitoring) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 630.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 613.8899999999999864 Td
+(• operations officer, branch manager) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 591.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 574.8899999999999864 Td
+(• card issue) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 558.8899999999999864 Td
+(• activate/block/unblock) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 542.8899999999999864 Td
+(• replace/renew) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 526.8899999999999864 Td
+(• event log and card dashboard) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 510.8899999999999864 Td
+(• customer mail on card outcome) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 482.8899999999999864 Td
+(Module 13: Statements) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 450.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 433.8899999999999864 Td
+(• customer statement, branch statement, statement registers) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 411.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 394.8899999999999864 Td
+(• branch staff, operations officer, customer, MIS officer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 372.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 355.8899999999999864 Td
+(• customer statement request) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 339.8899999999999864 Td
+(• branch statement request) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 323.8899999999999864 Td
+(• preview, print, download PDF) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 307.8899999999999864 Td
+(• statement register export CSV/Excel/PDF) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 291.8899999999999864 Td
+(• requester actor capture) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 269.8899999999999864 Td
+(Documents:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 252.8899999999999864 Td
+(• customer statement) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 236.8899999999999864 Td
+(• branch statement) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 220.8899999999999864 Td
+(• statement register reports) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 192.8899999999999864 Td
+(Module 14: Deposit Schemes) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 160.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 143.8899999999999864 Td
+(• scheme setup, enrollment, schedule, profit distribution) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 121.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 104.8899999999999864 Td
+(• branch staff, operations officer, customer service) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 82.8899999999999864 Td
+(Verify:) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 8) Tj
+ET
+endstream
+endobj
+19 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 20 0 R
+>>
+endobj
+20 0 obj
+<<
+/Length 5138
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+60. 777.8899999999999864 Td
+(• scheme create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 761.8899999999999864 Td
+(• enrollment create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 745.8899999999999864 Td
+(• schedule view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 729.8899999999999864 Td
+(• profit distribution view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 713.8899999999999864 Td
+(• investment certificate PDF preview/download/print) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 691.8899999999999864 Td
+(Documents:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 674.8899999999999864 Td
+(• Islamic investment certificate) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 646.8899999999999864 Td
+(Module 15: Financing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 614.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 597.8899999999999864 Td
+(• product setup, application, review, disbursement, repayment, overdue handling) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 575.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 558.8899999999999864 Td
+(• investment officer, operations officer, recovery officer, branch manager) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 536.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 519.8899999999999864 Td
+(• financing product create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 503.8899999999999864 Td
+(• application create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 487.8899999999999864 Td
+(• review queue and decision actions) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 471.8899999999999864 Td
+(• disbursement) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 455.8899999999999864 Td
+(• repayment collection) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 439.8899999999999864 Td
+(• overdue-only queue) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 423.8899999999999864 Td
+(• loan recovery report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 407.8899999999999864 Td
+(• financing sanction letter PDF) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 391.8899999999999864 Td
+(• transaction and approval mails) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 363.8899999999999864 Td
+(Module 16: Contracts) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 331.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 314.8899999999999864 Td
+(• template, contract generation, versioning, customer sign, Shariah sign) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 292.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 275.8899999999999864 Td
+(• operations officer, investment officer, Shariah board member) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 253.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 236.8899999999999864 Td
+(• template create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 220.8899999999999864 Td
+(• contract generate/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 204.8899999999999864 Td
+(• version history) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 188.8899999999999864 Td
+(• customer sign) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 172.8899999999999864 Td
+(• Shariah sign) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 156.8899999999999864 Td
+(• contract print copy PDF preview/download/print) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 128.8899999999999864 Td
+(Module 17: Shariah Review) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 96.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 79.8899999999999864 Td
+(• case creation, review, correction queue, final decision) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 9) Tj
+ET
+endstream
+endobj
+21 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 22 0 R
+>>
+endobj
+22 0 obj
+<<
+/Length 5058
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+48. 777.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 760.8899999999999864 Td
+(• Shariah board member, operations officer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 738.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 721.8899999999999864 Td
+(• create or route reference case) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 705.8899999999999864 Td
+(• list/view/review) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 689.8899999999999864 Td
+(• approve, reject, return) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 673.8899999999999864 Td
+(• correction queue visibility) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 657.8899999999999864 Td
+(• decision mail) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 629.8899999999999864 Td
+(Module 18: Zakat & Charity) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 597.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 580.8899999999999864 Td
+(• zakat profile, calculation, charity fund, beneficiary, payout) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 558.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 541.8899999999999864 Td
+(• operations officer, charity control, management reviewer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 519.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 502.8899999999999864 Td
+(• zakat profile create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 486.8899999999999864 Td
+(• profile sheet PDF preview/download/print) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 470.8899999999999864 Td
+(• zakat calculation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 454.8899999999999864 Td
+(• charity fund list) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 438.8899999999999864 Td
+(• beneficiary create/list/view with proof preview) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 422.8899999999999864 Td
+(• payout create/list) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 406.8899999999999864 Td
+(• charity payout receipt preview/download/print) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 378.8899999999999864 Td
+(Module 19: Notifications) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 346.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 329.8899999999999864 Td
+(• templates, event rules, retry queue, delivery logs) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 307.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 290.8899999999999864 Td
+(• system admin, operations support) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 268.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 251.8899999999999864 Td
+(• template create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 235.8899999999999864 Td
+(• event rules list) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 219.8899999999999864 Td
+(• retry queue) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 203.8899999999999864 Td
+(• delivery log list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 187.8899999999999864 Td
+(• fake print removed from config-only pages) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 171.8899999999999864 Td
+(• only operational export remains where meaningful) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 143.8899999999999864 Td
+(Module 20: Integrations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 111.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 94.8899999999999864 Td
+(• provider config, test, retry, execution log) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 72.8899999999999864 Td
+(Roles:) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 10) Tj
+ET
+endstream
+endobj
+23 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 24 0 R
+>>
+endobj
+24 0 obj
+<<
+/Length 5143
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+60. 777.8899999999999864 Td
+(• system admin, integration operator) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 755.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 738.8899999999999864 Td
+(• provider create/list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 722.8899999999999864 Td
+(• provider test success/failure) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 706.8899999999999864 Td
+(• retry queue and log view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 690.8899999999999864 Td
+(• automated support mails on provider test/retry) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 662.8899999999999864 Td
+(Module 21: Reports & Monthly Closing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 630.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 613.8899999999999864 Td
+(• branded report engine, KPI, growth, recovery, monthly closing ops) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 591.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 574.8899999999999864 Td
+(• MIS officer, compliance officer, branch manager, treasury/finance officer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 552.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 535.8899999999999864 Td
+(• report dashboard) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 519.8899999999999864 Td
+(• KPI report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 503.8899999999999864 Td
+(• growth report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 487.8899999999999864 Td
+(• financing recovery report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 471.8899999999999864 Td
+(• monthly closing report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 455.8899999999999864 Td
+(• monthly closing ops screen) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 439.8899999999999864 Td
+(• create/refresh/submit/approve/reject/reopen) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 423.8899999999999864 Td
+(• report preview/print/download) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 407.8899999999999864 Td
+(• PDF/Excel/CSV export) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 379.8899999999999864 Td
+(Module 22: Security / Audit / Investigation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 347.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 330.8899999999999864 Td
+(• event log, suspicious activity, audit log, investigation lifecycle) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 308.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 291.8899999999999864 Td
+(• compliance officer, internal auditor, security reviewer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 269.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 252.8899999999999864 Td
+(• security dashboard) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 236.8899999999999864 Td
+(• event list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 220.8899999999999864 Td
+(• suspicious activity list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 204.8899999999999864 Td
+(• audit log list/view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 188.8899999999999864 Td
+(• investigation case list/view/action) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 172.8899999999999864 Td
+(• evidence upload and preview) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 156.8899999999999864 Td
+(• assign and close mail) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 128.8899999999999864 Td
+(Module 23: Workflow) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 96.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 79.8899999999999864 Td
+(• pending approvals, my submissions, workflow history) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 11) Tj
+ET
+endstream
+endobj
+25 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 26 0 R
+>>
+endobj
+26 0 obj
+<<
+/Length 4923
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+48. 777.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 760.8899999999999864 Td
+(• all operational approvers) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 738.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 721.8899999999999864 Td
+(• pending queue) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 705.8899999999999864 Td
+(• history list) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 689.8899999999999864 Td
+(• my submissions) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 673.8899999999999864 Td
+(• source record navigation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 657.8899999999999864 Td
+(• actor and status timeline consistency) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 629.8899999999999864 Td
+(Module 24: Verification) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 597.8899999999999864 Td
+(Purpose:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 580.8899999999999864 Td
+(• OTP, provider test, delivery/retry, verification logs) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 558.8899999999999864 Td
+(Roles:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 541.8899999999999864 Td
+(• system admin, support, end users) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 519.8899999999999864 Td
+(Verify:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 502.8899999999999864 Td
+(• login OTP send/verify) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 486.8899999999999864 Td
+(• forgot password send/verify/reset) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 470.8899999999999864 Td
+(• verification dashboard and logs) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 454.8899999999999864 Td
+(• provider test console) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 438.8899999999999864 Td
+(• retry and delivery visibility) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 410.8899999999999864 Td
+(Cross-Cutting Checks) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 378.8899999999999864 Td
+(For every module, confirm these cross-cutting behaviors:) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 355.8899999999999864 Td
+(RBAC) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 329.8899999999999864 Td
+(• unauthorized route does not open) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 313.8899999999999864 Td
+(• unauthorized button is hidden) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 297.8899999999999864 Td
+(• direct API hit is still blocked) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 275.8899999999999864 Td
+(Actor Trail) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 249.8899999999999864 Td
+(• create/review/approve/disburse/request actions save real logged-in username where implemented) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 233.8899999999999864 Td
+(• no fake SYSTEM_* actor should appear on user-facing current workflow unless intentionally) Tj
+T* (system-generated) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 197.8899999999999864 Td
+(Documents) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 171.8899999999999864 Td
+(• preview opens correct document) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 155.8899999999999864 Td
+(• print uses generated document, not raw page print) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 139.8899999999999864 Td
+(• download gives correct file type) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 123.8899999999999864 Td
+(• export only exists where meaningful) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 101.8899999999999864 Td
+(Mail) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 75.8899999999999864 Td
+(• OTP mails) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 12) Tj
+ET
+endstream
+endobj
+27 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 28 0 R
+>>
+endobj
+28 0 obj
+<<
+/Length 5104
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+60. 777.8899999999999864 Td
+(• welcome/reset mails) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 761.8899999999999864 Td
+(• transaction confirmations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 745.8899999999999864 Td
+(• approval decision mails) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 729.8899999999999864 Td
+(• report ready mails) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 713.8899999999999864 Td
+(• contract/card/zakat/security outcome mails) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 691.8899999999999864 Td
+(Images) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 665.8899999999999864 Td
+(• profile/document image preview works) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 649.8899999999999864 Td
+(• avatar sizing is consistent) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 621.8899999999999864 Td
+(End-to-End Test Packs) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 589.8899999999999864 Td
+(Run these packs after module tests:) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 566.8899999999999864 Td
+(Pack A: Customer Onboarding) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 540.8899999999999864 Td
+(1. Create customer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 524.8899999999999864 Td
+(2. Upload identity) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 508.8899999999999864 Td
+(3. Create KYC) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 492.8899999999999864 Td
+(4. Verify/approve KYC) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 476.8899999999999864 Td
+(5. Create account-opening request) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 460.8899999999999864 Td
+(6. Approve request) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 444.8899999999999864 Td
+(7. Activate account) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 428.8899999999999864 Td
+(8. Generate account opening form PDF) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 406.8899999999999864 Td
+(Pack B: Teller Operations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 380.8899999999999864 Td
+(1. Deposit) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 364.8899999999999864 Td
+(2. Withdrawal) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 348.8899999999999864 Td
+(3. Transfer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 332.8899999999999864 Td
+(4. Cheque clearing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 316.8899999999999864 Td
+(5. Transaction reversal by authorized role) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 300.8899999999999864 Td
+(6. Verify voucher PDFs and mail) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 278.8899999999999864 Td
+(Pack C: Investment Lifecycle) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 252.8899999999999864 Td
+(1. Create financing application) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 236.8899999999999864 Td
+(2. Review and approve) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 220.8899999999999864 Td
+(3. Generate sanction letter) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 204.8899999999999864 Td
+(4. Generate contract) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 188.8899999999999864 Td
+(5. Customer sign) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 172.8899999999999864 Td
+(6. Shariah sign) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 156.8899999999999864 Td
+(7. Disburse) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 140.8899999999999864 Td
+(8. Collect repayment) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 124.8899999999999864 Td
+(9. Verify recovery report) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 102.8899999999999864 Td
+(Pack D: Deposit Investment Lifecycle) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 76.8899999999999864 Td
+(1. Create scheme) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 13) Tj
+ET
+endstream
+endobj
+29 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 30 0 R
+>>
+endobj
+30 0 obj
+<<
+/Length 5032
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+58. 777.8899999999999864 Td
+(2. Enroll customer) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 761.8899999999999864 Td
+(3. Open schedule) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 745.8899999999999864 Td
+(4. Open profit distribution) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 729.8899999999999864 Td
+(5. Generate investment certificate) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 707.8899999999999864 Td
+(Pack E: Branch Operations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 681.8899999999999864 Td
+(1. Open vault) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 665.8899999999999864 Td
+(2. Close vault) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 649.8899999999999864 Td
+(3. Open cash ledger) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 633.8899999999999864 Td
+(4. Generate daily cash report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 617.8899999999999864 Td
+(5. Generate vault report) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 601.8899999999999864 Td
+(6. Submit monthly closing) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.459 0.337 0.067 rg
+48. 579.8899999999999864 Td
+(Pack F: Zakat & Charity) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 553.8899999999999864 Td
+(1. Create zakat profile) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 537.8899999999999864 Td
+(2. Run calculation) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 521.8899999999999864 Td
+(3. Verify profile sheet) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 505.8899999999999864 Td
+(4. Create beneficiary) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 489.8899999999999864 Td
+(5. Create payout) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 473.8899999999999864 Td
+(6. Verify payout receipt) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 445.8899999999999864 Td
+(Pass / Fail Template) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 413.8899999999999864 Td
+(For each module record:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 390.8899999999999864 Td
+(• Role) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 374.8899999999999864 Td
+(• Scenario) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 358.8899999999999864 Td
+(• Input) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 342.8899999999999864 Td
+(• Expected Result) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 326.8899999999999864 Td
+(• Actual Result) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 310.8899999999999864 Td
+(• Pass/Fail) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 294.8899999999999864 Td
+(• Evidence Path) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 278.8899999999999864 Td
+(• Remarks) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 250.8899999999999864 Td
+(Evidence To Save) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 218.8899999999999864 Td
+(Save these as verification evidence:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 195.8899999999999864 Td
+(• screenshot of dashboard) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 179.8899999999999864 Td
+(• screenshot of create success) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 163.8899999999999864 Td
+(• screenshot of list and action column) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 147.8899999999999864 Td
+(• screenshot of detail view) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 131.8899999999999864 Td
+(• generated PDF sample) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 115.8899999999999864 Td
+(• exported Excel/CSV sample) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 99.8899999999999864 Td
+(• mail receipt screenshot if applicable) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 83.8899999999999864 Td
+(• API response sample for negative test) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 14) Tj
+ET
+endstream
+endobj
+31 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 32 0 R
+>>
+endobj
+32 0 obj
+<<
+/Length 2713
+>>
+stream
+0.7 w
+0.82 0.86 0.84 RG
+0.03 0.27 0.18 rg
+0. 841.8899999999999864 595.2799999999999727 -42. re
+f
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+1. g
+48. 814.8899999999999864 Td
+(SBMS System Verification Playbook) Tj
+ET
+0.83 0.69 0.22 RG
+1.2 w
+48. 801.8899999999999864 m
+547.2799999999999727 801.8899999999999864 l
+S
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0.118 0.161 0.231 rg
+48. 777.8899999999999864 Td
+(Final Verification Outcome Levels) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 745.8899999999999864 Td
+(Use this final grading:) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 722.8899999999999864 Td
+(• Green: module flow complete, RBAC okay, document/export okay) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 706.8899999999999864 Td
+(• Amber: core flow works but one or two support items still incomplete) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+60. 690.8899999999999864 Td
+(• Red: business flow blocked or role/process mismatch exists) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 662.8899999999999864 Td
+(Recommended Final Sign-Off Order) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 630.8899999999999864 Td
+(1. System admin sign-off on RBAC and setup) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 614.8899999999999864 Td
+(2. Branch operations sign-off on onboarding, transaction, vault, statement) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 598.8899999999999864 Td
+(3. Investment sign-off on financing, contract, Shariah) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 582.8899999999999864 Td
+(4. Finance/MIS sign-off on profit, reports, monthly closing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+58. 566.8899999999999864 Td
+(5. Compliance sign-off on security, audit, workflow and notification trail) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.051 0.373 0.267 rg
+48. 538.8899999999999864 Td
+(Final Note) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 506.8899999999999864 Td
+(The current system is now strong enough to be verified as a connected platform, not just isolated CRUD) Tj
+T* (modules.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0.118 0.161 0.231 rg
+48. 475.8899999999999864 Td
+(Use this playbook as the main UAT guide and mark each module and process family one by one.) Tj
+ET
+0.82 0.86 0.84 RG
+0.7 w
+48. 32. m
+547.2799999999999727 32. l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+48. 18. Td
+(Generated from docs\\SBMS-System-Verification-Playbook.md) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.353 0.408 0.376 rg
+513.2799999999999727 18. Td
+(Page 15) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R ]
+/Count 15
+>>
+endobj
+33 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+34 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+35 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+36 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+37 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+38 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+39 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+40 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+41 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+42 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+43 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+44 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+45 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+46 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 33 0 R
+/F2 34 0 R
+/F3 35 0 R
+/F4 36 0 R
+/F5 37 0 R
+/F6 38 0 R
+/F7 39 0 R
+/F8 40 0 R
+/F9 41 0 R
+/F10 42 0 R
+/F11 43 0 R
+/F12 44 0 R
+/F13 45 0 R
+/F14 46 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+47 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20260516004444+06'00')
+>>
+endobj
+48 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 49
+0000000000 65535 f 
+0000077144 00000 n 
+0000079062 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000005671 00000 n 
+0000005808 00000 n 
+0000010997 00000 n 
+0000011134 00000 n 
+0000016832 00000 n 
+0000016970 00000 n 
+0000021913 00000 n 
+0000022052 00000 n 
+0000027076 00000 n 
+0000027215 00000 n 
+0000032282 00000 n 
+0000032421 00000 n 
+0000037590 00000 n 
+0000037729 00000 n 
+0000042689 00000 n 
+0000042828 00000 n 
+0000048019 00000 n 
+0000048158 00000 n 
+0000053269 00000 n 
+0000053408 00000 n 
+0000058604 00000 n 
+0000058743 00000 n 
+0000063719 00000 n 
+0000063858 00000 n 
+0000069015 00000 n 
+0000069154 00000 n 
+0000074239 00000 n 
+0000074378 00000 n 
+0000077297 00000 n 
+0000077423 00000 n 
+0000077554 00000 n 
+0000077688 00000 n 
+0000077826 00000 n 
+0000077950 00000 n 
+0000078079 00000 n 
+0000078211 00000 n 
+0000078347 00000 n 
+0000078475 00000 n 
+0000078602 00000 n 
+0000078731 00000 n 
+0000078864 00000 n 
+0000078966 00000 n 
+0000079315 00000 n 
+0000079401 00000 n 
+trailer
+<<
+/Size 49
+/Root 48 0 R
+/Info 47 0 R
+/ID [ <06B2B69C3C812BFDBD04F5849D9DFC2D> <06B2B69C3C812BFDBD04F5849D9DFC2D> ]
+>>
+startxref
+79505
+%%EOF

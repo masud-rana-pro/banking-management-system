@@ -1,0 +1,9 @@
+-- Calculation Engine Support Concept
+-- No dedicated table is defined in the playbook for this support concept.
+-- The simulator consumes existing Financing, Deposit Scheme and Profit module data.
+-- Use the payloads in docs/calculation-engine-postman-samples.json to test /api/calculations/simulate.
+-- Optional source-data checks:
+-- SELECT COUNT(*) FROM financing_product;
+-- SELECT COUNT(*) FROM financing_application;
+-- SELECT COUNT(*) FROM deposit_scheme;
+-- SELECT COUNT(*) FROM profit_schedule;

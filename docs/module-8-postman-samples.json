@@ -1,0 +1,50 @@
+{
+  "accountTypeCreateSamples": [
+    { "typeCode": "ACT-001", "typeName": "Mudarabah Savings Basic", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 1000, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-002", "typeName": "Wadia Current Personal", "shariahContractType": "WADIAH", "currencyCode": "BDT", "minimumOpeningBalance": 2000, "profitApplicable": false, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-003", "typeName": "Mudarabah Savings Plus", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 3000, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-004", "typeName": "SME Current Wadia", "shariahContractType": "WADIAH", "currencyCode": "BDT", "minimumOpeningBalance": 5000, "profitApplicable": false, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-005", "typeName": "Corporate Mudarabah", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 10000, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-006", "typeName": "Hajj Savings", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 1500, "profitApplicable": true, "withdrawalAllowed": false, "status": "ACTIVE" },
+    { "typeCode": "ACT-007", "typeName": "Umrah Savings", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 1500, "profitApplicable": true, "withdrawalAllowed": false, "status": "ACTIVE" },
+    { "typeCode": "ACT-008", "typeName": "Student Savings", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 500, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-009", "typeName": "Payroll Savings", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 1000, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-010", "typeName": "Business Current", "shariahContractType": "WADIAH", "currencyCode": "BDT", "minimumOpeningBalance": 7500, "profitApplicable": false, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-011", "typeName": "Women Savings", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 800, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-012", "typeName": "Senior Citizen Savings", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 700, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-013", "typeName": "NRB FC Savings", "shariahContractType": "MUDARABAH", "currencyCode": "USD", "minimumOpeningBalance": 100, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" },
+    { "typeCode": "ACT-014", "typeName": "Monthly Deposit Lite", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 500, "profitApplicable": true, "withdrawalAllowed": false, "status": "ACTIVE" },
+    { "typeCode": "ACT-015", "typeName": "Digital Savings", "shariahContractType": "MUDARABAH", "currencyCode": "BDT", "minimumOpeningBalance": 300, "profitApplicable": true, "withdrawalAllowed": true, "status": "ACTIVE" }
+  ],
+  "openingRequestCreateSamples": [
+    { "customerId": "{{customer_01_id}}", "accountTypeId": "{{account_type_01_id}}", "branchId": 2, "requestedDate": "2026-04-01", "initialDepositAmount": 3000, "requestStatus": "DRAFT", "remarks": "Basic savings request", "status": "ACTIVE" },
+    { "customerId": "{{customer_02_id}}", "accountTypeId": "{{account_type_02_id}}", "branchId": 2, "requestedDate": "2026-04-02", "initialDepositAmount": 4000, "requestStatus": "DRAFT", "remarks": "Current account request", "status": "ACTIVE" },
+    { "customerId": "{{customer_03_id}}", "accountTypeId": "{{account_type_03_id}}", "branchId": 1, "requestedDate": "2026-04-03", "initialDepositAmount": 5000, "requestStatus": "DRAFT", "remarks": "Savings plus request", "status": "ACTIVE" },
+    { "customerId": "{{customer_04_id}}", "accountTypeId": "{{account_type_04_id}}", "branchId": 1, "requestedDate": "2026-04-04", "initialDepositAmount": 8000, "requestStatus": "DRAFT", "remarks": "SME current request", "status": "ACTIVE" },
+    { "customerId": "{{customer_05_id}}", "accountTypeId": "{{account_type_05_id}}", "branchId": 2, "requestedDate": "2026-04-05", "initialDepositAmount": 15000, "requestStatus": "DRAFT", "remarks": "Corporate opening request", "status": "ACTIVE" },
+    { "customerId": "{{customer_06_id}}", "accountTypeId": "{{account_type_06_id}}", "branchId": 1, "requestedDate": "2026-04-06", "initialDepositAmount": 2000, "requestStatus": "DRAFT", "remarks": "Hajj plan request", "status": "ACTIVE" },
+    { "customerId": "{{customer_07_id}}", "accountTypeId": "{{account_type_07_id}}", "branchId": 2, "requestedDate": "2026-04-07", "initialDepositAmount": 3000, "requestStatus": "DRAFT", "remarks": "Umrah plan request", "status": "ACTIVE" },
+    { "customerId": "{{customer_08_id}}", "accountTypeId": "{{account_type_08_id}}", "branchId": 1, "requestedDate": "2026-04-08", "initialDepositAmount": 700, "requestStatus": "DRAFT", "remarks": "Student savings request", "status": "ACTIVE" },
+    { "customerId": "{{customer_09_id}}", "accountTypeId": "{{account_type_09_id}}", "branchId": 3, "requestedDate": "2026-04-09", "initialDepositAmount": 2500, "requestStatus": "DRAFT", "remarks": "Payroll savings request", "status": "ACTIVE" },
+    { "customerId": "{{customer_10_id}}", "accountTypeId": "{{account_type_10_id}}", "branchId": 2, "requestedDate": "2026-04-10", "initialDepositAmount": 12000, "requestStatus": "DRAFT", "remarks": "Business current request", "status": "ACTIVE" },
+    { "customerId": "{{customer_11_id}}", "accountTypeId": "{{account_type_11_id}}", "branchId": 1, "requestedDate": "2026-04-11", "initialDepositAmount": 1500, "requestStatus": "DRAFT", "remarks": "Women savings request", "status": "ACTIVE" },
+    { "customerId": "{{customer_12_id}}", "accountTypeId": "{{account_type_12_id}}", "branchId": 3, "requestedDate": "2026-04-12", "initialDepositAmount": 2000, "requestStatus": "DRAFT", "remarks": "Senior savings request", "status": "ACTIVE" },
+    { "customerId": "{{customer_13_id}}", "accountTypeId": "{{account_type_13_id}}", "branchId": 2, "requestedDate": "2026-04-13", "initialDepositAmount": 500, "requestStatus": "DRAFT", "remarks": "NRB FC savings request", "status": "ACTIVE" },
+    { "customerId": "{{customer_14_id}}", "accountTypeId": "{{account_type_14_id}}", "branchId": 1, "requestedDate": "2026-04-14", "initialDepositAmount": 900, "requestStatus": "DRAFT", "remarks": "Monthly deposit lite request", "status": "ACTIVE" },
+    { "customerId": "{{customer_15_id}}", "accountTypeId": "{{account_type_15_id}}", "branchId": 3, "requestedDate": "2026-04-15", "initialDepositAmount": 1000, "requestStatus": "DRAFT", "remarks": "Digital savings request", "status": "ACTIVE" }
+  ],
+  "openingWorkflowSamples": [
+    { "endpoint": "/api/account-opening-requests/{{opening_request_01_id}}/submit", "body": {} },
+    { "endpoint": "/api/account-opening-requests/{{opening_request_02_id}}/verify", "body": {} },
+    { "endpoint": "/api/account-opening-requests/{{opening_request_03_id}}/approve", "body": {} },
+    { "endpoint": "/api/account-opening-requests/{{opening_request_04_id}}/reject", "body": { "remarks": "Risk concern found during account opening review" } },
+    { "endpoint": "/api/account-opening-requests/{{opening_request_05_id}}/return", "body": { "remarks": "Need corrected branch approval note and deposit source clarification" } }
+  ],
+  "accountStatusSamples": [
+    { "endpoint": "/api/accounts/{{account_01_id}}/activate", "body": { "remarks": "Activation after branch verification" } },
+    { "endpoint": "/api/accounts/{{account_02_id}}/block", "body": { "remarks": "Block due to temporary compliance hold" } },
+    { "endpoint": "/api/accounts/{{account_03_id}}/freeze", "body": { "remarks": "Freeze because of signature mismatch" } },
+    { "endpoint": "/api/accounts/{{account_04_id}}/close", "body": { "remarks": "Close after customer instruction" } },
+    { "endpoint": "/api/accounts/{{account_05_id}}/activate", "body": { "remarks": "Re-activate after issue resolution" } }
+  ]
+}

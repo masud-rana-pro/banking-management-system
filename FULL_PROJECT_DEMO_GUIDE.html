@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SBMS Full Project Demo Guide</title>
+  <style>
+    :root {
+      --ink: #10243e;
+      --muted: #5d718d;
+      --line: #dbe6f0;
+      --bg: #eef4f8;
+      --card: #ffffff;
+      --teal: #128c88;
+      --teal-soft: #e8f7f5;
+      --gold: #d89b14;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #f6fbfd 0%, var(--bg) 100%);
+      line-height: 1.55;
+    }
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 18px 40px rgba(16, 36, 62, 0.06);
+    }
+    .hero {
+      padding: 28px 30px;
+      border-top: 4px solid var(--teal);
+      margin-bottom: 20px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+    h1 { font-size: 34px; }
+    h2 {
+      margin-top: 24px;
+      font-size: 24px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    h3 { font-size: 18px; margin-top: 18px; }
+    p, li { color: var(--muted); }
+    strong { color: var(--ink); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin: 20px 0;
+    }
+    .card { padding: 20px 22px; }
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--teal-soft);
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+      background: white;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #f7fbfd;
+      color: var(--ink);
+      font-size: 12px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .note {
+      background: #fff9ec;
+      border: 1px solid #f0dfb1;
+      color: #735205;
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-top: 16px;
+    }
+    ol, ul { padding-left: 22px; }
+    .footer-note {
+      margin-top: 28px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    @media print {
+      body { background: #fff; }
+      .page { max-width: none; padding: 0; }
+      .hero, .card { box-shadow: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="pill">SBMS Demo Pack</div>
+      <h1>SBMS Full Project Demo Guide</h1>
+      <p>This printable guide is based on actual frontend route files and backend controllers in the current project. Use it for tomorrow's live manual rehearsal and final demo.</p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h3>Confirmed Process Count</h3>
+        <p><strong>14 main process groups</strong> are currently implemented across operations, compliance, servicing, financing, reporting, workflow, security, and accounting control.</p>
+      </div>
+      <div class="card">
+        <h3>Best Login Plan</h3>
+        <p><strong>Safe live-demo login set:</strong> SYSTEM_ADMIN, OPERATIONS_OFFICER, TELLER, INVESTMENT_OFFICER, SHARIAH_BOARD_MEMBER.</p>
+      </div>
+    </section>
+
+    <h2>Recommended Demo Roles</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Use In Demo</th>
+          <th>Main Modules To Show</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>SYSTEM_ADMIN</td><td>Foundation + executive close</td><td>Admin, Lookups, Branch, Reports, Accounting, Integrations</td></tr>
+        <tr><td>OPERATIONS_OFFICER</td><td>Main business processing</td><td>Customer, KYC, Accounts, Statements, Profit, Workflow</td></tr>
+        <tr><td>TELLER</td><td>Frontline banking actions</td><td>Deposit, Withdraw, Transfer, request initiation</td></tr>
+        <tr><td>INVESTMENT_OFFICER</td><td>Financing flow</td><td>Financing review, disbursement, contracts</td></tr>
+        <tr><td>SHARIAH_BOARD_MEMBER</td><td>Islamic governance</td><td>Shariah review, shariah sign, zakat governance</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Full Demo Sequence</h2>
+    <ol>
+      <li>Login and header overview</li>
+      <li>System Administration</li>
+      <li>Lookup / Configuration</li>
+      <li>Branch Setup and Cash Control</li>
+      <li>Customer Onboarding</li>
+      <li>KYC Verification Workflow</li>
+      <li>Account Opening Workflow</li>
+      <li>Core Transactions</li>
+      <li>Deposit Schemes</li>
+      <li>Profit Management</li>
+      <li>Cards and ATM/CDM</li>
+      <li>Statement Generation</li>
+      <li>Financing + Contract + Shariah</li>
+      <li>Zakat + Notifications + Integrations + Verification</li>
+      <li>Workflow + Security</li>
+      <li>Reports + Management P&amp;L + Trial Balance + Ledger Profit &amp; Loss</li>
+    </ol>
+
+    <h2>Process Flow Map</h2>
+    <div class="card">
+      <h3>1. Customer To KYC To Account</h3>
+      <p><strong>Role order:</strong> OPERATIONS_OFFICER -> BRANCH_MANAGER -> OPERATIONS_OFFICER</p>
+      <ol>
+        <li>Create customer from Customer module</li>
+        <li>Manage address and identity</li>
+        <li>Create KYC profile and submit</li>
+        <li>Verify / approve / reject / return from KYC approval flow</li>
+        <li>Create account opening request</li>
+        <li>Submit and review request</li>
+        <li>Approve request and show final account in Account List</li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h3>2. Account To Transaction To Statement</h3>
+      <p><strong>Role order:</strong> TELLER -> OPERATIONS_OFFICER</p>
+      <ol>
+        <li>Use approved account</li>
+        <li>Show deposit / withdraw / transfer screens</li>
+        <li>Open transaction list and one voucher/journal view</li>
+        <li>Go to Statement module</li>
+        <li>Create customer or branch statement request</li>
+        <li>Show preview / download / export</li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h3>3. Financing To Contract To Shariah</h3>
+      <p><strong>Role order:</strong> INVESTMENT_OFFICER -> SHARIAH_BOARD_MEMBER</p>
+      <ol>
+        <li>Create or open financing application</li>
+        <li>Submit -> verify -> review -> approve</li>
+        <li>Disburse financing</li>
+        <li>Open schedule and repayment collection</li>
+        <li>Generate contract from source module reference</li>
+        <li>Show customer sign and shariah sign path</li>
+        <li>Open shariah case review and correction queue</li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h3>4. Reports To Accounting Proof</h3>
+      <p><strong>Role order:</strong> SYSTEM_ADMIN</p>
+      <ol>
+        <li>Show Report Dashboard</li>
+        <li>Open Management P&amp;L</li>
+        <li>Open Expense Register</li>
+        <li>Open Trial Balance and view journals</li>
+        <li>Open Ledger Profit &amp; Loss</li>
+        <li>Show reconciliation, branch summary, income heads, expense heads, and drill-down</li>
+      </ol>
+    </div>
+
+    <h2>Exact Login Switching Plan</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Login Role</th>
+          <th>Show These Pages</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>SYSTEM_ADMIN</td><td>Header, Admin, Lookups, Branch, Report Dashboard</td></tr>
+        <tr><td>2</td><td>OPERATIONS_OFFICER</td><td>Customer, KYC, Accounts, Deposit Schemes, Profit, Statements, Workflow</td></tr>
+        <tr><td>3</td><td>TELLER</td><td>Deposit, Withdraw, Transfer</td></tr>
+        <tr><td>4</td><td>INVESTMENT_OFFICER</td><td>Financing, Contract Generate</td></tr>
+        <tr><td>5</td><td>SHARIAH_BOARD_MEMBER</td><td>Shariah Review, Zakat</td></tr>
+        <tr><td>6</td><td>SYSTEM_ADMIN</td><td>Notifications, Integrations, Verification, Security, Management P&amp;L, Trial Balance, Ledger P&amp;L</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Final Rehearsal Checklist</h2>
+    <ul>
+      <li>Test all 6 login phases once</li>
+      <li>Open each dashboard once before tomorrow</li>
+      <li>Keep one valid sample customer, KYC, account, financing application, and expense record ready</li>
+      <li>Practice Trial Balance and Ledger Profit &amp; Loss drill-down once</li>
+      <li>Practice Preview / Download / Export / Export History once</li>
+      <li>End the demo with Ledger Profit &amp; Loss</li>
+    </ul>
+
+    <div class="note">
+      For a PDF handout: open this HTML file in a browser and use <strong>Print -> Save as PDF</strong>.
+    </div>
+
+    <p class="footer-note">Project workspace: <code>I:\SBMS Copy</code></p>
+  </div>
+</body>
+</html>

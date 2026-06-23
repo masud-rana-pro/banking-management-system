@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "SBMS Module 20 - Reporting & Regulatory",
+    "_postman_id": "module-20-reporting-regulatory",
+    "description": "Sample GET requests for Module 20 report APIs based on Playbook.pdf",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Dashboard Summary",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/dashboard-summary"
+      }
+    },
+    {
+      "name": "02 Operational Report - View",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/operational?dateFrom=2026-04-01&dateTo=2026-04-30&branchId=1&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "03 Operational Report - CSV",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/operational?dateFrom=2026-04-15&dateTo=2026-04-30&branchId=3&exportType=CSV&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "04 Profit Distribution - View",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/profit-distribution?dateFrom=2026-04-01&dateTo=2026-04-30&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "05 Profit Distribution - PDF",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/profit-distribution?dateFrom=2026-02-01&dateTo=2026-04-30&exportType=PDF&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "06 Financing Portfolio - View",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/financing-portfolio?dateFrom=2026-03-01&dateTo=2026-04-30&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "07 Financing Portfolio - CSV",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/financing-portfolio?dateFrom=2026-02-01&dateTo=2026-04-30&exportType=CSV&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "08 PAR Report - View",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/par?dateFrom=2026-01-01&dateTo=2026-04-30&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "09 PAR Report - PDF",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/par?dateFrom=2026-03-01&dateTo=2026-04-30&exportType=PDF&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "10 Shariah Audit - View",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/shariah-audit?dateFrom=2026-04-01&dateTo=2026-04-30&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "11 Shariah Audit - CSV",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/shariah-audit?dateFrom=2026-01-01&dateTo=2026-04-30&exportType=CSV&requestedBy=SYSTEM_ADMIN"
+      }
+    },
+    {
+      "name": "12 Branch Report - View",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/branch?dateFrom=2026-04-01&dateTo=2026-04-30&branchId=2&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "13 Branch Report - CSV",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/branch?dateFrom=2026-03-01&dateTo=2026-04-30&branchId=1&exportType=CSV&requestedBy=SYSTEM"
+      }
+    },
+    {
+      "name": "14 Export History List",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/export-history"
+      }
+    },
+    {
+      "name": "15 Export History Filtered",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/reports/export-history?reportType=PAR&requestStatus=EXPORTED&keyword=REPORT_SEED"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}

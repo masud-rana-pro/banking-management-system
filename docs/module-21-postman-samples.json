@@ -1,0 +1,44 @@
+{
+  "info": {
+    "name": "SBMS Module 21 - Security Audit Investigation",
+    "_postman_id": "module-21-security-audit-investigation",
+    "description": "Sample requests for Playbook Module 21",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    { "name": "01 Dashboard Summary", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/dashboard-summary" } },
+    { "name": "02 Security Event List", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/events/list" } },
+    { "name": "03 Security Event Filtered", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/events/list?severityLevel=CRITICAL&keyword=FAILED" } },
+    { "name": "04 Security Event View", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/events/1" } },
+    { "name": "05 Suspicious Activity List", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/suspicious-activities/list" } },
+    { "name": "06 Suspicious Activity View", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/suspicious-activities/4" } },
+    { "name": "07 Audit Log List", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/audit-logs/list" } },
+    { "name": "08 Audit Log Filtered", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/audit-logs/list?moduleName=SECURITY_INVESTIGATION&keyword=ASSIGN" } },
+    { "name": "09 Audit Log View", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/audit-logs/1" } },
+    { "name": "10 Investigation Case List", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/investigation-cases/list" } },
+    { "name": "11 Investigation Case Filtered", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/investigation-cases/list?caseStatus=OPEN&caseType=SUSPICIOUS_TRANSACTION" } },
+    { "name": "12 Investigation Case View", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/investigation-cases/1" } },
+    {
+      "name": "13 Investigation Assign",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"assignedTo\": 1,\n  \"remarks\": \"Assigning case to compliance reviewer\",\n  \"performedBy\": \"SYSTEM\"\n}" },
+        "url": "{{baseUrl}}/api/security/investigation-cases/3/assign"
+      }
+    },
+    {
+      "name": "14 Investigation Close",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"remarks\": \"Case closed after branch and compliance confirmation\",\n  \"performedBy\": \"SYSTEM\"\n}" },
+        "url": "{{baseUrl}}/api/security/investigation-cases/3/close"
+      }
+    },
+    { "name": "15 Open Cases Only", "request": { "method": "GET", "url": "{{baseUrl}}/api/security/investigation-cases/list?caseStatus=OPEN" } }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ]
+}

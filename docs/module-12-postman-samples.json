@@ -1,0 +1,55 @@
+{
+  "module": "Module 12 - Customer Statement / Branch Statement",
+  "baseUrls": {
+    "customerStatements": "http://localhost:8080/api/customer-statements",
+    "branchStatements": "http://localhost:8080/api/branch-statements",
+    "dashboard": "http://localhost:8080/api/statements"
+  },
+  "notes": [
+    "Date range is mandatory for both customer and branch statements.",
+    "Customer statement requires a valid customer/account ownership pair.",
+    "For the current seeded environment, customerId/accountId pairs 1/1 and 7/7 are valid active combinations.",
+    "Branch ids 1 through 15 are used in the current seeded environment.",
+    "After creating a request, call the matching /{id}/download endpoint to mark it as downloaded and verify generated file linkage."
+  ],
+  "customerStatementRequests": [
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-01-01", "dateTo": "2026-01-21", "requestedBy": "SYSTEM" },
+    { "customerId": 7, "accountId": 7, "dateFrom": "2026-01-05", "dateTo": "2026-01-25", "requestedBy": "SYSTEM" },
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-01-09", "dateTo": "2026-01-29", "requestedBy": "SYSTEM" },
+    { "customerId": 7, "accountId": 7, "dateFrom": "2026-01-13", "dateTo": "2026-02-02", "requestedBy": "SYSTEM" },
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-01-17", "dateTo": "2026-02-06", "requestedBy": "SYSTEM" },
+    { "customerId": 7, "accountId": 7, "dateFrom": "2026-01-21", "dateTo": "2026-02-10", "requestedBy": "SYSTEM" },
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-01-25", "dateTo": "2026-02-14", "requestedBy": "SYSTEM" },
+    { "customerId": 7, "accountId": 7, "dateFrom": "2026-01-29", "dateTo": "2026-02-18", "requestedBy": "SYSTEM" },
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-02-02", "dateTo": "2026-02-22", "requestedBy": "SYSTEM" },
+    { "customerId": 7, "accountId": 7, "dateFrom": "2026-02-06", "dateTo": "2026-02-26", "requestedBy": "SYSTEM" },
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-02-10", "dateTo": "2026-03-02", "requestedBy": "SYSTEM" },
+    { "customerId": 7, "accountId": 7, "dateFrom": "2026-02-14", "dateTo": "2026-03-06", "requestedBy": "SYSTEM" },
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-02-18", "dateTo": "2026-03-10", "requestedBy": "SYSTEM" },
+    { "customerId": 7, "accountId": 7, "dateFrom": "2026-02-22", "dateTo": "2026-03-14", "requestedBy": "SYSTEM" },
+    { "customerId": 1, "accountId": 1, "dateFrom": "2026-02-26", "dateTo": "2026-03-18", "requestedBy": "SYSTEM" }
+  ],
+  "branchStatementRequests": [
+    { "branchId": 1, "dateFrom": "2026-01-01", "dateTo": "2026-01-19", "requestedBy": "SYSTEM" },
+    { "branchId": 2, "dateFrom": "2026-01-04", "dateTo": "2026-01-22", "requestedBy": "SYSTEM" },
+    { "branchId": 3, "dateFrom": "2026-01-07", "dateTo": "2026-01-25", "requestedBy": "SYSTEM" },
+    { "branchId": 4, "dateFrom": "2026-01-10", "dateTo": "2026-01-28", "requestedBy": "SYSTEM" },
+    { "branchId": 5, "dateFrom": "2026-01-13", "dateTo": "2026-01-31", "requestedBy": "SYSTEM" },
+    { "branchId": 6, "dateFrom": "2026-01-16", "dateTo": "2026-02-03", "requestedBy": "SYSTEM" },
+    { "branchId": 7, "dateFrom": "2026-01-19", "dateTo": "2026-02-06", "requestedBy": "SYSTEM" },
+    { "branchId": 8, "dateFrom": "2026-01-22", "dateTo": "2026-02-09", "requestedBy": "SYSTEM" },
+    { "branchId": 9, "dateFrom": "2026-01-25", "dateTo": "2026-02-12", "requestedBy": "SYSTEM" },
+    { "branchId": 10, "dateFrom": "2026-01-28", "dateTo": "2026-02-15", "requestedBy": "SYSTEM" },
+    { "branchId": 11, "dateFrom": "2026-01-31", "dateTo": "2026-02-18", "requestedBy": "SYSTEM" },
+    { "branchId": 12, "dateFrom": "2026-02-03", "dateTo": "2026-02-21", "requestedBy": "SYSTEM" },
+    { "branchId": 13, "dateFrom": "2026-02-06", "dateTo": "2026-02-24", "requestedBy": "SYSTEM" },
+    { "branchId": 14, "dateFrom": "2026-02-09", "dateTo": "2026-02-27", "requestedBy": "SYSTEM" },
+    { "branchId": 15, "dateFrom": "2026-02-12", "dateTo": "2026-03-02", "requestedBy": "SYSTEM" }
+  ],
+  "downloadExamples": {
+    "customerStatementDownload": "GET http://localhost:8080/api/customer-statements/1/download",
+    "branchStatementDownload": "GET http://localhost:8080/api/branch-statements/1/download",
+    "fileReferenceList": "GET http://localhost:8080/api/statements/files",
+    "dashboardSummary": "GET http://localhost:8080/api/statements/dashboard-summary"
+  }
+}

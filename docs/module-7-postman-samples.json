@@ -1,0 +1,43 @@
+{
+  "kycProfileCreateSamples": [
+    { "customerId": "{{customer_01_id}}", "riskLevel": "HIGH", "sourceOfFundsNote": "Legacy corporate source of funds note", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Initial draft created", "status": "ACTIVE" },
+    { "customerId": "{{customer_02_id}}", "riskLevel": "MEDIUM", "sourceOfFundsNote": "Corporate operating income verified from declaration", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Ready for submission", "status": "ACTIVE" },
+    { "customerId": "{{customer_03_id}}", "riskLevel": "LOW", "sourceOfFundsNote": "Business income declared by customer", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Trade income note", "status": "ACTIVE" },
+    { "customerId": "{{customer_04_id}}", "riskLevel": "MEDIUM", "sourceOfFundsNote": "Freelancing and personal income captured", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Waiting for review", "status": "ACTIVE" },
+    { "customerId": "{{customer_05_id}}", "riskLevel": "HIGH", "sourceOfFundsNote": "Wholesale business turnover needs extra care", "pepFlag": true, "sanctionFlag": false, "amlFlag": true, "reviewStatus": "DRAFT", "remarks": "Enhanced due diligence", "status": "ACTIVE" },
+    { "customerId": "{{customer_06_id}}", "riskLevel": "MEDIUM", "sourceOfFundsNote": "Salary and household income note", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Address proof needed later", "status": "ACTIVE" },
+    { "customerId": "{{customer_07_id}}", "riskLevel": "LOW", "sourceOfFundsNote": "Teacher salary declaration", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Clean case", "status": "ACTIVE" },
+    { "customerId": "{{customer_08_id}}", "riskLevel": "HIGH", "sourceOfFundsNote": "Business turnover flagged for monitoring", "pepFlag": false, "sanctionFlag": false, "amlFlag": true, "reviewStatus": "DRAFT", "remarks": "High-risk review path", "status": "ACTIVE" },
+    { "customerId": "{{customer_09_id}}", "riskLevel": "MEDIUM", "sourceOfFundsNote": "Salary source uploaded for checking", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Awaiting reviewer", "status": "ACTIVE" },
+    { "customerId": "{{customer_10_id}}", "riskLevel": "LOW", "sourceOfFundsNote": "Driving income note captured", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Draft stage", "status": "ACTIVE" },
+    { "customerId": "{{customer_11_id}}", "riskLevel": "HIGH", "sourceOfFundsNote": "Online work income with AML note", "pepFlag": false, "sanctionFlag": false, "amlFlag": true, "reviewStatus": "DRAFT", "remarks": "Enhanced due diligence", "status": "ACTIVE" },
+    { "customerId": "{{customer_12_id}}", "riskLevel": "MEDIUM", "sourceOfFundsNote": "Government salary note", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Ready for review", "status": "ACTIVE" },
+    { "customerId": "{{customer_13_id}}", "riskLevel": "LOW", "sourceOfFundsNote": "Student tuition income note", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Need supporting proof", "status": "ACTIVE" },
+    { "customerId": "{{customer_14_id}}", "riskLevel": "HIGH", "sourceOfFundsNote": "Shop owner cash source note", "pepFlag": false, "sanctionFlag": false, "amlFlag": true, "reviewStatus": "DRAFT", "remarks": "Updated evidence expected", "status": "ACTIVE" },
+    { "customerId": "{{customer_15_id}}", "riskLevel": "LOW", "sourceOfFundsNote": "Tailoring income declaration", "pepFlag": false, "sanctionFlag": false, "amlFlag": false, "reviewStatus": "DRAFT", "remarks": "Awaiting review", "status": "ACTIVE" }
+  ],
+  "kycDocumentUploadSamples": [
+    { "customerId": "{{customer_01_id}}", "documentType": "NID", "fileReferenceId": "KYC-DOC-001", "documentNo": "KDOC-001", "issueDate": "2017-01-10", "expiryDate": "", "verifiedFlag": true, "status": "ACTIVE" },
+    { "customerId": "{{customer_02_id}}", "documentType": "TRADE_LICENSE", "fileReferenceId": "KYC-DOC-002", "documentNo": "KDOC-002", "issueDate": "2023-01-01", "expiryDate": "2028-12-31", "verifiedFlag": true, "status": "ACTIVE" },
+    { "customerId": "{{customer_03_id}}", "documentType": "TIN", "fileReferenceId": "KYC-DOC-003", "documentNo": "KDOC-003", "issueDate": "2020-02-14", "expiryDate": "", "verifiedFlag": false, "status": "ACTIVE" },
+    { "customerId": "{{customer_04_id}}", "documentType": "UTILITY_BILL", "fileReferenceId": "KYC-DOC-004", "documentNo": "KDOC-004", "issueDate": "2026-03-05", "expiryDate": "2027-03-05", "verifiedFlag": false, "status": "ACTIVE" },
+    { "customerId": "{{customer_05_id}}", "documentType": "BANK_STATEMENT", "fileReferenceId": "KYC-DOC-005", "documentNo": "KDOC-005", "issueDate": "2026-01-01", "expiryDate": "2026-12-31", "verifiedFlag": true, "status": "ACTIVE" },
+    { "customerId": "{{customer_06_id}}", "documentType": "NID", "fileReferenceId": "KYC-DOC-006", "documentNo": "KDOC-006", "issueDate": "2018-08-08", "expiryDate": "", "verifiedFlag": false, "status": "ACTIVE" },
+    { "customerId": "{{customer_07_id}}", "documentType": "PASSPORT", "fileReferenceId": "KYC-DOC-007", "documentNo": "KDOC-007", "issueDate": "2022-03-15", "expiryDate": "2032-03-15", "verifiedFlag": true, "status": "ACTIVE" },
+    { "customerId": "{{customer_08_id}}", "documentType": "TRADE_LICENSE", "fileReferenceId": "KYC-DOC-008", "documentNo": "KDOC-008", "issueDate": "2024-01-01", "expiryDate": "2029-12-31", "verifiedFlag": true, "status": "ACTIVE" },
+    { "customerId": "{{customer_09_id}}", "documentType": "NID", "fileReferenceId": "KYC-DOC-009", "documentNo": "KDOC-009", "issueDate": "2016-09-19", "expiryDate": "", "verifiedFlag": false, "status": "ACTIVE" },
+    { "customerId": "{{customer_10_id}}", "documentType": "DRIVING_LICENSE", "fileReferenceId": "KYC-DOC-010", "documentNo": "KDOC-010", "issueDate": "2020-04-25", "expiryDate": "2030-04-25", "verifiedFlag": false, "status": "ACTIVE" },
+    { "customerId": "{{customer_11_id}}", "documentType": "BANK_STATEMENT", "fileReferenceId": "KYC-DOC-011", "documentNo": "KDOC-011", "issueDate": "2026-02-01", "expiryDate": "2027-02-01", "verifiedFlag": true, "status": "ACTIVE" },
+    { "customerId": "{{customer_12_id}}", "documentType": "PASSPORT", "fileReferenceId": "KYC-DOC-012", "documentNo": "KDOC-012", "issueDate": "2021-03-19", "expiryDate": "2031-03-19", "verifiedFlag": true, "status": "ACTIVE" },
+    { "customerId": "{{customer_13_id}}", "documentType": "OTHER", "fileReferenceId": "KYC-DOC-013", "documentNo": "KDOC-013", "issueDate": "2026-01-10", "expiryDate": "2026-12-31", "verifiedFlag": false, "status": "ACTIVE" },
+    { "customerId": "{{customer_14_id}}", "documentType": "UTILITY_BILL", "fileReferenceId": "KYC-DOC-014", "documentNo": "KDOC-014", "issueDate": "2026-02-12", "expiryDate": "2027-02-12", "verifiedFlag": false, "status": "ACTIVE" },
+    { "customerId": "{{customer_15_id}}", "documentType": "NID", "fileReferenceId": "KYC-DOC-015", "documentNo": "KDOC-015", "issueDate": "2019-02-20", "expiryDate": "", "verifiedFlag": false, "status": "ACTIVE" }
+  ],
+  "kycActionSamples": [
+    { "endpoint": "/api/kyc/profile/{{kyc_01_id}}/submit", "body": {} },
+    { "endpoint": "/api/kyc/profile/{{kyc_02_id}}/verify", "body": {} },
+    { "endpoint": "/api/kyc/profile/{{kyc_03_id}}/approve", "body": {} },
+    { "endpoint": "/api/kyc/profile/{{kyc_04_id}}/reject", "body": { "remarks": "Compliance concern found during review" } },
+    { "endpoint": "/api/kyc/profile/{{kyc_05_id}}/return", "body": { "remarks": "Corrected address proof required before resubmission" } }
+  ]
+}

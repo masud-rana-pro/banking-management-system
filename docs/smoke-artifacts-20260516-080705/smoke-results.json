@@ -1,0 +1,370 @@
+﻿[
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for Admin01",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "Permissions=189",
+        "Timestamp":  "2026-05-16T08:07:07"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for branch.manager01",
+        "Role":  "BRANCH_MANAGER",
+        "Status":  "PASS",
+        "Details":  "Permissions=56",
+        "Timestamp":  "2026-05-16T08:07:07"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for ops.officer01",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "Permissions=85",
+        "Timestamp":  "2026-05-16T08:07:08"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for investment.officer01",
+        "Role":  "INVESTMENT_OFFICER",
+        "Status":  "PASS",
+        "Details":  "Permissions=51",
+        "Timestamp":  "2026-05-16T08:07:08"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for shariah.board01",
+        "Role":  "SHARIAH_BOARD_MEMBER",
+        "Status":  "PASS",
+        "Details":  "Permissions=12",
+        "Timestamp":  "2026-05-16T08:07:09"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Login and OTP for customer.seed01",
+        "Role":  "CUSTOMER",
+        "Status":  "PASS",
+        "Details":  "Permissions=15",
+        "Timestamp":  "2026-05-16T08:07:09"
+    },
+    {
+        "Process":  "RBAC",
+        "Step":  "Admin users list",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:10"
+    },
+    {
+        "Process":  "RBAC",
+        "Step":  "Customer users list denied",
+        "Role":  "CUSTOMER",
+        "Status":  "PASS",
+        "Details":  "Expected denial HTTP 403",
+        "Timestamp":  "2026-05-16T08:07:10"
+    },
+    {
+        "Process":  "RBAC",
+        "Step":  "Admin roles list",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:10"
+    },
+    {
+        "Process":  "User Provisioning",
+        "Step":  "Create branch staff user",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:11"
+    },
+    {
+        "Process":  "User Provisioning",
+        "Step":  "Create teller user",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:11"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Branch staff login",
+        "Role":  "BRANCH_STAFF",
+        "Status":  "PASS",
+        "Details":  "New branch staff authenticated",
+        "Timestamp":  "2026-05-16T08:07:11"
+    },
+    {
+        "Process":  "Auth",
+        "Step":  "Teller login",
+        "Role":  "TELLER",
+        "Status":  "PASS",
+        "Details":  "New teller authenticated",
+        "Timestamp":  "2026-05-16T08:07:12"
+    },
+    {
+        "Process":  "Customer Onboarding",
+        "Step":  "Create customer",
+        "Role":  "BRANCH_STAFF",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:12"
+    },
+    {
+        "Process":  "KYC",
+        "Step":  "Create KYC profile",
+        "Role":  "BRANCH_STAFF",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:12"
+    },
+    {
+        "Process":  "KYC",
+        "Step":  "Upload KYC document",
+        "Role":  "BRANCH_STAFF",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:12"
+    },
+    {
+        "Process":  "KYC",
+        "Step":  "Submit KYC profile",
+        "Role":  "BRANCH_STAFF",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:12"
+    },
+    {
+        "Process":  "KYC",
+        "Step":  "Verify KYC profile",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:12"
+    },
+    {
+        "Process":  "KYC",
+        "Step":  "Approve KYC profile",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:13"
+    },
+    {
+        "Process":  "Account Opening",
+        "Step":  "Create account opening request",
+        "Role":  "BRANCH_STAFF",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:13"
+    },
+    {
+        "Process":  "Account Opening",
+        "Step":  "Submit account opening request",
+        "Role":  "BRANCH_STAFF",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:13"
+    },
+    {
+        "Process":  "Account Opening",
+        "Step":  "Verify account opening request",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:13"
+    },
+    {
+        "Process":  "Account Opening",
+        "Step":  "Approve account opening request",
+        "Role":  "BRANCH_MANAGER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:13"
+    },
+    {
+        "Process":  "Account Opening",
+        "Step":  "Locate approved account",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "AccountId=18",
+        "Timestamp":  "2026-05-16T08:07:13"
+    },
+    {
+        "Process":  "Account Opening",
+        "Step":  "Activate approved account",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:13"
+    },
+    {
+        "Process":  "Account Opening",
+        "Step":  "Preview account opening document",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "Saved account-opening-form.pdf",
+        "Timestamp":  "2026-05-16T08:07:21"
+    },
+    {
+        "Process":  "Transactions",
+        "Step":  "Post deposit",
+        "Role":  "TELLER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:21"
+    },
+    {
+        "Process":  "Transactions",
+        "Step":  "Preview voucher PDF",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "Saved transaction-voucher.pdf",
+        "Timestamp":  "2026-05-16T08:07:30"
+    },
+    {
+        "Process":  "Transactions",
+        "Step":  "Reverse transaction",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:30"
+    },
+    {
+        "Process":  "Statements",
+        "Step":  "Create customer statement request",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:31"
+    },
+    {
+        "Process":  "Statements",
+        "Step":  "Preview customer statement",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "Saved customer-statement.pdf",
+        "Timestamp":  "2026-05-16T08:07:38"
+    },
+    {
+        "Process":  "Reporting",
+        "Step":  "Generate KPI report",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:39"
+    },
+    {
+        "Process":  "Reporting",
+        "Step":  "Export history increment check",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "Before=1, After=1",
+        "Timestamp":  "2026-05-16T08:07:39"
+    },
+    {
+        "Process":  "Reporting",
+        "Step":  "Preview exported report file",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "ExportLogId=60",
+        "Timestamp":  "2026-05-16T08:07:45"
+    },
+    {
+        "Process":  "Monthly Closing",
+        "Step":  "Create or refresh run",
+        "Role":  "BRANCH_MANAGER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:45"
+    },
+    {
+        "Process":  "Monthly Closing",
+        "Step":  "Submit run",
+        "Role":  "BRANCH_MANAGER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:45"
+    },
+    {
+        "Process":  "Monthly Closing",
+        "Step":  "Approve run",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:46"
+    },
+    {
+        "Process":  "Financing",
+        "Step":  "List financing applications",
+        "Role":  "INVESTMENT_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:46"
+    },
+    {
+        "Process":  "Contracts",
+        "Step":  "List contracts",
+        "Role":  "INVESTMENT_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:46"
+    },
+    {
+        "Process":  "Shariah",
+        "Step":  "List shariah cases",
+        "Role":  "SHARIAH_BOARD_MEMBER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:46"
+    },
+    {
+        "Process":  "Zakat",
+        "Step":  "List zakat profiles",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:46"
+    },
+    {
+        "Process":  "Zakat",
+        "Step":  "List charity payouts",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:46"
+    },
+    {
+        "Process":  "ATM",
+        "Step":  "List ATM terminals",
+        "Role":  "OPERATIONS_OFFICER",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:46"
+    },
+    {
+        "Process":  "Security",
+        "Step":  "List workflow pending queue",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:47"
+    },
+    {
+        "Process":  "Security",
+        "Step":  "Verification dashboard summary",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:47"
+    },
+    {
+        "Process":  "Security",
+        "Step":  "Integration dashboard summary",
+        "Role":  "SYSTEM_ADMIN",
+        "Status":  "PASS",
+        "Details":  "HTTP 200",
+        "Timestamp":  "2026-05-16T08:07:47"
+    }
+]

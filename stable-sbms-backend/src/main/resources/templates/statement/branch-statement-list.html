@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Branch Statement Export</title>
+    <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Branch Register Export</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent branch-accent"></div>
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img class="doc-logo" th:if="${logoDataUri}" th:src="${logoDataUri}" alt="Logo" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Bank</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}">Tagline</div>
+                <div class="doc-bank-sub" th:text="${bankAddress}">Address</div>
+                <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Register Type</div>
+            <div class="doc-chip">Branch Register</div>
+            <div class="doc-chip-meta" th:text="${generatedAt}">Generated At</div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Branch Monitoring Register</div>
+            <h1>Branch Statement Register</h1>
+            <div class="hero-note">Register of branch statement generation, cash position and vault exposure.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Search</span><strong th:text="${searchLabel}">All</strong></div>
+            <div><span>Status</span><strong th:text="${statusLabel}">All</strong></div>
+            <div><span>Total Requests</span><strong th:text="${totalCount}">0</strong></div>
+        </div>
+    </div>
+
+    <div class="meta-grid">
+        <div class="meta-item"><span>Vault Balance</span><strong th:text="${vaultBalance}">0.00</strong></div>
+        <div class="meta-item"><span>Total Amount</span><strong th:text="${totalAmount}">0.00</strong></div>
+        <div class="meta-item"><span>Cash In</span><strong th:text="${totalCashIn}">0.00</strong></div>
+        <div class="meta-item"><span>Cash Out</span><strong th:text="${totalCashOut}">0.00</strong></div>
+    </div>
+
+    <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><span>Transactions</span><strong th:text="${transactionCount}">0</strong></div>
+        <div class="metric-card"><span>Register Rows</span><strong th:text="${totalCount}">0</strong></div>
+        <div class="metric-card"><span>Review Scope</span><strong>Branch Statements</strong></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Request Register</div>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Request No</th>
+                <th>Branch</th>
+                <th>Period</th>
+                <th>Status</th>
+                <th>Transactions</th>
+                <th>Total Amount</th>
+                <th>Vault Balance</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, stat : ${items}">
+                <td th:text="${stat.count}">1</td>
+                <td th:text="${item.requestNo()}">REQ</td>
+                <td th:text="${item.branchCode() + ' - ' + item.branchName()}">Branch</td>
+                <td th:text="${item.dateFrom() + ' to ' + item.dateTo()}">Range</td>
+                <td th:text="${item.requestStatus()}">Status</td>
+                <td th:text="${item.transactionCount()}">0</td>
+                <td th:text="${item.totalTransactionAmount()}">0.00</td>
+                <td th:text="${item.vaultClosingBalance()}">0.00</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(items)}">
+                <td colspan="8" class="empty-row">No branch statement request found for the selected filter.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="doc-footer">
+        <div>Generated from SBMS branch statement register export.</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{
+  "module": "17",
+  "name": "Zakat & Charity",
+  "baseUrls": {
+    "zakat": "http://localhost:8080/api/zakat"
+  },
+  "profileCreateSamples": [
+    { "customerId": 1, "zakatYear": 2025, "nisabAmount": 85000, "eligibleAssetAmount": 540000, "remarks": "Primary zakat profile settled through yearly deduction workflow." },
+    { "customerId": 2, "zakatYear": 2025, "nisabAmount": 85000, "eligibleAssetAmount": 450000, "remarks": "Business reserve adjusted and zakat routed to charity fund." },
+    { "customerId": 3, "zakatYear": 2025, "nisabAmount": 85000, "eligibleAssetAmount": 72000, "remarks": "Retail savings remained below nisab threshold for the year." },
+    { "customerId": 4, "zakatYear": 2026, "nisabAmount": 90000, "eligibleAssetAmount": 81000, "remarks": "Personal assets reviewed and kept for reminder tracking only." },
+    { "customerId": 5, "zakatYear": 2025, "nisabAmount": 85000, "eligibleAssetAmount": 650000, "remarks": "Corporate zakat amount deducted after asset review." },
+    { "customerId": 6, "zakatYear": 2026, "nisabAmount": 90000, "eligibleAssetAmount": 390000, "remarks": "Calculated and waiting finance confirmation before deduction." },
+    { "customerId": 7, "zakatYear": 2025, "nisabAmount": 85000, "eligibleAssetAmount": 390000, "remarks": "Salary and deposit mix cleared for deduction posting." },
+    { "customerId": 8, "zakatYear": 2026, "nisabAmount": 90000, "eligibleAssetAmount": 580000, "remarks": "Asset profile opened and waiting calculation run by officer." },
+    { "customerId": 9, "zakatYear": 2025, "nisabAmount": 90000, "eligibleAssetAmount": 575000, "remarks": "Customer requested immediate deduction after yearly review." },
+    { "customerId": 10, "zakatYear": 2026, "nisabAmount": 90000, "eligibleAssetAmount": 440000, "remarks": "Calculated amount waiting customer approval for deduction." },
+    { "customerId": 11, "zakatYear": 2025, "nisabAmount": 90000, "eligibleAssetAmount": 500000, "remarks": "Trade inventory exposure converted into posted zakat amount." },
+    { "customerId": 12, "zakatYear": 2026, "nisabAmount": 90000, "eligibleAssetAmount": 315000, "remarks": "New profile captured and waiting verified eligible asset review." },
+    { "customerId": 13, "zakatYear": 2025, "nisabAmount": 90000, "eligibleAssetAmount": 425000, "remarks": "Family zakat pool cleared and routed to charity fund." },
+    { "customerId": 14, "zakatYear": 2026, "nisabAmount": 90000, "eligibleAssetAmount": 620000, "remarks": "High balance assets reviewed and deducted for current cycle." },
+    { "customerId": 15, "zakatYear": 2025, "nisabAmount": 90000, "eligibleAssetAmount": 350000, "remarks": "Community savings portfolio settled through yearly zakat process." }
+  ],
+  "calculationSamples": [
+    { "profileId": 6, "nisabAmount": 90000, "eligibleAssetAmount": 390000, "remarks": "Run calculation and keep pending for finance confirmation." },
+    { "profileId": 8, "nisabAmount": 90000, "eligibleAssetAmount": 580000, "remarks": "Run calculation for newly profiled high-value assets." },
+    { "profileId": 4, "nisabAmount": 90000, "eligibleAssetAmount": 81000, "remarks": "Re-check below nisab profile before yearly reminder." }
+  ],
+  "beneficiaryCreateSamples": [
+    { "beneficiaryCode": "BEN-00001", "beneficiaryName": "Ayesha Welfare Family", "mobile": "01711000001", "address": "Badda, Dhaka" },
+    { "beneficiaryCode": "BEN-00002", "beneficiaryName": "Rahman Community Clinic", "mobile": "01711000002", "address": "Mirpur, Dhaka" },
+    { "beneficiaryCode": "BEN-00003", "beneficiaryName": "Noor Shelter Support", "mobile": "01711000003", "address": "Jatrabari, Dhaka" },
+    { "beneficiaryCode": "BEN-00004", "beneficiaryName": "Alor Path Student Aid", "mobile": "01711000004", "address": "Keraniganj, Dhaka" },
+    { "beneficiaryCode": "BEN-00005", "beneficiaryName": "Mizan Elder Support", "mobile": "01711000005", "address": "Savar, Dhaka" },
+    { "beneficiaryCode": "BEN-00006", "beneficiaryName": "Green Village Relief", "mobile": "01711000006", "address": "Gazipur Sadar, Gazipur" },
+    { "beneficiaryCode": "BEN-00007", "beneficiaryName": "Safa Medical Outreach", "mobile": "01711000007", "address": "Narayanganj" },
+    { "beneficiaryCode": "BEN-00008", "beneficiaryName": "Iqra Women Support Cell", "mobile": "01711000008", "address": "Uttara, Dhaka" },
+    { "beneficiaryCode": "BEN-00009", "beneficiaryName": "Tawhid Rural Care", "mobile": "01711000009", "address": "Cumilla Town" },
+    { "beneficiaryCode": "BEN-00010", "beneficiaryName": "Baraka Widow Support", "mobile": "01711000010", "address": "Mymensingh" },
+    { "beneficiaryCode": "BEN-00011", "beneficiaryName": "Madrasa Meal Program", "mobile": "01711000011", "address": "Narsingdi" },
+    { "beneficiaryCode": "BEN-00012", "beneficiaryName": "Sadaqah Care Trust", "mobile": "01711000012", "address": "Tangail" },
+    { "beneficiaryCode": "BEN-00013", "beneficiaryName": "Nobojibon Health Link", "mobile": "01711000013", "address": "Kishoreganj" },
+    { "beneficiaryCode": "BEN-00014", "beneficiaryName": "Ar Rahmah Winter Drive", "mobile": "01711000014", "address": "Manikganj" },
+    { "beneficiaryCode": "BEN-00015", "beneficiaryName": "Community Skill Uplift", "mobile": "01711000015", "address": "Munshiganj" }
+  ],
+  "payoutCreateSamples": [
+    { "beneficiaryId": 1, "payoutDate": "2026-04-12", "amount": 3500, "approvedBy": "Zakat Officer 01", "remarks": "Monthly family food assistance disbursed from zakat fund." },
+    { "beneficiaryId": 2, "payoutDate": "2026-04-12", "amount": 4200, "approvedBy": "Zakat Officer 02", "remarks": "Medical support released for clinic treatment inventory." },
+    { "beneficiaryId": 3, "payoutDate": "2026-04-12", "amount": 5000, "approvedBy": "Zakat Officer 03", "remarks": "Emergency housing and shelter payout approved." },
+    { "beneficiaryId": 4, "payoutDate": "2026-04-12", "amount": 2750, "approvedBy": "Zakat Officer 04", "remarks": "Student educational materials distributed to verified list." },
+    { "beneficiaryId": 5, "payoutDate": "2026-04-12", "amount": 6400, "approvedBy": "Zakat Officer 05", "remarks": "Senior citizen support cycle released for medicine coverage." },
+    { "beneficiaryId": 6, "payoutDate": "2026-04-12", "amount": 7200, "approvedBy": "Zakat Officer 06", "remarks": "Village relief pack and cash assistance disbursed." },
+    { "beneficiaryId": 7, "payoutDate": "2026-04-12", "amount": 3800, "approvedBy": "Zakat Officer 07", "remarks": "Rural medical camp logistics funded from charity pool." },
+    { "beneficiaryId": 8, "payoutDate": "2026-04-12", "amount": 4550, "approvedBy": "Zakat Officer 08", "remarks": "Women support allowance approved after branch verification." },
+    { "beneficiaryId": 9, "payoutDate": "2026-04-12", "amount": 5100, "approvedBy": "Zakat Officer 09", "remarks": "Rural hardship payout delivered to field coordinator." },
+    { "beneficiaryId": 10, "payoutDate": "2026-04-12", "amount": 6200, "approvedBy": "Zakat Officer 10", "remarks": "Widow household assistance released for quarter one." },
+    { "beneficiaryId": 11, "payoutDate": "2026-04-12", "amount": 7400, "approvedBy": "Zakat Officer 11", "remarks": "Madrasa meal support funded for one monthly cycle." },
+    { "beneficiaryId": 12, "payoutDate": "2026-04-12", "amount": 2900, "approvedBy": "Zakat Officer 12", "remarks": "Small grant approved for immediate social care need." },
+    { "beneficiaryId": 13, "payoutDate": "2026-04-12", "amount": 3350, "approvedBy": "Zakat Officer 13", "remarks": "Healthcare mobility support released after approval." },
+    { "beneficiaryId": 1, "payoutDate": "2026-04-12", "amount": 4800, "approvedBy": "Zakat Officer 14", "remarks": "Follow-up food and shelter support provided to family case." },
+    { "beneficiaryId": 2, "payoutDate": "2026-04-12", "amount": 5600, "approvedBy": "Zakat Officer 15", "remarks": "Additional treatment support released for clinic beneficiary." }
+  ]
+}

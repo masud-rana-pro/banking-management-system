@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${definition.reportName}">Report</title>
+    <style th:text="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Official Banking Report</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent"></div>
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" th:alt="${bankName}" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}"></div>
+                <div class="doc-bank-sub" th:text="${bankAddress}"></div>
+                <div class="doc-bank-sub" th:text="${bankContact}"></div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Report Code</div>
+            <div class="doc-chip" th:text="${definition.reportCode}">CODE</div>
+            <div class="doc-chip-meta" th:text="${definition.reportType}">TYPE</div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Management Information Report</div>
+            <h1 th:text="${definition.reportName}">Report</h1>
+            <div class="hero-note">Official report copy for management review, regulatory archive and operational control.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Requested By</span><strong th:text="${log.requestedBy}"></strong></div>
+            <div><span>Date Range</span><strong th:text="|${log.dateFrom} to ${log.dateTo}|"></strong></div>
+            <div><span>Status</span><strong th:text="${log.requestStatus}"></strong></div>
+        </div>
+    </div>
+
+    <div class="meta-grid">
+        <div class="meta-item">
+            <span>Report Type</span>
+            <strong th:text="${definition.reportType}"></strong>
+        </div>
+        <div class="meta-item">
+            <span>Query Key</span>
+            <strong th:text="${definition.queryKey}"></strong>
+        </div>
+        <div class="meta-item">
+            <span>Run Date</span>
+            <strong th:text="${log.generatedAt != null ? log.generatedAt : log.requestedAt}"></strong>
+        </div>
+        <div class="meta-item">
+            <span>Document Control</span>
+            <strong th:text="${definition.reportCode}"></strong>
+        </div>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric-card" th:each="metric : ${payload.metrics()}">
+            <span th:text="${metric.label}"></span>
+            <strong th:text="${metric.value}"></strong>
+        </div>
+    </div>
+
+    <div class="visual-section">
+        <div class="visual-card">
+            <h3 th:text="${payload.chartTitle()}">Report Chart</h3>
+            <p>Top segments from the current report result for quick management review.</p>
+            <div class="chart-stack" th:if="${!#lists.isEmpty(payload.chartItems())}">
+                <div class="chart-row" th:each="item : ${payload.chartItems()}">
+                    <div class="chart-head">
+                        <span th:text="${item.label()}"></span>
+                        <strong th:text="${item.displayValue()}"></strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill primary" th:style="|width:${item.share()}%|"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="empty-row" th:if="${#lists.isEmpty(payload.chartItems())}">No chart data available for this report.</div>
+        </div>
+        <div class="visual-card">
+            <h3>Report Control Note</h3>
+            <p>Use this generated copy for preview, print, export archive and management review circulation.</p>
+            <div class="legend-row"><span>Report Code</span><strong th:text="${definition.reportCode}"></strong></div>
+            <div class="legend-row"><span>Query Key</span><strong th:text="${definition.queryKey}"></strong></div>
+            <div class="legend-row"><span>Run Status</span><strong th:text="${log.requestStatus}"></strong></div>
+            <div class="legend-row"><span>Requested By</span><strong th:text="${log.requestedBy}"></strong></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Report Result</div>
+        <table>
+            <thead>
+            <tr>
+                <th th:each="column : ${payload.columns()}" th:text="${column.label}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(payload.rows())}">
+                <td th:attr="colspan=${#lists.size(payload.columns())}" class="empty-row">No report rows found for the selected filter range.</td>
+            </tr>
+            <tr th:each="row : ${payload.rows()}">
+                <td th:each="column : ${payload.columns()}" th:text="${row[column.key] ?: '-'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="signature-strip">
+        <div class="signature-box"><span>Prepared By</span><strong>Reporting Desk</strong></div>
+        <div class="signature-box"><span>Reviewed By</span><strong>MIS / Compliance</strong></div>
+        <div class="signature-box"><span>Authorized For Use</span><strong>Management Copy</strong></div>
+    </div>
+
+    <div class="doc-footer">
+        <div>Generated from SBMS reporting and regulatory module.</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>

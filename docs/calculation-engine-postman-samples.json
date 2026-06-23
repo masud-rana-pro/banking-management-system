@@ -1,0 +1,24 @@
+{
+  "notes": [
+    "Calculation Engine has no dedicated seed table; it is a support concept over financing, deposit scheme and profit modules.",
+    "Use these payloads with POST /api/calculations/simulate.",
+    "Apply Result is expected to continue into the source module form/page rather than create a standalone calculation record."
+  ],
+  "simulate": [
+    { "sourceModule": "FINANCING", "productType": "MURABAHA", "principalAmount": 500000, "ratePercent": 12.5, "tenureMonths": 12, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Murabaha financing simulation" },
+    { "sourceModule": "FINANCING", "productType": "IJARAH", "principalAmount": 850000, "ratePercent": 10.25, "tenureMonths": 24, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Ijarah rental plan simulation" },
+    { "sourceModule": "FINANCING", "productType": "SALAM", "principalAmount": 300000, "ratePercent": 9.75, "tenureMonths": 9, "frequency": "MONTHLY", "startDate": "2026-06-15", "remarks": "Salam financing schedule preview" },
+    { "sourceModule": "FINANCING", "productType": "ISTISNA", "principalAmount": 1200000, "ratePercent": 11.0, "tenureMonths": 18, "frequency": "MONTHLY", "startDate": "2026-07-01", "remarks": "Istisna staged repayment preview" },
+    { "sourceModule": "FINANCING", "productType": "MUSHARAKA", "principalAmount": 950000, "ratePercent": 14.0, "tenureMonths": 18, "frequency": "QUARTERLY", "startDate": "2026-07-01", "remarks": "Musharaka quarterly profit simulation" },
+    { "sourceModule": "FINANCING", "productType": "MUDARABA", "principalAmount": 1250000, "ratePercent": 13.25, "tenureMonths": 24, "frequency": "QUARTERLY", "startDate": "2026-07-01", "remarks": "Mudaraba profit-sharing schedule" },
+    { "sourceModule": "DEPOSIT_SCHEME", "productType": "MONTHLY_SAVINGS", "principalAmount": 100000, "ratePercent": 7.5, "tenureMonths": 12, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Monthly savings maturity preview" },
+    { "sourceModule": "DEPOSIT_SCHEME", "productType": "HAJJ_SAVINGS", "principalAmount": 250000, "ratePercent": 8.25, "tenureMonths": 24, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Hajj savings accumulation preview" },
+    { "sourceModule": "DEPOSIT_SCHEME", "productType": "EDUCATION_SAVINGS", "principalAmount": 180000, "ratePercent": 7.9, "tenureMonths": 36, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Education savings long-tenure simulation" },
+    { "sourceModule": "DEPOSIT_SCHEME", "productType": "MARRIAGE_SAVINGS", "principalAmount": 220000, "ratePercent": 8.0, "tenureMonths": 30, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Marriage savings payout preview" },
+    { "sourceModule": "DEPOSIT_SCHEME", "productType": "PENSION_SAVINGS", "principalAmount": 320000, "ratePercent": 8.5, "tenureMonths": 48, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Pension savings projection" },
+    { "sourceModule": "DEPOSIT_SCHEME", "productType": "GENERAL_SAVINGS", "principalAmount": 150000, "ratePercent": 7.1, "tenureMonths": 18, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "General savings maturity estimate" },
+    { "sourceModule": "PROFIT", "productType": "PROFIT_POSTING", "principalAmount": 800000, "ratePercent": 9.0, "tenureMonths": 6, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Profit posting cycle simulation" },
+    { "sourceModule": "PROFIT", "productType": "PROFIT_POSTING", "principalAmount": 1500000, "ratePercent": 10.0, "tenureMonths": 12, "frequency": "QUARTERLY", "startDate": "2026-06-01", "remarks": "Quarterly profit distribution preview" },
+    { "sourceModule": "GENERAL", "productType": "MURABAHA", "principalAmount": 275000, "ratePercent": 11.5, "tenureMonths": 10, "frequency": "MONTHLY", "startDate": "2026-06-01", "remarks": "Generic calculation smoke test" }
+  ]
+}

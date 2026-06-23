@@ -1,0 +1,51 @@
+{
+  "module": "15",
+  "name": "Contract Management",
+  "baseUrls": {
+    "contracts": "http://localhost:8080/api/contracts"
+  },
+  "templateCreateSamples": [
+    { "templateCode": "CTM-00001", "templateName": "Account Opening Standard", "contractType": "ACCOUNT_OPENING", "versionNo": 1, "templateBody": "Account opening agreement for {{customerName}} ({{customerCode}}) under contract {{contractNo}} dated {{today}}." },
+    { "templateCode": "CTM-00002", "templateName": "Financing Murabaha Core", "contractType": "FINANCING", "versionNo": 1, "templateBody": "Murabaha financing agreement for {{customerName}} against {{referenceModule}} #{{referenceId}} under contract {{contractNo}}." },
+    { "templateCode": "CTM-00003", "templateName": "Financing Ijarah Lease", "contractType": "FINANCING", "versionNo": 2, "templateBody": "Ijarah rental contract for {{customerName}} generated as {{contractNo}} from template {{templateName}}." },
+    { "templateCode": "CTM-00004", "templateName": "Deposit Scheme Enrollment", "contractType": "DEPOSIT_SCHEME", "versionNo": 1, "templateBody": "Deposit scheme enrollment contract for {{customerName}} linked to reference {{referenceId}}." },
+    { "templateCode": "CTM-00005", "templateName": "Card Issue Undertaking", "contractType": "CARD_ISSUE", "versionNo": 1, "templateBody": "Card issuance acknowledgement for {{customerName}} under contract {{contractNo}}." },
+    { "templateCode": "CTM-00006", "templateName": "General Service Contract", "contractType": "GENERAL", "versionNo": 1, "templateBody": "General service contract generated for {{customerName}} with source {{referenceModule}} / {{referenceId}}." },
+    { "templateCode": "CTM-00007", "templateName": "Account Opening Premium", "contractType": "ACCOUNT_OPENING", "versionNo": 2, "templateBody": "Premium account opening clauses for {{customerName}} under agreement {{contractNo}}." },
+    { "templateCode": "CTM-00008", "templateName": "Working Capital Financing", "contractType": "FINANCING", "versionNo": 1, "templateBody": "Working capital financing contract prepared for {{customerName}} under reference {{referenceId}}." },
+    { "templateCode": "CTM-00009", "templateName": "Savings Scheme Long Term", "contractType": "DEPOSIT_SCHEME", "versionNo": 1, "templateBody": "Long-term savings scheme contract for {{customerName}} generated on {{today}}." },
+    { "templateCode": "CTM-00010", "templateName": "Medical Equipment Financing", "contractType": "FINANCING", "versionNo": 1, "templateBody": "Medical equipment financing agreement for {{customerName}} with contract no {{contractNo}}." },
+    { "templateCode": "CTM-00011", "templateName": "Corporate Card Contract", "contractType": "CARD_ISSUE", "versionNo": 2, "templateBody": "Corporate card issue contract for {{customerName}} using template {{templateName}}." },
+    { "templateCode": "CTM-00012", "templateName": "Shariah Advisory Service", "contractType": "GENERAL", "versionNo": 1, "templateBody": "Shariah advisory service contract for {{customerName}} against general reference {{referenceId}}." },
+    { "templateCode": "CTM-00013", "templateName": "SME Account Opening", "contractType": "ACCOUNT_OPENING", "versionNo": 1, "templateBody": "SME account opening agreement for {{customerName}} prepared under {{contractNo}}." },
+    { "templateCode": "CTM-00014", "templateName": "Commodity Financing Contract", "contractType": "FINANCING", "versionNo": 1, "templateBody": "Commodity financing contract for {{customerName}} generated from financing case {{referenceId}}." },
+    { "templateCode": "CTM-00015", "templateName": "General Undertaking", "contractType": "GENERAL", "versionNo": 1, "templateBody": "Final general undertaking executed by {{customerName}} under contract {{contractNo}}." }
+  ],
+  "generateSamples": [
+    { "templateId": 1, "customerId": 1, "referenceModule": "ACCOUNT_OPENING", "referenceId": 1, "contractText": "Account opening draft contract for customer 1 generated from Postman sample." },
+    { "templateId": 2, "customerId": 2, "referenceModule": "FINANCING", "referenceId": 1, "contractText": "Murabaha contract draft for customer 2 generated from Postman sample." },
+    { "templateId": 4, "customerId": 4, "referenceModule": "DEPOSIT_SCHEME", "referenceId": 1, "contractText": "Deposit scheme contract draft for customer 4 generated from Postman sample." },
+    { "templateId": 5, "customerId": 5, "referenceModule": "CARD_ISSUE", "referenceId": 1, "contractText": "Card issue contract draft for customer 5 generated from Postman sample." },
+    { "templateId": 6, "customerId": 6, "referenceModule": "GENERAL", "referenceId": 6, "contractText": "General service contract draft for customer 6 generated from Postman sample." },
+    { "templateId": 7, "customerId": 7, "referenceModule": "ACCOUNT_OPENING", "referenceId": 7, "contractText": "Premium account opening contract draft for customer 7 generated from Postman sample." },
+    { "templateId": 8, "customerId": 8, "referenceModule": "FINANCING", "referenceId": 8, "contractText": "Working capital contract draft for customer 8 generated from Postman sample." },
+    { "templateId": 9, "customerId": 9, "referenceModule": "DEPOSIT_SCHEME", "referenceId": 9, "contractText": "Savings scheme contract draft for customer 9 generated from Postman sample." },
+    { "templateId": 10, "customerId": 10, "referenceModule": "FINANCING", "referenceId": 10, "contractText": "Medical financing contract draft for customer 10 generated from Postman sample." },
+    { "templateId": 11, "customerId": 11, "referenceModule": "CARD_ISSUE", "referenceId": 11, "contractText": "Corporate card contract draft for customer 11 generated from Postman sample." },
+    { "templateId": 12, "customerId": 12, "referenceModule": "GENERAL", "referenceId": 12, "contractText": "Shariah advisory contract draft for customer 12 generated from Postman sample." },
+    { "templateId": 13, "customerId": 13, "referenceModule": "ACCOUNT_OPENING", "referenceId": 13, "contractText": "SME account opening contract draft for customer 13 generated from Postman sample." },
+    { "templateId": 14, "customerId": 14, "referenceModule": "FINANCING", "referenceId": 14, "contractText": "Commodity financing contract draft for customer 14 generated from Postman sample." },
+    { "templateId": 15, "customerId": 15, "referenceModule": "GENERAL", "referenceId": 15, "contractText": "General undertaking draft for customer 15 generated from Postman sample." },
+    { "templateId": 3, "customerId": 3, "referenceModule": "FINANCING", "referenceId": 2, "contractText": "Ijarah contract draft for customer 3 generated from Postman sample." }
+  ],
+  "customerSignSamples": [
+    { "signedBy": "Customer Signer 02", "remarks": "Customer accepted financing terms from Postman sample" },
+    { "signedBy": "Customer Signer 04", "remarks": "Customer accepted deposit scheme terms from Postman sample" },
+    { "signedBy": "Customer Signer 07", "remarks": "Customer accepted account opening terms from Postman sample" }
+  ],
+  "shariahSignSamples": [
+    { "signedBy": "Shariah Signer 03", "remarks": "Shariah board confirmed Ijarah clauses from Postman sample" },
+    { "signedBy": "Shariah Signer 05", "remarks": "Shariah board approved card undertaking from Postman sample" },
+    { "signedBy": "Shariah Signer 14", "remarks": "Shariah board approved commodity financing contract from Postman sample" }
+  ]
+}

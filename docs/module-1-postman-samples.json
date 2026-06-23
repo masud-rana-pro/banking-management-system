@@ -1,0 +1,56 @@
+{
+  "info": {
+    "name": "SBMS Module 1 - Role Management",
+    "_postman_id": "module-1-role-management",
+    "description": "Sample requests for Playbook Module 1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    { "name": "01 Dashboard Summary", "request": { "method": "GET", "url": "{{baseUrl}}/api/roles/dashboard-summary" } },
+    { "name": "02 Role List", "request": { "method": "GET", "url": "{{baseUrl}}/api/roles/list" } },
+    { "name": "03 Role Dropdown", "request": { "method": "GET", "url": "{{baseUrl}}/api/roles/dropdown" } },
+    { "name": "04 Role View", "request": { "method": "GET", "url": "{{baseUrl}}/api/roles/1" } },
+    {
+      "name": "05 Create Role",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"AUDIT_REVIEWER\",\n  \"name\": \"Audit Reviewer\",\n  \"description\": \"Reviews audit and security events.\",\n  \"status\": \"ACTIVE\",\n  \"actionBy\": \"SYSTEM\"\n}"
+        },
+        "url": "{{baseUrl}}/api/roles/create"
+      }
+    },
+    {
+      "name": "06 Update Role",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"AUDIT_REVIEWER\",\n  \"name\": \"Audit Reviewer Updated\",\n  \"description\": \"Updated reviewer role for module 21.\",\n  \"status\": \"ACTIVE\",\n  \"actionBy\": \"SYSTEM\"\n}"
+        },
+        "url": "{{baseUrl}}/api/roles/1"
+      }
+    },
+    { "name": "07 Role Permissions View", "request": { "method": "GET", "url": "{{baseUrl}}/api/roles/permissions/1" } },
+    {
+      "name": "08 Map Permissions",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"permissionCodes\": [\n    \"ADMIN_DASHBOARD_ACCESS\",\n    \"ROLE_MANAGEMENT_ACCESS\",\n    \"ROLE_VIEW\",\n    \"ROLE_MAP_PERMISSIONS\"\n  ],\n  \"createdBy\": \"SYSTEM\"\n}"
+        },
+        "url": "{{baseUrl}}/api/roles/1/permissions/map"
+      }
+    },
+    { "name": "09 Archive Role", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/roles/1" } },
+    { "name": "10 Restore Role", "request": { "method": "PUT", "url": "{{baseUrl}}/api/roles/1/restore" } }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ]
+}

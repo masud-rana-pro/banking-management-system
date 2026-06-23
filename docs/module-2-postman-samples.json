@@ -1,0 +1,81 @@
+{
+  "info": {
+    "name": "SBMS Module 2 - User Management",
+    "_postman_id": "module-2-user-management",
+    "description": "Sample requests for Playbook Module 2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    { "name": "01 Dashboard Summary", "request": { "method": "GET", "url": "{{baseUrl}}/api/users/dashboard-summary" } },
+    { "name": "02 User List", "request": { "method": "GET", "url": "{{baseUrl}}/api/users/list" } },
+    { "name": "03 User Search", "request": { "method": "GET", "url": "{{baseUrl}}/api/users/search?keyword=manager" } },
+    { "name": "04 User Dropdown", "request": { "method": "GET", "url": "{{baseUrl}}/api/users/dropdown" } },
+    { "name": "05 User View", "request": { "method": "GET", "url": "{{baseUrl}}/api/users/1" } },
+    {
+      "name": "06 Create User",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"module2.demo.user\",\n  \"password\": \"Pass@123\",\n  \"fullName\": \"Module Two Demo User\",\n  \"email\": \"module2.demo.user@sbms.local\",\n  \"mobile\": \"01719999999\",\n  \"employeeNo\": \"EMP-2999\",\n  \"designation\": \"Operations Demo\",\n  \"branchId\": 1,\n  \"userType\": \"STAFF\",\n  \"status\": \"ACTIVE\",\n  \"roleId\": 4,\n  \"actionBy\": \"SYSTEM\"\n}"
+        },
+        "url": "{{baseUrl}}/api/users/create"
+      }
+    },
+    {
+      "name": "07 Update User",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Module Two Demo User Updated\",\n  \"designation\": \"Senior Operations Demo\",\n  \"branchId\": 2,\n  \"status\": \"ACTIVE\",\n  \"userType\": \"STAFF\",\n  \"actionBy\": \"SYSTEM\"\n}"
+        },
+        "url": "{{baseUrl}}/api/users/1"
+      }
+    },
+    { "name": "08 User History", "request": { "method": "GET", "url": "{{baseUrl}}/api/users/1/history" } },
+    {
+      "name": "09 Assign Role",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"roleId\": 4,\n  \"actionBy\": \"SYSTEM\"\n}" },
+        "url": "{{baseUrl}}/api/users/1/assign-role"
+      }
+    },
+    {
+      "name": "10 Lock User",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"actionBy\": \"SYSTEM\",\n  \"reason\": \"Risk hold\"\n}" },
+        "url": "{{baseUrl}}/api/users/1/lock"
+      }
+    },
+    {
+      "name": "11 Unlock User",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"actionBy\": \"SYSTEM\",\n  \"reason\": \"Cleared\"\n}" },
+        "url": "{{baseUrl}}/api/users/1/unlock"
+      }
+    },
+    {
+      "name": "12 Reset Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"Pass@1234\",\n  \"confirmPassword\": \"Pass@1234\",\n  \"actionBy\": \"SYSTEM\"\n}" },
+        "url": "{{baseUrl}}/api/users/1/reset-password"
+      }
+    },
+    { "name": "13 Archive User", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/users/1" } },
+    { "name": "14 Restore User", "request": { "method": "PUT", "url": "{{baseUrl}}/api/users/1/restore" } }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ]
+}

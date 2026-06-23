@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Customer Statement</title>
+    <style th:text="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Official Banking Statement</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent customer-accent"></div>
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" th:alt="${bankName}" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}"></div>
+                <div class="doc-bank-sub" th:text="${bankAddress}"></div>
+                <div class="doc-bank-sub" th:text="${bankContact}"></div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Document Type</div>
+            <div class="doc-chip">Bank Statement</div>
+            <div class="doc-chip-meta" th:text="|Request ${response.requestNo()}|"></div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Account Statement</div>
+            <h1>Customer Account Statement</h1>
+            <div class="hero-note">Statement of account for the selected period, generated from posted SBMS transactions.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Statement Ref</span><strong th:text="${response.requestNo()}"></strong></div>
+            <div><span>Generated Status</span><strong th:text="${response.requestStatus()}"></strong></div>
+            <div><span>Requested By</span><strong th:text="${response.requestedBy()}"></strong></div>
+        </div>
+    </div>
+
+    <div class="info-layout">
+        <div class="info-card">
+            <div class="card-title">Customer Information</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>Customer Name</span><strong th:text="${response.customerName()}"></strong></div>
+                <div class="info-row"><span>Customer Code</span><strong th:text="${response.customerCode()}"></strong></div>
+                <div class="info-row"><span>Account Number</span><strong th:text="${response.accountNumber()}"></strong></div>
+                <div class="info-row"><span>Branch ID</span><strong th:text="${response.branchId()}"></strong></div>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="card-title">Statement Period</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>From Date</span><strong th:text="${response.dateFrom()}"></strong></div>
+                <div class="info-row"><span>To Date</span><strong th:text="${response.dateTo()}"></strong></div>
+                <div class="info-row"><span>Opening Snapshot</span><strong th:text="${response.currentBalance()}"></strong></div>
+                <div class="info-row"><span>Net Movement</span><strong th:text="${response.netMovement()}"></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><span>Transactions</span><strong th:text="${response.transactionCount()}"></strong></div>
+        <div class="metric-card"><span>Total Debit</span><strong th:text="${response.totalDebit()}"></strong></div>
+        <div class="metric-card"><span>Total Credit</span><strong th:text="${response.totalCredit()}"></strong></div>
+        <div class="metric-card"><span>Profit Posted</span><strong th:text="${response.profitPosted()}"></strong></div>
+        <div class="metric-card"><span>Net Movement</span><strong th:text="${response.netMovement()}"></strong></div>
+        <div class="metric-card"><span>Current Balance</span><strong th:text="${response.currentBalance()}"></strong></div>
+    </div>
+
+    <div class="visual-section">
+        <div class="visual-card">
+            <h3>Movement Split</h3>
+            <p>Debit and credit flow for the selected statement period.</p>
+            <div class="bar-track">
+                <div class="bar-fill warning" th:style="|width:${debitShare}%|"></div>
+                <div class="bar-fill primary" th:style="|width:${creditShare}%|"></div>
+            </div>
+            <div class="legend-row">
+                <span th:text="|Debit ${response.totalDebit()}|"></span>
+                <span th:text="|Credit ${response.totalCredit()}|"></span>
+            </div>
+        </div>
+        <div class="visual-card">
+            <h3>Balance Snapshot</h3>
+            <p>Net movement and current balance view for quick decision support.</p>
+            <div class="legend-row"><span>Net Movement</span><strong th:text="${response.netMovement()}"></strong></div>
+            <div class="legend-row"><span>Profit Posted</span><strong th:text="${response.profitPosted()}"></strong></div>
+            <div class="legend-row"><span>Current Balance</span><strong th:text="${response.currentBalance()}"></strong></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Statement Lines</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th>Channel</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>Narration</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(response.lines())}">
+                <td colspan="7" class="empty-row">No statement lines found for the selected range.</td>
+            </tr>
+            <tr th:each="line : ${response.lines()}">
+                <td th:text="${line.lineDate()}"></td>
+                <td th:text="${line.lineType()}"></td>
+                <td th:text="${line.referenceNo()}"></td>
+                <td th:text="${line.channel()}"></td>
+                <td th:text="${line.debitAmount()}"></td>
+                <td th:text="${line.creditAmount()}"></td>
+                <td th:text="${line.narration()}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="signature-strip">
+        <div class="signature-box"><span>Prepared By</span><strong>Statement Desk</strong></div>
+        <div class="signature-box"><span>Checked By</span><strong>Operations Officer</strong></div>
+        <div class="signature-box"><span>Authorized By</span><strong>Branch Operations</strong></div>
+    </div>
+
+    <div class="doc-footer">
+        <div>Thank you for banking with Al-Barakah Shariah Bank PLC.</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>

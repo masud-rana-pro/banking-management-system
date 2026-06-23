@@ -1,0 +1,54 @@
+{
+  "module": "Module 11 - Card Management",
+  "baseUrl": "http://localhost:8080/api/cards",
+  "notes": [
+    "These payloads follow playbook fields exactly.",
+    "For the current seeded environment, customerId/accountId pairs 1/1 and 7/7 are valid active combinations.",
+    "Replace ids if your local customer/account records differ."
+  ],
+  "createCards": [
+    { "customerId": 1, "accountId": 1, "cardType": "DEBIT_CARD", "maskedCardNo": "4000-****-9101-0001", "issueDate": "2026-05-01", "expiryDate": "2031-05-01", "cardStatus": "PENDING_ACTIVATION", "blockReason": "" },
+    { "customerId": 7, "accountId": 7, "cardType": "ATM_CARD", "maskedCardNo": "4000-****-9102-0007", "issueDate": "2026-05-02", "expiryDate": "2031-05-02", "cardStatus": "ACTIVE", "blockReason": "" },
+    { "customerId": 1, "accountId": 1, "cardType": "PREPAID_CARD", "maskedCardNo": "4000-****-9103-0001", "issueDate": "2026-05-03", "expiryDate": "2031-05-03", "cardStatus": "BLOCKED", "blockReason": "Fraud monitoring hold" },
+    { "customerId": 7, "accountId": 7, "cardType": "VIRTUAL_CARD", "maskedCardNo": "4000-****-9104-0007", "issueDate": "2026-05-04", "expiryDate": "2031-05-04", "cardStatus": "PENDING_ACTIVATION", "blockReason": "" },
+    { "customerId": 1, "accountId": 1, "cardType": "ATM_CARD", "maskedCardNo": "4000-****-9105-0001", "issueDate": "2026-05-05", "expiryDate": "2031-05-05", "cardStatus": "ACTIVE", "blockReason": "" },
+    { "customerId": 7, "accountId": 7, "cardType": "DEBIT_CARD", "maskedCardNo": "4000-****-9106-0007", "issueDate": "2026-05-06", "expiryDate": "2031-05-06", "cardStatus": "PENDING_ACTIVATION", "blockReason": "" },
+    { "customerId": 1, "accountId": 1, "cardType": "PREPAID_CARD", "maskedCardNo": "4000-****-9107-0001", "issueDate": "2026-05-07", "expiryDate": "2031-05-07", "cardStatus": "ACTIVE", "blockReason": "" },
+    { "customerId": 7, "accountId": 7, "cardType": "ATM_CARD", "maskedCardNo": "4000-****-9108-0007", "issueDate": "2026-05-08", "expiryDate": "2031-05-08", "cardStatus": "BLOCKED", "blockReason": "PIN retry exceeded" },
+    { "customerId": 1, "accountId": 1, "cardType": "VIRTUAL_CARD", "maskedCardNo": "4000-****-9109-0001", "issueDate": "2026-05-09", "expiryDate": "2031-05-09", "cardStatus": "ACTIVE", "blockReason": "" },
+    { "customerId": 7, "accountId": 7, "cardType": "DEBIT_CARD", "maskedCardNo": "4000-****-9110-0007", "issueDate": "2026-05-10", "expiryDate": "2031-05-10", "cardStatus": "PENDING_ACTIVATION", "blockReason": "" },
+    { "customerId": 1, "accountId": 1, "cardType": "ATM_CARD", "maskedCardNo": "4000-****-9111-0001", "issueDate": "2026-05-11", "expiryDate": "2031-05-11", "cardStatus": "ACTIVE", "blockReason": "" },
+    { "customerId": 7, "accountId": 7, "cardType": "PREPAID_CARD", "maskedCardNo": "4000-****-9112-0007", "issueDate": "2026-05-12", "expiryDate": "2031-05-12", "cardStatus": "PENDING_ACTIVATION", "blockReason": "" },
+    { "customerId": 1, "accountId": 1, "cardType": "ATM_CARD", "maskedCardNo": "4000-****-9113-0001", "issueDate": "2026-05-13", "expiryDate": "2031-05-13", "cardStatus": "ACTIVE", "blockReason": "" },
+    { "customerId": 7, "accountId": 7, "cardType": "DEBIT_CARD", "maskedCardNo": "4000-****-9114-0007", "issueDate": "2026-05-14", "expiryDate": "2031-05-14", "cardStatus": "BLOCKED", "blockReason": "Customer requested temporary hold" },
+    { "customerId": 1, "accountId": 1, "cardType": "VIRTUAL_CARD", "maskedCardNo": "4000-****-9115-0001", "issueDate": "2026-05-15", "expiryDate": "2031-05-15", "cardStatus": "PENDING_ACTIVATION", "blockReason": "" }
+  ],
+  "activationRequest": {
+    "blockReason": "",
+    "remarks": "Customer completed activation call",
+    "performedBy": "SYSTEM",
+    "maskedCardNo": "",
+    "expiryDate": ""
+  },
+  "blockRequest": {
+    "blockReason": "Suspicious ATM withdrawal pattern",
+    "remarks": "Temporary card block applied",
+    "performedBy": "OPS_USER",
+    "maskedCardNo": "",
+    "expiryDate": ""
+  },
+  "replaceRequest": {
+    "blockReason": "",
+    "remarks": "Physical card damaged",
+    "performedBy": "OPS_USER",
+    "maskedCardNo": "4000-****-9201-0001",
+    "expiryDate": "2031-06-01"
+  },
+  "pinEventPayloads": [
+    { "eventType": "PIN_GENERATED", "performedBy": "SYSTEM" },
+    { "eventType": "PIN_CHANGE", "performedBy": "SELF_SERVICE" },
+    { "eventType": "PIN_RESET", "performedBy": "CALL_CENTER" },
+    { "eventType": "WRONG_PIN", "performedBy": "ATM-002" },
+    { "eventType": "PIN_BLOCKED", "performedBy": "ATM-003" }
+  ]
+}

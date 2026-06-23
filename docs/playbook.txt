@@ -1,0 +1,4183 @@
+    SBMS Module-Wise Implementation
+                        Playbook
+
+Handbook reorganized by module so every module has its tables, forms, APIs, UI pages, workflows,
+                               validations and implementation checklist in one place.
+
+                      Source: handbook.md uploaded by user | Generated for SBMS manual implementation
+
+How to Use This Playbook
+
+1. Pick the module you are implementing.
+2. Open that module section only.
+3. Complete work in this order: tables -> entity -> repository/HQL -> service validation -> controller -> Angular
+
+      model/service/pages -> dashboard -> permissions -> testing.
+4. Do not move to next module until the current module CRUD/workflow/dashboard/permission/testing are done.
+
+Global Rules Reused by Every Module
+
+Category                          Details
+Backend flow                      Controller -> Service -> Repository -> Database. Concrete
+                                  controller lives in controller.impl and service contains
+Backend package pattern           business rules.
+Persistence style                 com.sbms.<module>/{controller, controller/impl, service,
+DI style                          service/impl, repository, entity, dto, enums, util}
+Validation style                  Repository class + EntityManager + HQL only. Avoid
+Response/exception                JpaRepository as primary business repository style.
+                                  @Autowired preferred.
+Frontend pattern                  Three layers: frontend form validation, frontend
+List screen rule                  component.ts validation, backend service validation.
+                                  Use ApiResponse, ResponseBuilder,
+Dashboard rule                    BusinessException/BadRequestException,
+Soft delete mindset               ResourceNotFoundException, GlobalExceptionHandler.
+                                  src/app/features/<module>/{pages, models, services,
+                                  <module>-routing.module.ts, <module>.module.ts}
+                                  Every major list must have Action column. View is
+                                  mandatory; add Edit, Archive/Delete, Restore,
+                                  Approve/Reject/Return, Print/Export, History as needed.
+                                  Every module needs dashboard cards, recent activity,
+                                  status distribution and action queue.
+                                  Master/config data usually soft delete/archive;
+                                  transaction/ledger/audit/history data kept forever; some
+                                  workflow records use status transitions only.
+
+Enterprise Build Order by Sprint
+
+Sprint                                                       Scope
+Phase 0                                                      Project setup, DB foundation, common packages, auth
+                                                             groundwork, RBAC, Angular shell/layout, SweetAlert2,
+
+         SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ Sprint 1                     shared DataTable, Font Awesome, guards/interceptors.
+ Sprint 2                     Role, permission, user, login/session, lookup/config,
+ Sprint 3                     dashboard skeleton.
+ Sprint 4                     Branch management, branch assignment, teller limit, vault
+ Sprint 5                     balance, cash ledger, branch dashboard.
+ Sprint 6                     ATM/CDM terminal, cash cassette/bin, replenishment,
+ Sprint 7                     reconciliation, terminal dashboard.
+ Sprint 8                     Customer, address, identity, KYC preparation, document
+ Sprint 9                     tracking, customer dashboard.
+ Sprint 10                    KYC flow, account types, account opening request, account
+ Sprint 11                    approval, accounts, account dashboard.
+ Sprint 12                    Deposit, withdrawal, fund transfer, transaction journal,
+ Sprint 13                    reversal, transaction dashboard.
+ Sprint 14                    Profit ratio, profit applicability, schedule, posting, balance
+ Sprint 15                    snapshot, profit dashboard.
+ Sprint 16                    Card, lifecycle, PIN event log, ATM/CDM card linkage, card
+ Sprint 17                    dashboard.
+ Sprint 18                    Customer statement, branch statement, export/print,
+                              statement dashboard.
+Cross-Module Dependency Map   Deposit schemes, enrollment, schedule, statement, scheme
+                              dashboard.
+ Category                     Financing products/applications, asset verification,
+ Level 1 foundational         approval chain, disbursement, repayment schedule.
+ Level 2 customer onboarding  Contracts, template, clauses, versioning, signature states,
+ Level 3 operational account  contract dashboard.
+ Level 4 expanded operations  Shariah review, review cases, checklist, decision workflow,
+ Level 5 advanced approval    Shariah dashboard.
+ Level 6 governance/support   Zakat profile, calculation, charity fund, beneficiary payout,
+                              zakat dashboard.
+                              Notifications, templates, delivery logs, integrations, retry
+                              log, integration dashboard.
+                              Reporting, regulatory reports, operational reports,
+                              print/export packs, report dashboard.
+                              Security event log, audit log, compliance case, suspicious
+                              activity, investigation dashboard.
+                              Workflow timeline, comments, attachments, dashboards
+                              polish, RBAC polish, E2E testing.
+
+                              Details
+                              Auth, role, permission, lookup/config, branch,
+                              notification/integration base
+                              Customer, customer_address, customer_document, KYC,
+                              verification
+                              Account type, account opening request, account, profit
+                              ratio, transaction, statements
+                              ATM/CDM, card, deposit scheme
+                              Financing, contract, Shariah review, calculation engine
+                              Zakat/charity, reporting, security/compliance,
+                              dashboards/analytics polish
+
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module Index  Module                         Sprint/Phase                   Base API Path
+              Module 1: Role &               Sprint 1                       /api/roles
+ #            Permission Management          Sprint 1
+ 1            Module 2: User                 Sprint 1                       /api/users
+ 2            Management                     Sprint 2
+ 3            Module 3: Lookup / Config      Sprint 3                       /api/lookups
+ 4            Module 4: Branch               Sprint 4                       /api/branches
+ 5            Management                     Sprint 5
+ 6            Module 5: ATM / CDM            Sprint 5                       /api/atm-terminals
+ 7            Management
+ 8            Module 6: Customer             Sprint 6                       /api/customers
+              Management
+ 9            Module 7: KYC Management       Sprint 7                       /api/kyc
+              Module 8: Islamic Account                                     /api/account-types,
+ 10           Management                     Sprint 8                       /api/account-opening-
+                                             Sprint 9                       requests, /api/accounts
+ 11           Module 9: Deposit /                                           /api/transactions
+ 12           Withdrawal / Transfer /        Sprint 10
+              Transactions                   Sprint 11                      /api/profit-ratios, /api/profit-
+ 13           Module 10: Profit Ratio &      Sprint 12                      schedules, /api/profit-
+ 14           Posting                        Sprint 13                      postings
+ 15                                          Sprint 14                      /api/cards
+ 16           Module 11: Card                Sprint 15
+ 17           Management                     Sprint 15                      /api/customer-statements,
+ 18           Module 12: Customer            Sprint 16                      /api/branch-statements
+ 19           Statement / Branch             Sprint 17
+ 20           Statement                                                     /api/deposit-schemes
+ 21           Module 13: Deposit Scheme      Sprint 18                      /api/financing-products,
+              Module 14: Financing           Phase 0 + Sprint 1-2 + Sprint  /api/financing-applications
+ 22                                          4 + Sprint 15 + Sprint 17      /api/contracts
+ 23           Module 15: Contract            Advanced support for
+              Management                     Financing/Profit/Deposit       /api/shariah-reviews
+ 24           Module 16: Shariah Review      Scheme                         /api/zakat
+              Module 17: Zakat & Charity                                    /api/notifications
+              Module 18: Notification &
+              Alerts                                                        /api/integrations
+              Module 19: Integration
+              Management                                                    /api/reports
+              Module 20: Reporting &
+              Regulatory                                                    /api/security-events,
+              Module 21: Security / Audit /                                 /api/audit-logs,
+              Investigation                                                 /api/investigations
+                                                                            /api/workflows
+              Module 22: Workflow
+              Support                                                       /api/verification plus
+              Add-on Module: Verification                                   auth/customer/notification/i
+              / OTP / Email / SMS                                           ntegration hooks
+                                                                            Internal service / optional
+              Support Concept:                                              /api/calculations
+              Calculation Engine
+
+              SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Reusable Implementation Checklist for Every Module
+
+5. Create all master/child/workflow tables with PK/FK/unique/audit columns.
+6. Create entity classes aligned with table/column names.
+7. Create repository HQL methods: save, update, getById, list/search/filter, status-based search, soft delete/status change if
+
+      allowed.
+8. Create service validations: uniqueness, existence, workflow, branch/role/permission and business rules.
+9. Create controller endpoints: create, update, getById, list/search, status/workflow action, dashboard summary.
+10. Create Angular model/service, dashboard page, list page, create/edit/view pages and workflow pages.
+11. Add DataTable-style search/filter/pagination/export, SweetAlert confirmations, status badges and action buttons.
+12. Map permissions and hide/guard routes/buttons while enforcing backend checks too.
+13. Test valid cases, invalid cases, role-wise access and end-to-end workflow.
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 1: Role & Permission Management
+
+Category                                           Details
+Sprint/Phase                                       Sprint 1
+Base API path                                      /api/roles
+Goal                                               Manage roles and permission mapping. Role controls who
+                                                   can access module/action-level features.
+
+Dashboard Widgets / Summary Cards
+
+ Total roles
+ Active roles
+ Inactive/deleted roles
+ Permission-heavy roles
+ Recent role/permission changes
+
+Tables & Columns
+
+role
+
+ id
+ role_code
+ role_name
+ description
+ status
+ created_at
+ updated_at
+ created_by
+ updated_by
+
+role_permission
+
+ id
+ role_id
+ permission_id
+ allow_flag
+ created_at
+ created_by
+
+Forms / Field Source / Save Mapping
+
+Role create/edit form  UI Type                     Source            Save Target
+                       Text box or auto-generated  manual/system     role.role_code
+ Field                 Text box                    manual            role.role_name
+ Role Code             Textarea                    manual            role.description
+ Role Name             Dropdown                    ACTIVE/INACTIVE   role.status
+ Description
+ Status
+
+Role permission mapping form
+
+Field                  UI Type                     Source            Save Target
+Role                   Dropdown                    role table        role_permission.role_id
+Module                 Dropdown                    app_module table  permissions filtered by
+                                                                     module
+Actions                Checkbox list               app_permission    role_permission.permission
+                                                                     _id
+
+                       SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Backend Files / Package Guide
+
+ com.sbms.role.controller/IRoleController.java
+ com.sbms.role.controller.impl/RoleController.java
+ com.sbms.role.service/IRoleService.java
+ com.sbms.role.service.impl/RoleService.java
+ com.sbms.role.repository/RoleRepository.java
+ com.sbms.role.repository/RolePermissionRepository.java
+ com.sbms.role.entity/Role.java
+ com.sbms.role.entity/RolePermission.java
+ com.sbms.role.dto/RolePermissionAssignDto.java
+
+Angular Pages & Files                                      Details
+                                                           · role-dashboard
+ Category                                                  · role-list
+ Pages                                                     · role-create
+                                                           · role-edit
+ Core Angular files                                        · role-view
+                                                           · role-permission-map
+Suggested APIs                                             · models/role.model.ts
+                                                           · models/role-permission.model.ts
+ POST /api/roles/create                                    · services/role.service.ts
+ GET /api/roles/list                                       · role-routing.module.ts
+ GET /api/roles/{id}                                       · role.module.ts
+ PUT /api/roles/{id}
+ DELETE /api/roles/{id}
+ PUT /api/roles/{id}/restore
+ GET /api/roles/dropdown
+ GET /api/roles/permissions/{roleId}
+ POST /api/roles/{id}/permissions/map
+
+Business Flow / Workflow
+
+14. System admin creates role
+15. System admin maps permissions to role
+16. Role is assigned to users
+17. Menu/action visibility follows permissions
+
+Important Validations / Business Rules
+
+ role_code must be unique
+ role_name should not duplicate logically
+ Cannot delete/archive a role if assigned to active users
+ SYSTEM_ADMIN role should be protected
+
+View Page Requirement
+
+Role basic info, mapped permission matrix, module/action list, status, audit info.
+
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+ Map permissions
+
+Implementation Order for This Module
+
+18. Create role
+19. List roles
+20. Edit role
+21. Map permissions
+22. View role detail
+23. Activate/Inactivate role
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 2: User Management          Details
+                                   Sprint 1
+ Category                          /api/users
+ Sprint/Phase                      Manage system users, branch mapping, login readiness,
+ Base API path                     role assignment, lock/unlock and status control.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Total users
+ Active users
+ Locked users
+ Users by role
+ Users by branch
+ Last login list
+
+Tables & Columns
+
+app_user
+
+ id
+ user_code
+ username
+ full_name
+ email
+ mobile
+ password_hash
+ branch_id
+ employee_no
+ designation
+ is_locked
+ is_active
+ last_login_at
+ failed_login_count
+ status
+ created_at
+ updated_at
+ created_by
+ updated_by
+
+user_role
+
+ id
+ user_id
+ role_id
+ created_at
+ created_by
+
+user_session
+
+ id
+ user_id
+ login_time
+ logout_time
+
+                     SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ jwt_id
+ ip_address
+ device_info
+ status
+
+Forms / Field Source / Save Mapping
+
+User create/edit form  UI Type                      Source                      Save Target
+                       Auto-generated               system                      app_user.user_code
+ Field                 Text box                     manual                      app_user.username
+ User Code             Text box                     manual                      app_user.full_name
+ Username              Text box                     manual                      app_user.email
+ Full Name             Text box                     manual                      app_user.mobile
+ Email                 Text box                     manual                      app_user.employee_no
+ Mobile                Text box                     manual                      app_user.designation
+ Employee No           Dropdown/by-search           branch table                app_user.branch_id
+ Designation           Checkbox/multi-select        role table                  user_role.role_id
+ Branch                Password field               manual                      app_user.password_hash
+ Roles                 Password field               manual temp                 not saved
+ Password              Checkbox                     manual                      app_user.is_active
+ Confirm Password      Checkbox                     manual                      app_user.is_locked
+ Active                Dropdown                     ACTIVE/INACTIVE             app_user.status
+ Locked
+ Status
+
+Backend Files / Package Guide
+
+ com.sbms.user.controller/IUserController.java
+ com.sbms.user.controller.impl/UserController.java
+ com.sbms.user.service/IUserService.java
+ com.sbms.user.service.impl/UserService.java
+ com.sbms.user.repository/UserRepository.java
+ com.sbms.user.entity/AppUser.java
+ com.sbms.user.entity/UserRole.java
+ com.sbms.user.entity/UserSession.java
+ com.sbms.user.dto/UserRequestDto.java
+ com.sbms.user.dto/UserResponseDto.java
+
+Angular Pages & Files                               Details
+                                                    · user-dashboard
+ Category                                           · user-list
+ Pages                                              · user-create
+                                                    · user-edit
+Core Angular files                                  · user-view
+                                                    · user-role-assign
+                                                    · user-password-reset
+                                                    · user-lock-unlock
+                                                    · models/user.model.ts
+                                                    · services/user.service.ts
+                                                    · user-routing.module.ts
+                                                    · user.module.ts
+
+                       SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Suggested APIs
+
+ POST /api/users/create
+ GET /api/users/list
+ GET /api/users/{id}
+ PUT /api/users/{id}
+ DELETE /api/users/{id}
+ PUT /api/users/{id}/restore
+ GET /api/users/dropdown
+ GET /api/users/search
+ POST /api/users/{id}/lock
+ POST /api/users/{id}/unlock
+ POST /api/users/{id}/reset-password
+ POST /api/users/{id}/assign-role
+ GET /api/users/{id}/history
+
+Business Flow / Workflow
+
+24. Admin creates user
+25. Assign branch if branch-bound
+26. Assign one or more roles
+27. User logs in and receives role/permission set
+28. Security/session events stored
+
+Important Validations / Business Rules
+
+ username unique
+ email unique
+ branch required for branch staff roles
+ customer role cannot get admin permissions
+ password hash only saved, never plain text
+ inactive or locked user cannot log in
+
+View Page Requirement
+
+User profile, mapped roles, assigned branch, contact verification status, account status, login/security history summary.
+
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+ Lock
+ Unlock
+ Reset password
+ Assign role
+
+Implementation Order for This Module
+
+29. Create user
+30. Assign role
+31. List user
+32. Edit user
+33. Lock/unlock user
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+34. Activate/inactivate user
+35. Reset password
+36. User detail view
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 3: Lookup / Config               Details
+                                        Sprint 1
+ Category                               /api/lookups
+ Sprint/Phase                           Manage reusable dropdown/configuration data used by
+ Base API path                          other modules.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Lookup type count
+ Lookup value count
+ Active values
+ Recently changed values
+
+Tables & Columns
+
+lookup_type
+
+ id
+ type_code
+ type_name
+ description
+ status
+ created_at
+ updated_at
+
+lookup_value
+
+ id
+ lookup_type_id
+ value_code
+ value_label
+ value_bn_label
+ sort_order
+ extra_data
+ status
+ created_at
+ updated_at
+
+Forms / Field Source / Save Mapping
+
+Lookup type/value forms  UI Type        Source           Save Target
+                         Text box       manual           lookup_type.type_code
+ Field                   Text box       manual           lookup_type.type_name
+ Type Code               Text box       manual           lookup_value.value_code
+ Type Name               Text box       manual           lookup_value.value_label
+ Value Code              Text box       manual           lookup_value.value_bn_labe
+ Value Label                                             l
+ Bangla Label                           manual           lookup_value.sort_order
+                                        manual           lookup_value.extra_data
+Sort Order               Number         ACTIVE/INACTIVE  status
+Extra Data               Textarea/JSON
+Status                   Dropdown
+
+            SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Backend Files / Package Guide
+
+ com.sbms.lookup.controller/ILookupController.java
+ com.sbms.lookup.controller.impl/LookupController.java
+ com.sbms.lookup.service/ILookupService.java
+ com.sbms.lookup.service.impl/LookupService.java
+ com.sbms.lookup.repository/LookupRepository.java
+ com.sbms.lookup.entity/LookupType.java
+ com.sbms.lookup.entity/LookupValue.java
+
+Angular Pages & Files                                   Details
+                                                        · lookup-dashboard
+ Category                                               · lookup-type-list
+ Pages                                                  · lookup-type-create
+                                                        · lookup-type-view
+ Core Angular files                                     · lookup-value-list
+                                                        · lookup-value-create
+                                                        · lookup-value-edit
+                                                        · lookup-value-view
+                                                        · models/lookup.model.ts
+                                                        · services/lookup.service.ts
+                                                        · lookup-routing.module.ts
+                                                        · lookup.module.ts
+
+Suggested APIs
+
+ POST /api/lookups/types/create
+ GET /api/lookups/types/list
+ GET /api/lookups/types/{id}
+ PUT /api/lookups/types/{id}
+ DELETE /api/lookups/types/{id}
+ POST /api/lookups/values/create
+ GET /api/lookups/values/list
+ GET /api/lookups/values/{id}
+ PUT /api/lookups/values/{id}
+ DELETE /api/lookups/values/{id}
+ GET /api/lookups/values/by-type/{typeCode}
+ GET /api/lookups/dropdown/{typeCode}
+
+Business Flow / Workflow
+
+37. Seed common lookup types first
+38. Feature modules consume lookup dropdown values
+39. Admin updates labels/status/sort order
+
+Important Validations / Business Rules
+
+ type_code unique
+ value_code unique within type
+ sort_order numeric
+ inactive values should not appear in active dropdowns
+
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+View Page Requirement
+
+Lookup type info, child values, display order, status flags.
+
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+
+Implementation Order for This Module
+
+40. Create lookup type
+41. List lookup types
+42. Create lookup value
+43. List lookup values
+44. Edit value
+45. Soft delete/archive value
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 4: Branch Management          Details
+                                     Sprint 2
+ Category                            /api/branches
+ Sprint/Phase                        Manage branches, branch ownership, staff assignment,
+ Base API path                       teller limits, vault balances, cash ledger and branch
+ Goal                                visibility.
+
+Dashboard Widgets / Summary Cards
+
+ Total branches
+ Active branches
+ Branch cash position
+ Pending assignments
+ Teller limit alerts
+ Today vault opening/closing status
+
+Tables & Columns
+
+branch
+
+ id
+ branch_code
+ branch_name
+ branch_short_name
+ branch_type
+ routing_no
+ swift_code
+ email
+ mobile
+ phone
+ address_line1
+ address_line2
+ country_id
+ division_id
+ district_id
+ upazila_id
+ postal_code
+ manager_user_id
+ opened_date
+ status
+ created_at
+ updated_at
+ created_by
+ updated_by
+
+branch_user_assignment
+
+ id
+ branch_id
+ user_id
+ assignment_role
+ from_date
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ to_date
+ is_primary
+ status
+ created_at
+
+teller_limit
+
+ id
+ branch_id
+ user_id
+ limit_date
+ daily_deposit_limit
+ daily_withdraw_limit
+ single_txn_limit
+ approved_by
+ approved_at
+ status
+ created_at
+
+vault_balance
+
+ id
+ branch_id
+ balance_date
+ opening_balance
+ total_cash_in
+ total_cash_out
+ closing_balance
+ is_closed
+ closed_by
+ closed_at
+ remarks
+ status
+ created_at
+
+branch_cash_ledger
+
+ id
+ branch_id
+ ledger_date
+ entry_type
+ source_type
+ reference_no
+ debit_amount
+ credit_amount
+ balance_after
+ remarks
+ created_at
+ created_by
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Forms / Field Source / Save Mapping
+
+Branch create/edit form      UI Type                 Source                       Save Target
+                             Auto-generated or text  system/manual                branch.branch_code
+ Field                       Text box                manual                       branch.branch_name
+ Branch Code                 Text box                manual                       branch.branch_short_name
+ Branch Name                 Dropdown                lookup BRANCH_TYPE           branch.branch_type
+ Short Name                  Text box                manual                       branch.routing_no
+ Branch Type                 Text box                manual                       branch.swift_code
+ Routing No                  Text box                manual                       branch.email
+ Swift Code                  Text box                manual                       branch.mobile
+ Email                       Text box                manual                       branch.phone
+ Mobile                      Text box                manual                       branch.address_line1
+ Phone                       Text box                manual                       branch.address_line2
+ Address Line 1              Dropdown                country table                branch.country_id
+ Address Line 2              Dropdown                division table               branch.division_id
+ Country                     Dropdown                district table               branch.district_id
+ Division                    Dropdown                upazila table                branch.upazila_id
+ District                    Text box                manual                       branch.postal_code
+ Upazila                     By-search dropdown      app_user                     branch.manager_user_id
+ Postal Code                 Date picker             manual                       branch.opened_date
+ Manager                     Dropdown                ACTIVE/INACTIVE              branch.status
+ Opened Date
+ Status
+
+Branch user assignment form
+
+Field                        UI Type                 Source                       Save Target
+Branch                       Dropdown/search         branch                       branch_user_assignment.br
+                                                     app_user                     anch_id
+User                         By-search               lookup ASSIGNMENT_ROLE       branch_user_assignment.us
+                                                     manual                       er_id
+Assignment Role              Dropdown                manual                       branch_user_assignment.ass
+                                                     manual                       ignment_role
+From Date                    Date picker             ACTIVE/INACTIVE              branch_user_assignment.fro
+                                                                                  m_date
+To Date                      Date picker                                          branch_user_assignment.to_
+                                                                                  date
+Primary                      Checkbox                                             branch_user_assignment.is_
+                                                                                  primary
+Status                       Dropdown                                             branch_user_assignment.sta
+                                                                                  tus
+
+Teller limit form            UI Type                 Source                       Save Target
+                             Dropdown/search         branch                       teller_limit.branch_id
+ Field                       By-search               app_user filtered by branch  teller_limit.user_id
+ Branch                      Date picker             manual                       teller_limit.limit_date
+ Teller User                 Currency                manual                       teller_limit.daily_deposit_li
+ Limit Date                                                                       mit
+ Daily Deposit Limit         Currency                manual                       teller_limit.daily_withdraw_
+                                                                                  limit
+ Daily Withdraw Limit        Currency                manual                       teller_limit.single_txn_limit
+                             Dropdown                ACTIVE/INACTIVE              teller_limit.status
+ Single Txn Limit
+ Status
+
+Vault opening form           UI Type                 Source                       Save Target
+
+ Field
+
+                         SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Branch                 Dropdown/search  branch                   vault_balance.branch_id
+Balance Date           Date picker      manual                   vault_balance.balance_date
+Opening Balance        Currency         manual                   vault_balance.opening_bala
+                                                                 nce
+Remarks                Textarea         manual                   vault_balance.remarks
+
+Backend Files / Package Guide
+
+ com.sbms.branch.controller/IBranchController.java
+ com.sbms.branch.controller.impl/BranchController.java
+ com.sbms.branch.service/IBranchService.java
+ com.sbms.branch.service.impl/BranchService.java
+ com.sbms.branch.repository/BranchRepository.java
+ com.sbms.branch.repository/BranchUserAssignmentRepository.java
+ com.sbms.branch.repository/BranchTellerLimitRepository.java
+ com.sbms.branch.repository/VaultBalanceRepository.java
+ com.sbms.branch.repository/BranchCashLedgerRepository.java
+ com.sbms.branch.entity/Branch.java
+ BranchUserAssignment.java
+ BranchTellerLimit.java
+ VaultBalance.java
+ BranchCashLedger.java
+ dto package request/response DTOs
+
+Angular Pages & Files                   Details
+                                        · branch-dashboard
+ Category                               · branch-list
+ Pages                                  · branch-create
+                                        · branch-edit
+ Core Angular files                     · branch-view
+                                        · branch-user-assignment
+                                        · teller-limit-list
+                                        · teller-limit-create
+                                        · teller-limit-view
+                                        · vault-balance-list
+                                        · vault-open
+                                        · vault-view
+                                        · cash-ledger-list
+                                        · inter-branch-transfer
+                                        · eod-summary
+                                        · models/branch.model.ts
+                                        · models/branch-assignment.model.ts
+                                        · models/teller-limit.model.ts
+                                        · services/branch-api.service.ts
+                                        · services/branch-assignment-api.service.ts
+                                        · services/teller-limit-api.service.ts
+                                        · branch-routing.module.ts
+                                        · branch.module.ts
+
+Suggested APIs
+
+ POST /api/branches/create
+ GET /api/branches/list
+ GET /api/branches/{id}
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ PUT /api/branches/{id}
+ DELETE /api/branches/{id}
+ PUT /api/branches/{id}/restore
+ GET /api/branches/dropdown
+ POST /api/branches/assign-user OR POST /api/branches/assignments/create
+ GET /api/branches/assignments
+ GET /api/branches/assignments/{id}
+ POST /api/branches/teller-limit/create
+ GET /api/branches/teller-limit/list
+ GET /api/branches/teller-limit/{id}
+ PUT /api/branches/teller-limit/{id}
+ POST /api/branches/vault/open
+ POST /api/branches/vault/close
+ GET /api/branches/vault/list
+ GET /api/branches/vault/{id}
+ GET /api/branches/cash-ledger
+ GET /api/branches/dashboard-summary
+
+Business Flow / Workflow
+
+46. Admin creates branch
+47. Branch manager assigned
+48. Teller/staff assigned to branch
+49. Teller limit configured
+50. Vault opening balance created
+51. Branch performs daily transactions
+52. Cash/vault position updated
+53. End-of-day summary generated
+
+Important Validations / Business Rules
+
+ branch_code unique
+ one branch manager per period
+ one vault opening per branch per date
+ teller must belong to same branch for limit
+ teller transaction cannot exceed teller limit
+ cannot close vault twice
+ inter-branch transfer needs approval trail
+ EOD should reflect transaction totals correctly
+
+View Page Requirement
+
+Branch profile, manager and assigned users, teller limits, latest vault balance, latest cash ledger summary, EOD summary.
+
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+ Assign user
+ Open vault
+ Close vault
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ View ledger
+ Start EOD
+
+Implementation Order for This Module
+
+54. Branch create
+55. Branch list/edit/view
+56. Branch user assignment
+57. Teller limit create/edit
+58. Vault opening
+59. Cash ledger auto entries
+60. Vault close
+61. Branch dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 5: ATM / CDM Management
+
+Category                           Details
+Sprint/Phase                       Sprint 3
+Base API path                      /api/atm-terminals
+Goal                               Manage ATM/CDM terminals, cash bins/cassettes,
+                                   replenishment, reconciliation and terminal dashboard.
+
+Dashboard Widgets / Summary Cards
+
+ Total terminals
+ Active terminals
+ Cash low alert
+ Unreconciled terminals
+ Terminal downtime list
+ Today ATM/CDM volumes
+
+Tables & Columns
+
+terminal
+
+ id
+ terminal_code
+ terminal_name
+ terminal_type
+ branch_id
+ location_note
+ ip_address
+ serial_no
+ vendor_name
+ install_date
+ status
+ created_at
+ updated_at
+
+terminal_cash_bin
+
+ id
+ terminal_id
+ bin_no
+ denomination
+ max_capacity
+ current_count
+ status
+ created_at
+
+terminal_replenishment
+
+ id
+ terminal_id
+ replenishment_date
+ bin_no
+ denomination
+ quantity_added
+ amount_added
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ performed_by
+ remarks
+ status
+ created_at
+
+terminal_reconciliation
+
+ id
+ terminal_id
+ recon_date
+ system_amount
+ physical_amount
+ variance_amount
+ approved_by
+ approved_at
+ remarks
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Forms summary          UI Type               Source                                   Save Target
+                       Text/dropdown         branch + terminal type                   terminal
+ Field                 Number/currency       terminal                                 terminal_cash_bin
+ Terminal form         Date/number/currency  terminal + app_user                      terminal_replenishment
+ Cash bin setup form   Currency/remarks      terminal                                 terminal_reconciliation
+ Replenishment form
+ Reconciliation form
+
+Backend Files / Package Guide
+
+ com.sbms.atm.controller/IAtmTerminalController.java
+ com.sbms.atm.controller.impl/AtmTerminalController.java
+ service/repository/entity/dto for terminal, cash bin, replenishment, reconciliation
+
+Angular Pages & Files
+
+Category                                                                  Details
+Pages                                                                     · terminal-dashboard
+                                                                          · terminal-list
+Core Angular files                                                        · terminal-create
+                                                                          · terminal-edit
+                                                                          · terminal-view
+                                                                          · cash-bin-list
+                                                                          · cash-bin-create
+                                                                          · cash-bin-view
+                                                                          · replenishment-list
+                                                                          · replenishment-create
+                                                                          · replenishment-view
+                                                                          · reconciliation-list
+                                                                          · reconciliation-create
+                                                                          · reconciliation-view
+                                                                          · device-journal-list
+                                                                          · models/terminal.model.ts
+                                                                          · services/atm-terminal.service.ts
+                                                                          · atm-routing.module.ts
+                                                                          · atm.module.ts
+
+                      SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Suggested APIs
+
+ POST /api/atm-terminals/create
+ GET /api/atm-terminals/list
+ GET /api/atm-terminals/{id}
+ PUT /api/atm-terminals/{id}
+ DELETE /api/atm-terminals/{id}
+ PUT /api/atm-terminals/{id}/restore
+ GET /api/atm-terminals/dropdown
+ POST /api/atm-terminals/cash-bin/create
+ GET /api/atm-terminals/cash-bin/list
+ GET /api/atm-terminals/cash-bin/{id}
+ POST /api/atm-terminals/replenishment/create
+ GET /api/atm-terminals/replenishment/list
+ GET /api/atm-terminals/replenishment/{id}
+ POST /api/atm-terminals/reconciliation/create
+ GET /api/atm-terminals/reconciliation/list
+ GET /api/atm-terminals/reconciliation/{id}
+ GET /api/atm-terminals/device-journal
+ GET /api/atm-terminals/dashboard-summary
+
+Business Flow / Workflow
+
+62. Admin registers terminal
+63. Terminal mapped to branch
+64. Cash cassette/bin setup created
+65. ATM/CDM transactions recorded
+66. Reconciliation compares terminal journal vs core records
+67. Variance/exception handled
+
+Important Validations / Business Rules
+
+ terminal_code unique
+ terminal must have branch mapping
+ only active terminal can transact
+ cash bin capacity should not be exceeded
+ reconciliation variance must be tracked
+
+View Page Requirement
+
+Terminal profile, branch mapping, cash bins, latest replenishment, reconciliation and device journal summary.
+
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+ Add cash bin
+ Replenish
+ Reconcile
+
+Implementation Order for This Module
+
+68. Create terminal tables
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+69. Terminal CRUD
+70. Cash bin setup
+71. Replenishment flow
+72. Reconciliation flow
+73. ATM dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 6: Customer Management
+
+Category                           Details
+Sprint/Phase                       Sprint 4
+Base API path                      /api/customers
+Goal                               Store customer identity, profile, address, contact, branch
+                                   and onboarding status.
+
+Dashboard Widgets / Summary Cards
+
+ Total customers
+ Active customers
+ Pending KYC customers
+ Customers by branch
+ New customers this month
+ Incomplete profiles
+ Blocked customers
+
+Tables & Columns
+
+customer
+
+ id
+ customer_code
+ customer_type
+ full_name
+ father_name
+ mother_name
+ spouse_name
+ date_of_birth
+ gender
+ marital_status
+ nationality
+ mobile
+ email
+ occupation
+ monthly_income
+ source_of_funds
+ branch_id
+ customer_status
+ status
+ created_at
+ updated_at
+ created_by
+ updated_by
+
+customer_address
+
+ id
+ customer_id
+ address_type
+ address_line1
+ address_line2
+ country_id
+
+                  SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ division_id
+ district_id
+ upazila_id
+ postal_code
+ is_primary
+ status
+ created_at
+
+customer_identity
+
+ id
+ customer_id
+ document_type
+ document_no
+ issue_date
+ expiry_date
+ issue_country
+ verified_flag
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Customer onboarding form  UI Type          Source                 Save Target
+                          Auto-generated   system                 customer.customer_code
+ Field                    Dropdown         lookup CUSTOMER_TYPE   customer.customer_type
+ Customer Code            Text box         manual                 customer.full_name
+ Customer Type            Text box         manual                 customer.father_name
+ Full Name                Text box         manual                 customer.mother_name
+ Father Name              Text box         manual                 customer.spouse_name
+ Mother Name              Date picker      manual                 customer.date_of_birth
+ Spouse Name              Dropdown         lookup GENDER          customer.gender
+ DOB                      Dropdown         lookup MARITAL_STATUS  customer.marital_status
+ Gender                   Dropdown         country table          customer.nationality
+ Marital Status           Text box         manual                 customer.mobile
+ Nationality              Text box         manual                 customer.email
+ Mobile                   Text box         manual                 customer.occupation
+ Email                    Currency         manual                 customer.monthly_income
+ Occupation               Textarea         manual                 customer.source_of_funds
+ Monthly Income           Dropdown/search  branch                 customer.branch_id
+ Source of Funds          Dropdown         ACTIVE/PENDING         customer.status
+ Branch
+ Status
+
+Customer address form
+
+Field                     UI Type          Source                 Save Target
+Customer                  By-search        customer               customer_address.customer
+Address Type              Dropdown         lookup ADDRESS_TYPE    _id
+Address Line 1            Text box         manual                 customer_address.address_t
+Address Line 2            Text box         manual                 ype
+Country                   Dropdown         country                customer_address.address_l
+                                                                  ine1
+                                                                  customer_address.address_l
+                                                                  ine2
+                                                                  customer_address.country_i
+
+                       SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Division                Dropdown                              division                        d
+District                Dropdown                              district                        customer_address.division_i
+Upazila                 Dropdown                              upazila                         d
+Postal Code             Text box                              manual                          customer_address.district_i
+Primary                 Checkbox                              manual                          d
+                                                                                              customer_address.upazila_i
+                                                                                              d
+                                                                                              customer_address.postal_co
+                                                                                              de
+                                                                                              customer_address.is_primar
+                                                                                              y
+
+Customer identity form  UI Type                               Source                          Save Target
+                        By-search                             customer                        customer_identity.customer
+ Field                  Dropdown                              lookup DOCUMENT_TYPE            _id
+ Customer               Text box                              manual                          customer_identity.documen
+                        Date picker                           manual                          t_type
+ Document Type          Date picker                           manual                          customer_identity.documen
+                        Dropdown                              country                         t_no
+ Document No                                                                                  customer_identity.issue_dat
+                                                                                              e
+ Issue Date                                                                                   customer_identity.expiry_da
+                                                                                              te
+ Expiry Date                                                                                  customer_identity.issue_cou
+                                                                                              ntry
+ Issue Country
+
+Backend Files / Package Guide
+
+ com.sbms.customer.controller/ICustomerController.java
+ controller.impl/CustomerController.java
+ service/repository/entity/dto for customer/address/identity
+
+Angular Pages & Files                                         Details
+                                                              · customer-dashboard
+ Category                                                     · customer-list
+ Pages                                                        · customer-create
+                                                              · customer-edit
+ Core Angular files                                           · customer-view
+                                                              · customer-address-manage
+                                                              · customer-identity-manage
+                                                              · customer-search
+                                                              · customer-status-action
+                                                              · models/customer.model.ts
+                                                              · services/customer.service.ts
+                                                              · customer-routing.module.ts
+                                                              · customer.module.ts
+
+Suggested APIs
+
+ POST /api/customers/create
+ GET /api/customers/list
+ GET /api/customers/{id}
+ PUT /api/customers/{id}
+ DELETE /api/customers/{id}
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ PUT /api/customers/{id}/restore
+ GET /api/customers/dropdown
+ GET /api/customers/search
+ POST /api/customers/address/create
+ PUT /api/customers/address/{id}
+ GET /api/customers/address/{id}
+ POST /api/customers/identity/create
+ PUT /api/customers/identity/{id}
+ GET /api/customers/identity/{id}
+ POST /api/customers/{id}/activate
+ POST /api/customers/{id}/block
+ GET /api/customers/{id}/timeline
+ GET /api/customers/dashboard-summary
+
+Business Flow / Workflow
+
+74. Officer opens customer create form
+75. Identity/contact/address captured
+76. Customer code generated
+77. Documents uploaded
+78. Customer profile saved
+79. KYC process starts
+
+Important Validations / Business Rules
+
+ customer_code unique
+ at least one identity record needed for KYC
+ NID/passport no should not duplicate wrongly
+ mobile format check
+ email/mobile uniqueness as needed
+ customer cannot be activated before required checks
+
+View Page Requirement
+
+Customer profile, present/permanent address, identity docs, contact verification, KYC summary, accounts summary, card
+summary, recent transactions.
+
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+ Activate
+ Block
+ Manage address
+ Manage identity
+
+Implementation Order for This Module
+
+80. Create customer tables
+81. Customer CRUD
+82. Address CRUD
+83. Identity CRUD
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+84. Customer search/detail
+85. Customer dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 7: KYC Management           Details
+                                   Sprint 5
+ Category                          /api/kyc
+ Sprint/Phase                      Confirm customer eligibility, source of funds, documents,
+ Base API path                     address, PEP/sanction/AML flags and risk level.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Pending KYC
+ Verified KYC
+ Rejected KYC
+ Resubmission queue
+ Risk level summary
+ High-risk customers
+
+Tables & Columns
+
+kyc_profile
+
+ id
+ customer_id
+ risk_level
+ source_of_funds_note
+ pep_flag
+ sanction_flag
+ aml_flag
+ review_status
+ reviewed_by
+ reviewed_at
+ remarks
+ status
+ created_at
+ updated_at
+
+customer_document
+
+ id
+ customer_id
+ document_type
+ file_reference_id
+ document_no
+ issue_date
+ expiry_date
+ verified_flag
+ status
+ created_at
+
+kyc_decision_history
+
+ id
+ kyc_profile_id
+ decision
+ decision_by
+
+                       SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ decision_at
+ remarks
+ status
+
+Forms / Field Source / Save Mapping
+
+KYC review form        UI Type          Source                           Save Target
+                       By-search        customer                         kyc_profile.customer_id
+ Field                 Dropdown         lookup RISK_LEVEL                kyc_profile.risk_level
+ Customer              Textarea         manual                           kyc_profile.source_of_funds
+ Risk Level                                                              _note
+ Source of Funds Note                                                    kyc_profile.pep_flag
+                                                                         kyc_profile.sanction_flag
+PEP Flag               Checkbox         manual                           kyc_profile.aml_flag
+Sanction Flag          Checkbox         manual                           kyc_profile.remarks
+AML Flag               Checkbox         manual                           kyc_profile.review_status
+Remarks                Textarea         manual
+Review Status          Dropdown         PENDING/VERIFIED/
+                                        REJECTED/RESUBMIT
+
+Backend Files / Package Guide
+
+ com.sbms.kyc.controller/IKycController.java
+ controller.impl/KycController.java
+ service/repository/entity/dto for profile, documents, decision history
+
+Angular Pages & Files                   Details
+                                        · kyc-dashboard
+ Category                               · kyc-list
+ Pages                                  · kyc-create
+                                        · kyc-edit
+ Core Angular files                     · kyc-view
+                                        · kyc-review
+                                        · kyc-approval-queue
+                                        · kyc-document-upload
+                                        · kyc-history
+                                        · models/kyc.model.ts
+                                        · services/kyc.service.ts
+                                        · kyc-routing.module.ts
+                                        · kyc.module.ts
+
+Suggested APIs
+
+ POST /api/kyc/profile/create
+ GET /api/kyc/profile/list
+ GET /api/kyc/profile/{id}
+ PUT /api/kyc/profile/{id}
+ POST /api/kyc/profile/{id}/submit
+ POST /api/kyc/profile/{id}/verify
+ POST /api/kyc/profile/{id}/approve
+ POST /api/kyc/profile/{id}/reject
+ POST /api/kyc/profile/{id}/return
+ POST /api/kyc/document/upload
+ GET /api/kyc/decision-history/{kycId}
+
+                       SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ GET /api/kyc/profile/{id}/documents
+ GET /api/kyc/dashboard-summary
+
+Business Flow / Workflow
+
+86. Customer profile exists
+87. KYC profile created
+88. Documents uploaded
+89. Source of funds declared
+90. Risk score captured
+91. Reviewer verifies
+92. Approve/reject/correction decision stored
+93. Onboarding readiness updated
+
+Status flow: DRAFT -> SUBMITTED -> UNDER_REVIEW -> VERIFIED -> APPROVED / REJECTED / SENT_BACK
+
+Important Validations / Business Rules
+
+ KYC cannot approve without required docs
+ reviewer identity must be stored
+ correction remarks mandatory on send back
+ reviewer cannot approve own case if business policy requires
+ risk level required
+
+View Page Requirement
+
+Customer + KYC profile, risk flags, documents, decision history, remarks and reviewer timestamps.
+
+Action Column Buttons
+
+ View
+ Edit
+ Submit
+ Verify
+ Approve
+ Reject
+ Return
+ Upload document
+ History
+
+Implementation Order for This Module
+
+94. Create KYC tables
+95. KYC review flow
+96. Document upload
+97. Decision history
+98. KYC dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 8: Islamic Account Management
+
+Category                           Details
+Sprint/Phase                       Sprint 5
+Base API path                      /api/account-types, /api/account-opening-requests,
+                                   /api/accounts
+Goal                               Handle account type setup, account opening request,
+                                   verification, account creation, activation and profit linkage.
+
+Dashboard Widgets / Summary Cards
+
+ Total accounts
+ Accounts by type
+ Pending opening requests
+ Active accounts
+ Blocked/frozen accounts
+ Accounts awaiting verification
+
+Tables & Columns
+
+account_type
+
+ id
+ type_code
+ type_name
+ shariah_contract_type
+ currency_code
+ minimum_opening_balance
+ profit_applicable
+ withdrawal_allowed
+ status
+ created_at
+
+account_opening_request
+
+ id
+ request_no
+ customer_id
+ account_type_id
+ branch_id
+ requested_date
+ initial_deposit_amount
+ request_status
+ verified_by
+ verified_at
+ approved_by
+ approved_at
+ remarks
+ status
+ created_at
+
+account
+
+ id
+ account_number
+
+                  SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ customer_id
+ account_type_id
+ branch_id
+ opening_request_id
+ opened_date
+ current_balance
+ available_balance
+ profit_ratio_id
+ account_status
+ closed_date
+ remarks
+ status
+ created_at
+ updated_at
+
+Forms / Field Source / Save Mapping
+
+Account opening form   UI Type          Source                             Save Target
+                       Auto-generated   system                             account_opening_request.re
+ Field                 By-search        customer                           quest_no
+ Request No            Dropdown         account_type                       account_opening_request.cu
+ Customer              Dropdown/search  branch                             stomer_id
+ Account Type          Currency         manual                             account_opening_request.ac
+ Branch                Date picker      manual/system                      count_type_id
+ Initial Deposit       Textarea         manual                             account_opening_request.br
+ Requested Date                                                            anch_id
+ Remarks                                                                   account_opening_request.in
+                                                                           itial_deposit_amount
+                                                                           account_opening_request.re
+                                                                           quested_date
+                                                                           account_opening_request.re
+                                                                           marks
+
+Backend Files / Package Guide
+
+ com.sbms.account.controller/IAccountTypeController.java
+ IAccountOpeningRequestController.java
+ IAccountController.java
+ service/repository/entity/dto for account type, opening request, account
+
+Angular Pages & Files
+
+Category                                                                  Details
+Pages                                                                     · account-dashboard
+                                                                          · account-type-list
+                                                                          · account-type-create
+                                                                          · account-type-view
+                                                                          · account-opening-request-list
+                                                                          · account-opening-request-create
+                                                                          · account-opening-request-edit
+                                                                          · account-opening-request-view
+                                                                          · account-opening-review
+                                                                          · account-list
+                                                                          · account-view
+
+                      SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ Core Angular files                               · account-status-action
+                                                  · models/account.model.ts
+Suggested APIs                                    · services/account.service.ts
+                                                  · account-routing.module.ts
+ POST /api/account-types/create                   · account.module.ts
+ GET /api/account-types/list
+ GET /api/account-types/{id}
+ PUT /api/account-types/{id}
+ DELETE /api/account-types/{id}
+ PUT /api/account-types/{id}/restore
+ GET /api/account-types/dropdown
+ POST /api/account-opening-requests/create
+ GET /api/account-opening-requests/list
+ GET /api/account-opening-requests/{id}
+ PUT /api/account-opening-requests/{id}
+ POST /api/account-opening-requests/{id}/submit
+ POST /api/account-opening-requests/{id}/verify
+ POST /api/account-opening-requests/{id}/approve
+ POST /api/account-opening-requests/{id}/reject
+ POST /api/account-opening-requests/{id}/return
+ GET /api/accounts/list
+ GET /api/accounts/{id}
+ POST /api/accounts/{id}/activate
+ POST /api/accounts/{id}/block
+ POST /api/accounts/{id}/freeze
+ POST /api/accounts/{id}/close
+ GET /api/accounts/search
+ GET /api/accounts/dashboard-summary
+
+Business Flow / Workflow
+
+99. Account types exist
+100.Customer chooses account type
+101.Opening request submitted
+102.Teller preliminary review
+103.Operations verification
+104.Shariah compliance check
+105.Account number generated
+106.Account activated
+107.Profit schedule/applicability linked
+
+Status flow: DRAFT -> SUBMITTED -> PRELIM_CHECK -> OPS_VERIFIED -> SHARIAH_CHECKED -> APPROVED -> ACTIVE
+
+Important Validations / Business Rules
+
+ Customer must have approved KYC before final activation
+ Account number must be system generated
+ One request should not accidentally create duplicate active account
+ Account type controls minimum balance/profit applicability
+
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ Initial deposit must satisfy account type rules
+
+View Page Requirement
+
+Request detail, customer/KYC summary, account type rules, workflow history, created account detail.
+
+Action Column Buttons
+
+ View
+ Edit request
+ Submit
+ Verify
+ Approve
+ Reject
+ Return
+ Activate account
+ Block
+ Freeze
+ Close
+
+Implementation Order for This Module
+
+108.Create account type CRUD
+109.Create account opening request flow
+110.Account approval + account creation flow
+111.Account lifecycle
+112.Account dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 9: Deposit / Withdrawal / Transfer / Transactions
+
+Category                            Details
+Sprint/Phase                        Sprint 6
+Base API path                       /api/transactions
+Goal                                Handle deposit, withdrawal, fund transfer,
+                                    cheque/standing instructions, transaction journal and
+                                    reversal.
+
+Dashboard Widgets / Summary Cards
+
+ Today deposit total
+ Today withdrawal total
+ Today transfer total
+ Pending reversals
+ Teller limit usage
+ Suspicious transaction count
+ Top branches by transaction count
+
+Tables & Columns
+
+transaction_journal
+
+ id
+ transaction_ref
+ transaction_date
+ transaction_type
+ channel_type
+ branch_id
+ terminal_id
+ debit_account_id
+ credit_account_id
+ amount
+ narration
+ posted_by
+ approved_by
+ reversal_flag
+ parent_transaction_id
+ transaction_status
+ status
+ created_at
+
+cash_transaction
+
+ id
+ transaction_id
+ cash_type
+ cash_direction
+ teller_user_id
+ branch_id
+ amount
+ remarks
+ created_at
+
+                        SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+fund_transfer
+
+ id
+ transaction_id
+ from_account_id
+ to_account_id
+ transfer_mode
+ remarks
+ created_at
+
+transaction_reversal
+
+ id
+ original_transaction_id
+ reversal_transaction_id
+ requested_by
+ requested_at
+ approved_by
+ approved_at
+ reason
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Deposit form        UI Type            Source         Save Target
+                    Auto-generated     system         transaction_journal.transact
+ Field                                                ion_ref
+ Transaction Ref    Dropdown/search    branch         transaction_journal.branch_
+                                                      id
+ Branch             Derived/logged-in  system         cash_transaction.teller_user
+                                                      _id
+ Teller             By-search          account        transaction_journal.credit_a
+                                                      ccount_id
+ Account            Currency           manual         transaction_journal.amount
+                    Textarea           manual         transaction_journal.narrati
+ Amount                                               on
+ Narration          Datetime           system/manual  transaction_journal.transact
+                                                      ion_date
+ Txn Date
+                    UI Type            Source         Save Target
+Withdrawal form     Auto-generated     system         transaction_journal.transact
+                                                      ion_ref
+ Field              Dropdown/search    branch         transaction_journal.branch_
+ Transaction Ref                                      id
+                    By-search          account        transaction_journal.debit_ac
+ Branch                                               count_id
+                    Currency           manual         transaction_journal.amount
+ Account            Textarea           manual         transaction_journal.narrati
+                                                      on
+ Amount
+ Narration          UI Type            Source         Save Target
+
+Fund transfer form
+
+ Field
+
+                    SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Transaction Ref        Auto-generated                system                            transaction_journal.transact
+                                                                                       ion_ref
+From Account           By-search                     account                           fund_transfer.from_account
+                                                                                       _id
+To Account             By-search                     account                           fund_transfer.to_account_id
+Transfer Mode          Dropdown                      lookup TRANSFER_MODE              fund_transfer.transfer_mod
+                                                                                       e
+Amount                 Currency                      manual                            transaction_journal.amount
+Remarks                Textarea                      manual                            fund_transfer.remarks
+
+Backend Files / Package Guide
+
+ com.sbms.transaction.controller/ITransactionController.java
+ controller.impl/TransactionController.java
+ service/repository/entity/dto for journal, cash transaction, fund transfer, reversal
+
+Angular Pages & Files                                Details
+                                                     · transaction-dashboard
+ Category                                            · cash-deposit
+ Pages                                               · cash-withdraw
+                                                     · fund-transfer
+ Core Angular files                                  · cheque-clearing
+                                                     · standing-instruction-list
+                                                     · standing-instruction-create
+                                                     · transaction-list
+                                                     · transaction-view
+                                                     · transaction-reversal
+                                                     · models/transaction.model.ts
+                                                     · services/transaction.service.ts
+                                                     · transaction-routing.module.ts
+                                                     · transaction.module.ts
+
+Suggested APIs
+
+ POST /api/transactions/deposit
+ POST /api/transactions/withdraw
+ POST /api/transactions/transfer
+ POST /api/transactions/cheque-clearing
+ POST /api/transactions/standing-instruction/create
+ GET /api/transactions/standing-instruction/list
+ GET /api/transactions/list
+ GET /api/transactions/{id}
+ GET /api/transactions/search
+ POST /api/transactions/{id}/reverse
+ GET /api/transactions/{id}/journal
+ GET /api/transactions/dashboard-summary
+
+Business Flow / Workflow
+
+113.Teller receives request
+114.Account validated
+115.Daily/teller limit checked
+116.Business/Shariah check applied if needed
+117.Transaction posted
+
+                 SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+118.Balance updated
+119.Journal created
+120.Alert sent
+121.Statement/report updated
+
+Important Validations / Business Rules
+
+ Account must be active
+ Withdrawal cannot exceed balance
+ Teller limit check needed
+ Transfer cannot be same account
+ Branch ownership must be respected
+ Reversal only by authorized role
+ Transaction must be atomic
+ Unique transaction_ref
+
+View Page Requirement
+
+Transaction header, debit/credit account, cash/fund details, journal, reversal status, audit trail.
+
+Action Column Buttons
+
+ View
+ Reverse
+ Print voucher
+ Export
+ Search
+
+Implementation Order for This Module
+
+122.Create transaction tables
+123.Deposit form and posting
+124.Withdrawal form and posting
+125.Transfer form and posting
+126.Reversal flow
+127.Transaction dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 10: Profit Ratio & Posting  Details
+                                   Sprint 7
+ Category                          /api/profit-ratios, /api/profit-schedules, /api/profit-postings
+ Sprint/Phase                      Configure PSR/effective dates and post profit periodically
+ Base API path                     with traceable schedules and postings.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Active profit ratios
+ Pending posting cycles
+ Posted this month
+ Failed posting logs
+ Current PSR table
+ Upcoming posting run
+
+Tables & Columns
+
+profit_ratio
+
+ id
+ ratio_code
+ account_type_id
+ effective_from
+ effective_to
+ ratio_percent
+ status
+ created_at
+
+profit_schedule
+
+ id
+ account_id
+ profit_frequency
+ next_posting_date
+ last_posting_date
+ status
+ created_at
+
+profit_posting
+
+ id
+ posting_ref
+ account_id
+ schedule_id
+ posting_date
+ profit_amount
+ period_from
+ period_to
+ posted_by
+ status
+ created_at
+
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+balance_snapshot
+
+ id
+ account_id
+ snapshot_date
+ closing_balance
+ average_balance
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Profit forms           UI Type       Source                            Save Target
+                       Auto/text     system/manual                     profit_ratio.ratio_code
+ Field                 Dropdown      account_type                      profit_ratio.account_type_id
+ Ratio Code            Date picker   manual                            profit_ratio.effective_from/
+ Account Type                                                          effective_to
+ Effective From/To     Decimal       manual                            profit_ratio.ratio_percent
+                       Dropdown      lookup PROFIT_FREQUENCY           profit_schedule.profit_frequ
+ Ratio Percent                                                         ency
+ Profit Frequency      Action        system                            profit_posting
+
+ Posting Run
+
+Backend Files / Package Guide
+
+ com.sbms.profit.controller/IProfitRatioController.java
+ IProfitScheduleController.java
+ IProfitPostingController.java
+ service/repository/entity/dto for ratio, schedule, posting, snapshot
+
+Angular Pages & Files                Details
+                                     · profit-dashboard
+ Category                            · profit-ratio-list
+ Pages                               · profit-ratio-create
+                                     · profit-ratio-view
+ Core Angular files                  · profit-schedule-list
+                                     · profit-schedule-create
+                                     · profit-schedule-view
+                                     · profit-posting-list
+                                     · profit-posting-run
+                                     · profit-posting-view
+                                     · models/profit.model.ts
+                                     · services/profit.service.ts
+                                     · profit-routing.module.ts
+                                     · profit.module.ts
+
+Suggested APIs
+
+ POST /api/profit-ratios/create
+ GET /api/profit-ratios/list
+ GET /api/profit-ratios/{id}
+ PUT /api/profit-ratios/{id}
+ DELETE /api/profit-ratios/{id}
+ GET /api/profit-ratios/dropdown
+
+                    SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ POST /api/profit-schedules/create
+ GET /api/profit-schedules/list
+ GET /api/profit-schedules/{id}
+ POST /api/profit-postings/run
+ GET /api/profit-postings/list
+ GET /api/profit-postings/{id}
+ GET /api/profit/dashboard-summary
+
+Business Flow / Workflow
+
+128.Profit ratio configured with effective date
+129.Eligible accounts identified
+130.Period snapshot taken
+131.Profit calculated
+132.Profit posting record created
+133.Customer statement reflects posting
+
+Important Validations / Business Rules
+
+ Do not overwrite previous effective ratio blindly
+ posting_ref unique
+ same posting period should not duplicate for same account unless reversal/correction flow exists
+ Only eligible accounts should be posted
+
+View Page Requirement
+
+Profit ratio detail, account type, effective window, schedule list, posting history, failed cases.
+
+Action Column Buttons
+
+ View
+ Edit ratio
+ Create schedule
+ Run posting
+ View posting detail
+
+Implementation Order for This Module
+
+134.Create profit tables
+135.Profit ratio CRUD
+136.Profit schedule setup
+137.Posting run flow
+138.Posting history
+139.Profit dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 11: Card Management         Details
+                                   Sprint 8
+ Category                          /api/cards
+ Sprint/Phase                      Handle card issue, activation, block/unblock,
+ Base API path                     replacement/renewal, PIN events, ATM/CDM linkage and
+ Goal                              card monitoring.
+
+Dashboard Widgets / Summary Cards
+
+ Total cards
+ Active cards
+ Blocked cards
+ Expiring soon
+ Card txn count
+ Pending activations
+ Card usage alerts today
+
+Tables & Columns
+
+card
+
+ id
+ card_ref_no
+ customer_id
+ account_id
+ card_type
+ masked_card_no
+ issue_date
+ expiry_date
+ card_status
+ block_reason
+ status
+ created_at
+
+card_event_log
+
+ id
+ card_id
+ event_type
+ event_date
+ performed_by
+ remarks
+ status
+ created_at
+
+card_pin_event
+
+ id
+ card_id
+ event_type
+ event_date
+ performed_by
+ status
+
+                 SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Card forms             UI Type                                 Source                      Save Target
+                       By-search                               customer                    card.customer_id
+ Field                 By-search                               account                     card.account_id
+ Customer              Dropdown                                lookup CARD_TYPE            card.card_type
+ Account               System/manual masked                    system                      card.masked_card_no
+ Card Type             Date picker                             manual/system               card.issue_date/expiry_date
+ Masked Card No        Dropdown                                lookup CARD_STATUS          card.card_status
+ Issue/Expiry Date     Textarea                                manual                      card.block_reason
+ Card Status
+ Block Reason
+
+Backend Files / Package Guide
+
+ com.sbms.card.controller/ICardController.java
+ controller.impl/CardController.java
+ service/repository/entity/dto for card, event log, PIN event
+
+Angular Pages & Files                                          Details
+                                                               · card-dashboard
+ Category                                                      · card-list
+ Pages                                                         · card-create
+                                                               · card-edit
+ Core Angular files                                            · card-view
+                                                               · card-activation
+                                                               · card-block-unblock
+                                                               · pin-event-list
+                                                               · atm-cdm-transaction-list
+                                                               · models/card.model.ts
+                                                               · services/card.service.ts
+                                                               · card-routing.module.ts
+                                                               · card.module.ts
+
+Suggested APIs
+
+ POST /api/cards/create
+ GET /api/cards/list
+ GET /api/cards/{id}
+ PUT /api/cards/{id}
+ DELETE /api/cards/{id}
+ PUT /api/cards/{id}/restore
+ POST /api/cards/{id}/activate
+ POST /api/cards/{id}/block
+ POST /api/cards/{id}/unblock
+ GET /api/cards/{id}/pin-events
+ GET /api/cards/atm-cdm-transactions
+ GET /api/cards/dashboard-summary
+
+Business Flow / Workflow
+
+140.Customer/account eligibility checked
+141.Card request created
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+142.Card record issued
+143.Card printed/assigned
+144.PIN event recorded
+145.Customer activates card
+146.Usage monitored
+147.Statement and alerts available
+
+Important Validations / Business Rules
+
+ masked_card_no unique
+ only eligible account/customer can get card
+ card status controls transaction ability
+ non-halal MCC/category restriction should be enforceable where needed
+ expiry date required
+
+View Page Requirement
+
+Card profile, customer/account, events, PIN logs, status changes, usage alerts.
+
+Action Column Buttons
+
+ View
+ Edit
+ Activate
+ Block
+ Unblock
+ Replace
+ Renew
+ View PIN events
+
+Implementation Order for This Module
+
+148.Create card tables
+149.Card issue flow
+150.Status/block flow
+151.PIN event logs
+152.Card dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 12: Customer Statement / Branch Statement
+
+Category                           Details
+Sprint/Phase                       Sprint 9
+Base API path                      /api/customer-statements, /api/branch-statements
+Goal                               Provide printable/downloadable account and branch
+                                   operational summaries with export history.
+
+Dashboard Widgets / Summary Cards
+
+ Statements generated today
+ Customer statement requests
+ Branch statement requests
+ Export/download counts
+ Most requested statement types
+
+Tables & Columns
+
+customer_statement_request
+
+ id
+ request_no
+ customer_id
+ account_id
+ date_from
+ date_to
+ request_status
+ generated_file_id
+ requested_by
+ requested_at
+ generated_at
+ status
+
+branch_statement_request
+
+ id
+ request_no
+ branch_id
+ date_from
+ date_to
+ request_status
+ generated_file_id
+ requested_by
+ requested_at
+ generated_at
+ status
+
+file_reference
+
+ id
+ file_name
+ original_file_name
+ file_path
+ file_type
+ file_size
+
+                     SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ module_name
+ reference_table
+ reference_id
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Statement request forms  UI Type             Source                           Save Target
+                         Auto-generated      system                           request_no
+ Field                   By-search           customer                         customer_statement_reques
+ Request No                                                                   t.customer_id
+ Customer                By-search           account                          customer_statement_reques
+                                                                              t.account_id
+ Account                 Dropdown/search     branch                           branch_statement_request.b
+                                                                              ranch_id
+ Branch                  Date picker         manual                           date_from/date_to
+                         System              file_reference                   generated_file_id
+ Date From/To
+ Generated File
+
+Backend Files / Package Guide
+
+ com.sbms.statement.controller/ICustomerStatementController.java
+ IBranchStatementController.java
+ service/repository/entity/dto for statement requests and file references
+
+Angular Pages & Files                        Details
+                                             · statement-dashboard
+ Category                                    · customer-statement-request
+ Pages                                       · customer-statement-list
+                                             · customer-statement-view
+ Core Angular files                          · branch-statement-request
+                                             · branch-statement-list
+                                             · branch-statement-view
+                                             · export-center
+                                             · models/statement.model.ts
+                                             · services/statement.service.ts
+                                             · statement-routing.module.ts
+                                             · statement.module.ts
+
+Suggested APIs
+
+ POST /api/customer-statements/request
+ GET /api/customer-statements/list
+ GET /api/customer-statements/{id}
+ GET /api/customer-statements/{id}/download
+ POST /api/branch-statements/request
+ GET /api/branch-statements/list
+ GET /api/branch-statements/{id}
+ GET /api/branch-statements/{id}/download
+ GET /api/statements/dashboard-summary
+
+                         SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Business Flow / Workflow
+
+153.User selects account/branch + period
+154.System fetches transactions/profit/vault/ATM/CDM totals
+155.Statement lines/summary generated
+156.PDF/print/download available
+157.Export action logged
+
+Important Validations / Business Rules
+
+ Date range required
+ Account/branch ownership restrictions apply
+ Export should be logged for sensitive statements
+ Generated file reference required before download
+
+View Page Requirement
+
+Statement request detail, filters, generated file, download/print info, audit metadata.
+
+Action Column Buttons
+
+ View
+ Download
+ Print
+ Export
+
+Implementation Order for This Module
+
+158.Create statement tables
+159.Statement request pages
+160.Generate export records
+161.Download/view files
+162.Statement dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 13: Deposit Scheme          Details
+                                   Sprint 10
+ Category                          /api/deposit-schemes
+ Sprint/Phase                      Handle scheme definition, enrollment, deposit schedule,
+ Base API path                     profit distribution, maturity and early withdrawal.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Total schemes
+ Active enrollments
+ Due installments
+ Early withdrawal requests
+ Matured schemes
+
+Tables & Columns
+
+deposit_scheme
+
+ id
+ scheme_code
+ scheme_name
+ scheme_type
+ tenure_months
+ minimum_installment
+ profit_ratio
+ profit_frequency
+ status
+ created_at
+
+deposit_scheme_enrollment
+
+ id
+ enrollment_no
+ scheme_id
+ customer_id
+ linked_account_id
+ start_date
+ installment_amount
+ maturity_date
+ enrollment_status
+ created_at
+
+deposit_scheme_schedule
+
+ id
+ enrollment_id
+ installment_no
+ due_date
+ due_amount
+ paid_amount
+ paid_date
+ schedule_status
+ created_at
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Forms / Field Source / Save Mapping
+
+Deposit scheme/enrollment forms
+
+Field                UI Type            Source                    Save Target
+Scheme Code          Auto/text          system/manual             deposit_scheme.scheme_cod
+                                        manual                    e
+Scheme Name          Text box           lookup/static             deposit_scheme.scheme_na
+                                        manual                    me
+Scheme Type          Dropdown           manual                    deposit_scheme.scheme_typ
+                                        manual                    e
+Tenure Months        Number             lookup PROFIT_FREQUENCY   deposit_scheme.tenure_mon
+                                        customer                  ths
+Minimum Installment  Currency           account                   deposit_scheme.minimum_i
+                                        manual                    nstallment
+Profit Ratio         Decimal                                      deposit_scheme.profit_ratio
+Profit Frequency     Dropdown                                     deposit_scheme.profit_frequ
+                                                                  ency
+Customer             By-search                                    deposit_scheme_enrollment.
+                                                                  customer_id
+Linked Account       By-search                                    deposit_scheme_enrollment.
+                                                                  linked_account_id
+Installment Amount   Currency                                     deposit_scheme_enrollment.
+                                                                  installment_amount
+
+Backend Files / Package Guide
+
+ com.sbms.depositscheme.controller/IDepositSchemeController.java
+ controller.impl/DepositSchemeController.java
+ service/repository/entity/dto for scheme, enrollment, schedule
+
+Angular Pages & Files                   Details
+                                        · scheme-dashboard
+ Category                               · scheme-list
+ Pages                                  · scheme-create
+                                        · scheme-edit
+ Core Angular files                     · scheme-view
+                                        · enrollment-list
+Suggested APIs                          · enrollment-create
+                                        · enrollment-view
+ POST /api/deposit-schemes/create       · deposit-schedule-view
+ GET /api/deposit-schemes/list          · profit-distribution-view
+ GET /api/deposit-schemes/{id}          · models/deposit-scheme.model.ts
+ PUT /api/deposit-schemes/{id}          · services/deposit-scheme.service.ts
+ DELETE /api/deposit-schemes/{id}       · deposit-scheme-routing.module.ts
+ PUT /api/deposit-schemes/{id}/restore  · deposit-scheme.module.ts
+
+                     SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ POST /api/deposit-schemes/enrollment/create
+ GET /api/deposit-schemes/enrollment/list
+ GET /api/deposit-schemes/enrollment/{id}
+ GET /api/deposit-schemes/enrollment/{id}/schedule
+ GET /api/deposit-schemes/enrollment/{id}/profit
+ GET /api/deposit-schemes/dashboard-summary
+
+Business Flow / Workflow
+
+163.Admin creates scheme master
+164.Customer enrolls
+165.Minimum deposit verified
+166.Schedule created
+167.Profit distribution runs periodically
+168.Statement generated
+169.Maturity/early withdrawal handled
+
+Important Validations / Business Rules
+
+ scheme parameters drive schedule/maturity rules
+ minimum installment required
+ early withdrawal rule controlled centrally
+ scheme contract/version should be traceable
+
+View Page Requirement
+
+Scheme detail, active enrollments, schedule, profit distribution, maturity/early withdrawal status.
+
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+ Enroll
+ View schedule
+ View profit
+
+Implementation Order for This Module
+
+170.Scheme CRUD
+171.Enrollment create/list/detail
+172.Schedule page
+173.Maturity process
+174.Early withdrawal
+175.Profit distribution run
+176.Scheme dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 14: Financing               Details
+                                   Sprint 11
+ Category                          /api/financing-products, /api/financing-applications
+ Sprint/Phase                      Manage Islamic financing products, applications, asset
+ Base API path                     verification, Shariah review, approval, disbursement,
+ Goal                              schedule and repayment.
+
+Dashboard Widgets / Summary Cards
+
+ Pending applications
+ Approved applications
+ Disbursed amount
+ Overdue installments
+ Financing by product
+ Charity late-fee amount
+
+Tables & Columns
+
+financing_product
+
+ id
+ product_code
+ product_name
+ financing_type
+ minimum_amount
+ maximum_amount
+ tenure_months
+ profit_rule
+ status
+ created_at
+
+financing_application
+
+ id
+ application_no
+ customer_id
+ product_id
+ branch_id
+ requested_amount
+ asset_description
+ purpose
+ application_status
+ submitted_at
+ approved_by
+ approved_at
+ remarks
+ status
+ created_at
+
+financing_asset_verification
+
+ id
+ application_id
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ asset_value
+ verification_note
+ verified_by
+ verified_at
+ status
+ created_at
+
+financing_disbursement
+
+ id
+ application_id
+ disbursement_no
+ disbursement_date
+ disbursed_amount
+ credited_account_id
+ disbursed_by
+ status
+ created_at
+
+financing_schedule
+
+ id
+ application_id
+ installment_no
+ due_date
+ principal_amount
+ profit_amount
+ charity_amount
+ paid_amount
+ paid_date
+ schedule_status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Financing product/application forms
+
+Field            UI Type             Source                 Save Target
+Product Code     Auto/text           system/manual          financing_product.product_
+                                     manual                 code
+Product Name     Text box            lookup FINANCING_TYPE  financing_product.product_
+                                     manual                 name
+Financing Type   Dropdown                                   financing_product.financing
+                                     manual                 _type
+Minimum/Maximum  Currency            manual                 financing_product.minimu
+Amount                               system                 m_amount/
+                                     customer               maximum_amount
+Tenure Months    Number                                     financing_product.tenure_m
+                                                            onths
+Profit Rule      Textarea/dropdown                          financing_product.profit_rul
+                                                            e
+Application No   Auto                                       financing_application.applic
+                                                            ation_no
+Customer         By-search                                  financing_application.custo
+                                                            mer_id
+
+                 SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Branch                 Dropdown/search                  branch                           financing_application.branc
+Requested Amount       Currency                         manual                           h_id
+Asset Description      Textarea                         manual                           financing_application.reque
+Purpose                Textarea                         manual                           sted_amount
+                                                                                         financing_application.asset_
+                                                                                         description
+                                                                                         financing_application.purpo
+                                                                                         se
+
+Backend Files / Package Guide
+
+ com.sbms.financing.controller/IFinancingProductController.java
+ IFinancingApplicationController.java
+ service/repository/entity/dto for product, application, asset verification, disbursement, schedule
+
+Angular Pages & Files                                   Details
+                                                        · financing-dashboard
+ Category                                               · financing-product-list
+ Pages                                                  · financing-product-create
+                                                        · financing-product-view
+ Core Angular files                                     · financing-application-list
+                                                        · financing-application-create
+                                                        · financing-application-edit
+                                                        · financing-application-view
+                                                        · financing-review
+                                                        · financing-disbursement
+                                                        · installment-schedule-view
+                                                        · repayment-collection
+                                                        · models/financing.model.ts
+                                                        · services/financing.service.ts
+                                                        · financing-routing.module.ts
+                                                        · financing.module.ts
+
+Suggested APIs
+
+ POST /api/financing-products/create
+ GET /api/financing-products/list
+ GET /api/financing-products/{id}
+ PUT /api/financing-products/{id}
+ DELETE /api/financing-products/{id}
+ POST /api/financing-applications/create
+ GET /api/financing-applications/list
+ GET /api/financing-applications/{id}
+ PUT /api/financing-applications/{id}
+ POST /api/financing-applications/{id}/submit
+ POST /api/financing-applications/{id}/verify
+ POST /api/financing-applications/{id}/approve
+ POST /api/financing-applications/{id}/reject
+ POST /api/financing-applications/{id}/return
+ POST /api/financing-applications/{id}/disburse
+ GET /api/financing-applications/{id}/schedule
+ POST /api/financing-applications/{id}/collect-payment
+ GET /api/financing/dashboard-summary
+
+                   SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Business Flow / Workflow
+
+177.Product exists
+178.Customer submits financing request
+179.Officer collects documents
+180.Purpose and asset validated
+181.Asset verification done
+182.Cost + profit determined
+183.Contract generated
+184.Shariah board review
+185.Branch manager/operations approval
+186.Disbursement made
+187.Installment schedule created
+188.Repayments collected
+
+Status flow: DRAFT -> SUBMITTED -> DOC_CHECK -> ASSET_VERIFIED -> SHARIAH_REVIEW -> APPROVED -> DISBURSED ->
+ACTIVE -> CLOSED
+
+Important Validations / Business Rules
+
+ No interest logic
+ product-specific formula applies
+ asset-required products need asset data
+ disbursement should not happen before approval chain complete
+ late fee goes to charity only
+ requested amount within product min/max
+
+View Page Requirement
+
+Application detail, product, customer, asset verification, approvals, disbursement, schedule, repayments.
+
+Action Column Buttons
+
+ View
+ Edit
+ Submit
+ Verify
+ Approve
+ Reject
+ Return
+ Disburse
+ Collect payment
+
+Implementation Order for This Module
+
+189.Product CRUD
+190.Application create/list/detail/update
+191. Submit
+192.Asset verification save
+193.Shariah submit
+194. Approve/reject/return
+195. Disburse
+196.Schedule list
+197.Repayment collection
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+198. Dashboard
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 15: Contract Management
+
+Category                             Details
+Sprint/Phase                         Sprint 12
+Base API path                        /api/contracts
+Goal                                 Manage contract templates, generated contracts, e-sign
+                                     flow, versioning, locking and archive.
+
+Dashboard Widgets / Summary Cards
+
+ Total contracts
+ Pending signatures
+ Active/locked contracts
+ Contract versions
+ Draft contracts
+
+Tables & Columns
+
+contract_template
+
+ id
+ template_code
+ template_name
+ contract_type
+ version_no
+ template_body
+ status
+ created_at
+
+contract
+
+ id
+ contract_no
+ contract_type
+ template_id
+ customer_id
+ reference_module
+ reference_id
+ contract_text
+ signed_by_customer
+ signed_by_shariah
+ signed_date
+ contract_status
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Contract forms    UI Type            Source         Save Target
+                  Auto/text          system/manual  contract_template.template_
+ Field                                              code
+ Template Code    Text box           manual         contract_template.template_
+                                                    name
+ Template Name
+
+                  SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Contract Type          Dropdown                 lookup/static                   contract_template.contract_
+                                                                                type
+Version No             Number/text              manual/system                   contract_template.version_n
+                                                                                o
+Template Body          Rich textarea            manual                          contract_template.template_
+                                                                                body
+Contract No            Auto                     system                          contract.contract_no
+Customer               By-search                customer                        contract.customer_id
+Reference Module/ID    Derived                  source module                   contract.reference_module/
+                                                                                reference_id
+Contract Text          Generated textarea       system/editable before lock     contract.contract_text
+
+Backend Files / Package Guide
+
+ com.sbms.contract.controller/IContractController.java
+ service/repository/entity/dto for template, contract, versions
+
+Angular Pages & Files                           Details
+                                                · contract-dashboard
+ Category                                       · contract-template-list
+ Pages                                          · contract-template-create
+                                                · contract-template-view
+ Core Angular files                             · contract-list
+                                                · contract-generate
+                                                · contract-view
+                                                · contract-sign
+                                                · contract-version-history
+                                                · models/contract.model.ts
+                                                · services/contract.service.ts
+                                                · contract-routing.module.ts
+                                                · contract.module.ts
+
+Suggested APIs
+
+ POST /api/contracts/templates/create
+ GET /api/contracts/templates/list
+ GET /api/contracts/templates/{id}
+ PUT /api/contracts/templates/{id}
+ POST /api/contracts/generate
+ GET /api/contracts/list
+ GET /api/contracts/{id}
+ POST /api/contracts/{id}/customer-sign
+ POST /api/contracts/{id}/shariah-sign
+ GET /api/contracts/{id}/versions
+ GET /api/contracts/dashboard-summary
+
+Business Flow / Workflow
+
+199.Contract template exists
+200.System auto-fills customer/asset/deal data
+201.Shariah clauses inserted
+202.Officer reviews
+203.Customer e-sign
+204.Shariah board e-sign if applicable
+
+                     SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+205.Contract locked
+206.Repository stores final and old versions
+
+Important Validations / Business Rules
+
+ Locked contract should not be edited directly
+ New changes create new version if needed
+ Signer identity/time must be stored
+ Template code unique
+
+View Page Requirement
+
+Contract text, sign status, signer identity/time, template version, source module, version history.
+
+Action Column Buttons
+
+ View
+ Edit template
+ Generate
+ Sign
+ View versions
+ Download
+
+Implementation Order for This Module
+
+207.Contract template CRUD
+208.Contract generate
+209.Contract list/detail
+210.Customer sign
+211.Shariah sign
+212.Version list
+213. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 16: Shariah Review                  Details
+                                           Sprint 13
+ Category                                  /api/shariah-reviews
+ Sprint/Phase                              Support Shariah compliance checklist review,
+ Base API path                             approval/reject/correction, certification and audit trail.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Pending cases
+ Approved cases
+ Rejected cases
+ Correction requests
+ Upcoming meetings/reviews if implemented
+
+Tables & Columns
+
+shariah_review_case
+
+ id
+ case_no
+ reference_module
+ reference_id
+ submitted_by
+ submitted_at
+ case_status
+ remarks
+ status
+ created_at
+
+shariah_checklist_item
+
+ id
+ item_code
+ item_name
+ description
+ status
+ created_at
+
+shariah_review_decision
+
+ id
+ case_id
+ decision
+ decision_by
+ decision_at
+ remarks
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Shariah review forms  UI Type              Source  Save Target
+
+ Field
+
+                      SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Case No                Auto                    system                         shariah_review_case.case_n
+                                                                              o
+Reference Module/ID    Derived                 source module                  reference_module/
+                                                                              reference_id
+Submitted By/At        System                  logged-in user/time            submitted_by/submitted_at
+Checklist Items        Checklist               shariah_checklist_item         decision/checklist records
+Decision               Dropdown                APPROVE/REJECT/RETURN          shariah_review_decision.de
+                                                                              cision
+Remarks                Textarea                manual                         remarks
+
+Backend Files / Package Guide
+
+ com.sbms.shariah.controller/IShariahReviewController.java
+ service/repository/entity/dto for case, checklist, decision
+
+Angular Pages & Files                          Details
+                                               · shariah-dashboard
+ Category                                      · case-list
+ Pages                                         · case-view
+                                               · case-review
+ Core Angular files                            · correction-queue
+                                               · fatwa-certificate-list
+                                               · annual-report-view
+                                               · models/shariah.model.ts
+                                               · services/shariah.service.ts
+                                               · shariah-routing.module.ts
+                                               · shariah.module.ts
+
+Suggested APIs
+
+ POST /api/shariah-reviews/create
+ GET /api/shariah-reviews/list
+ GET /api/shariah-reviews/{id}
+ POST /api/shariah-reviews/{id}/approve
+ POST /api/shariah-reviews/{id}/reject
+ POST /api/shariah-reviews/{id}/return
+ GET /api/shariah-reviews/{id}/history
+ GET /api/shariah-reviews/dashboard-summary
+
+Business Flow / Workflow
+
+214.Officer submits case
+215.Checklist prepared
+216.Board reviews purpose/asset/contract/docs
+217.Board decides approve/reject/correction
+218.Decision stored
+219.Annual report uses data
+
+Important Validations / Business Rules
+
+ Board decision mandatory before certain financing/contracts proceed
+ Correction remarks mandatory when returned
+ All decisions need traceability
+ Checklist items should be active
+
+                     SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+View Page Requirement
+
+Case source, checklist, review notes, decisions, reviewer identity, history.
+
+Action Column Buttons
+
+ View
+ Approve
+ Reject
+ Return
+ History
+
+Implementation Order for This Module
+
+220.Review case create/list/detail
+221.Checklist load/save
+222. Approve
+223. Reject
+224. Correction/return
+225. History
+226. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 17: Zakat & Charity         Details
+                                   Sprint 14
+ Category                          /api/zakat
+ Sprint/Phase                      Calculate zakat, handle deduction, charity fund ledger,
+ Base API path                     beneficiaries and payouts.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Zakat due accounts
+ Total zakat calculated
+ Charity fund balance
+ Beneficiary payout total
+ Upcoming zakat reminders
+
+Tables & Columns
+
+zakat_profile
+
+ id
+ customer_id
+ zakat_year
+ nisab_amount
+ eligible_asset_amount
+ zakat_amount
+ calculation_status
+ created_at
+
+charity_fund
+
+ id
+ fund_date
+ source_type
+ reference_id
+ credit_amount
+ debit_amount
+ balance_after
+ remarks
+ created_at
+
+charity_beneficiary
+
+ id
+ beneficiary_code
+ beneficiary_name
+ mobile
+ address
+ status
+ created_at
+
+charity_payout
+
+ id
+ beneficiary_id
+ payout_date
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ amount
+ approved_by
+ remarks
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Zakat/charity forms     UI Type        Source                                  Save Target
+                        By-search      customer                                zakat_profile.customer_id
+ Field                  Number         manual                                  zakat_profile.zakat_year
+ Customer               Currency       manual/system                           zakat_profile.nisab_amount
+ Zakat Year             Currency       system/manual                           zakat_profile.eligible_asset_
+ Nisab Amount                                                                  amount
+ Eligible Asset Amount                                                         charity_beneficiary
+                                                                               charity_payout.payout_date/
+Beneficiary Code/Name   Text           manual                                  amount
+Payout Date/Amount      Date/currency  manual                                  remarks
+
+Remarks                 Textarea       manual
+
+Backend Files / Package Guide
+
+ com.sbms.zakat.controller/IZakatController.java
+ service/repository/entity/dto for profile, charity fund, beneficiary, payout
+
+Angular Pages & Files                  Details
+                                       · zakat-dashboard
+ Category                              · zakat-profile-list
+ Pages                                 · zakat-profile-view
+                                       · zakat-calc-run
+ Core Angular files                    · charity-fund-view
+                                       · beneficiary-list
+                                       · beneficiary-create
+                                       · payout-list
+                                       · payout-create
+                                       · models/zakat.model.ts
+                                       · services/zakat.service.ts
+                                       · zakat-routing.module.ts
+                                       · zakat.module.ts
+
+Suggested APIs
+
+ POST /api/zakat/profile/create
+ GET /api/zakat/profile/list
+ GET /api/zakat/profile/{id}
+ POST /api/zakat/calculate
+ GET /api/zakat/charity-fund
+ GET /api/zakat/beneficiaries/list
+ POST /api/zakat/beneficiaries/create
+ GET /api/zakat/payouts/list
+ POST /api/zakat/payouts/create
+ GET /api/zakat/dashboard-summary
+
+                        SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Business Flow / Workflow
+
+227.Customer opts in/profile maintained
+228.Eligible zakatable assets/balance determined
+229.Yearly calculation executed
+230.Deduction processed if applicable
+231.Charity fund ledger updated
+232.Beneficiary payout managed
+233.Reports generated
+
+Important Validations / Business Rules
+
+ Asset-based calculation only
+ Deduction traceable by year/period
+ Late fees/penalties route to charity fund only
+ Beneficiary must be active for payout
+
+View Page Requirement
+
+Zakat profile, calculation amount, charity fund movements, payout details.
+
+Action Column Buttons
+
+ View
+ Calculate
+ Add beneficiary
+ Payout
+ Export report
+
+Implementation Order for This Module
+
+234.Profile create/list/update
+235. Calculate
+236.Deduction run
+237.Charity fund ledger
+238.Beneficiary CRUD
+239.Payout create/list
+240.Report export
+241. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 18: Notification & Alerts   Details
+                                   Sprint 15
+ Category                          /api/notifications
+ Sprint/Phase                      Convert system events into SMS/email/push messages and
+ Base API path                     store delivery logs/retry queue.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Sent today
+ Failed today
+ Retry queue
+ Channel wise summary
+ Messages sent today
+ Failed deliveries
+
+Tables & Columns
+
+notification_template
+
+ id
+ template_code
+ template_name
+ channel_type
+ subject_text
+ body_text
+ status
+ created_at
+
+notification_event
+
+ id
+ event_code
+ event_name
+ reference_module
+ status
+ created_at
+
+notification_log
+
+ id
+ event_id
+ template_id
+ recipient_to
+ channel_type
+ delivery_status
+ provider_response
+ retry_count
+ sent_at
+ status
+ created_at
+
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Forms / Field Source / Save Mapping
+
+Notification forms     UI Type               Source             Save Target
+                       Text                  manual             notification_template
+ Field                 Dropdown              EMAIL/SMS/PUSH     notification_template.chann
+ Template Code/Name                                             el_type
+ Channel Type          Text                  manual             notification_template.subjec
+                                                                t_text
+ Subject Text          Textarea              manual             notification_template.body_
+                                                                text
+ Body Text             Text                  manual             notification_event
+                       Text/system           derived            notification_log.recipient_to
+ Event Code/Name
+ Recipient
+
+Backend Files / Package Guide
+
+ com.sbms.notification.controller/INotificationController.java
+ service/repository/entity/dto for template, event, log
+
+Angular Pages & Files                        Details
+                                             · notification-dashboard
+ Category                                    · template-list
+ Pages                                       · template-create
+                                             · template-view
+ Core Angular files                          · event-rule-list
+                                             · event-rule-create
+                                             · delivery-log-list
+                                             · delivery-log-view
+                                             · retry-queue
+                                             · models/notification.model.ts
+                                             · services/notification.service.ts
+                                             · notification-routing.module.ts
+                                             · notification.module.ts
+
+Suggested APIs
+
+ POST /api/notifications/templates/create
+ GET /api/notifications/templates/list
+ GET /api/notifications/templates/{id}
+ PUT /api/notifications/templates/{id}
+ GET /api/notifications/event-rules/list
+ POST /api/notifications/event-rules/create
+ GET /api/notifications/logs/list
+ GET /api/notifications/logs/{id}
+ POST /api/notifications/logs/{id}/retry
+ GET /api/notifications/dashboard-summary
+
+Business Flow / Workflow
+
+242.Business event happens
+243.Notification event created
+244.Template resolved
+245.Rules determine channel(s)
+246.Provider called
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+247.Delivery result logged
+248.Retry queued if failed
+
+Important Validations / Business Rules
+
+ Do not mix messaging code directly in business modules; call notification service
+ Template centrally managed
+ Failed sends remain traceable
+ Retry count controlled
+
+View Page Requirement
+
+Template/event/log detail, provider response, retry count and delivery status.
+
+Action Column Buttons
+
+ View
+ Edit template
+ Retry
+ Archive
+
+Implementation Order for This Module
+
+249.Template CRUD
+250.Event mapping
+251.Send test
+252.Logs list/detail
+253. Retry
+254. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 19: Integration Management
+
+Category                             Details
+Sprint/Phase                         Sprint 15
+Base API path                        /api/integrations
+Goal                                 Store provider configuration for
+                                     SMS/email/payment/mobile banking and log
+                                     execution/retry status.
+
+Dashboard Widgets / Summary Cards
+
+ Active providers
+ Failed integrations
+ Retry pending
+ Last successful sync
+ Success rate
+
+Tables & Columns
+
+integration_provider
+
+ id
+ provider_code
+ provider_name
+ provider_type
+ base_url
+ auth_type
+ api_key
+ username
+ password_enc
+ timeout_sec
+ status
+ created_at
+
+integration_execution_log
+
+ id
+ provider_id
+ reference_module
+ reference_id
+ request_payload
+ response_payload
+ http_status
+ execution_status
+ executed_at
+ retry_count
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Integration provider/log forms
+
+Field               UI Type          Source  Save Target
+Provider Code/Name  Text             manual  integration_provider
+
+                    SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Provider Type          Dropdown                EMAIL/SMS/PAYMENT/etc              integration_provider.provid
+                       Text                    manual                             er_type
+Base URL               Dropdown                static                             integration_provider.base_u
+                       Text/password           manual secured                     rl
+Auth Type              Number                  manual                             integration_provider.auth_t
+                                                                                  ype
+API                                                                               integration_provider
+Key/Username/Password
+Timeout Sec                                                                       integration_provider.timeou
+                                                                                  t_sec
+
+Backend Files / Package Guide
+
+ com.sbms.integration.controller/IIntegrationController.java
+ service/repository/entity/dto for provider and execution log
+
+Angular Pages & Files                          Details
+                                               · integration-dashboard
+ Category                                      · provider-list
+ Pages                                         · provider-create
+                                               · provider-edit
+ Core Angular files                            · provider-view
+                                               · integration-log-list
+                                               · integration-log-view
+                                               · provider-test
+                                               · models/integration.model.ts
+                                               · services/integration.service.ts
+                                               · integration-routing.module.ts
+                                               · integration.module.ts
+
+Suggested APIs
+
+ POST /api/integrations/providers/create
+ GET /api/integrations/providers/list
+ GET /api/integrations/providers/{id}
+ PUT /api/integrations/providers/{id}
+ DELETE /api/integrations/providers/{id}
+ PUT /api/integrations/providers/{id}/restore
+ POST /api/integrations/providers/{id}/test
+ GET /api/integrations/logs/list
+ GET /api/integrations/logs/{id}
+ GET /api/integrations/dashboard-summary
+
+Business Flow / Workflow
+
+255.Provider configured
+256.Module triggers integration request
+257.Gateway/provider selected
+258.Request sent
+259.Response stored
+260.Retry/monitoring done if needed
+
+Important Validations / Business Rules
+
+ Provider can be active/inactive
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ Credentials/config must be masked or secured
+ Delivery/execution logs mandatory
+ Timeout required
+
+View Page Requirement
+
+Provider config with masked credentials, test status, logs and retry history.
+
+Action Column Buttons
+
+ View
+ Edit
+ Archive/Delete
+ Restore
+ Test provider
+ View logs
+
+Implementation Order for This Module
+
+261.Provider CRUD
+262.Provider test connection
+263.Execution logs
+264.Retry execution
+265. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 20: Reporting & Regulatory
+
+Category                             Details
+Sprint/Phase                         Sprint 16
+Base API path                        /api/reports
+Goal                                 Provide operational, regulatory, financing, profit, PAR,
+                                     Shariah audit and branch reports with export history.
+
+Dashboard Widgets / Summary Cards
+
+ Reports generated today
+ Regulatory pending
+ Branch performance summary
+ Financing summary
+ Profit summary
+ Most used reports
+
+Tables & Columns
+
+report_definition
+
+ id
+ report_code
+ report_name
+ report_type
+ query_key
+ export_types
+ status
+ created_at
+
+report_request_log
+
+ id
+ report_id
+ requested_by
+ date_from
+ date_to
+ filter_json
+ generated_file_id
+ request_status
+ requested_at
+ generated_at
+ status
+
+Forms / Field Source / Save Mapping
+
+Report forms       UI Type           Source         Save Target
+                   Text              manual         report_definition
+ Field             Dropdown          static/lookup  report_definition.report_typ
+ Report Code/Name                                   e
+ Report Type       Text              system/manual  report_definition.query_key
+                   Checkbox/multi    PDF/CSV/Excel  report_definition.export_typ
+ Query Key                                          es
+ Export Types
+
+                   SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Date From/To           Date picker                                   manual                        report_request_log.date_fro
+Filter JSON            System/manual                                 filters                       m/date_to
+                                                                                                   report_request_log.filter_jso
+                                                                                                   n
+
+Backend Files / Package Guide
+
+ com.sbms.report.controller/IReportController.java
+ service/repository/entity/dto for definition and request log
+
+Angular Pages & Files                                                Details
+                                                                     · report-dashboard
+ Category                                                            · operational-report
+ Pages                                                               · profit-distribution-report
+                                                                     · financing-portfolio-report
+ Core Angular files                                                  · par-report
+                                                                     · shariah-audit-report
+                                                                     · branch-report
+                                                                     · export-history
+                                                                     · models/report.model.ts
+                                                                     · services/report.service.ts
+                                                                     · report-routing.module.ts
+                                                                     · report.module.ts
+
+Suggested APIs
+
+ GET /api/reports/operational
+ GET /api/reports/profit-distribution
+ GET /api/reports/financing-portfolio
+ GET /api/reports/par
+ GET /api/reports/shariah-audit
+ GET /api/reports/branch
+ GET /api/reports/export-history
+ GET /api/reports/dashboard-summary
+
+Business Flow / Workflow
+
+266.User selects report type
+267.User selects filters/date range
+268.Data fetched and aggregated
+269.Report shown in dashboard/table
+270.Export PDF/CSV/print
+271.Export log stored
+
+Important Validations / Business Rules
+
+ Report queries must use clear filters
+ Sensitive reports need role restrictions
+ Export action should be auditable
+ Date range validation required
+
+View Page Requirement
+
+Report result, filters, generated file, run status, export history.
+
+              SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Action Column Buttons
+
+ View
+ Filter
+ Export PDF
+ Export CSV
+ Print
+
+Implementation Order for This Module
+
+272.Definition CRUD
+273.Operational run
+274.Regulatory run
+275.Export PDF/CSV
+276. History
+277. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 21: Security / Audit / Investigation
+
+Category                           Details
+Sprint/Phase                       Sprint 17
+Base API path                      /api/security-events, /api/audit-logs, /api/investigations
+Goal                               Track failed logins, audit events, suspicious activities,
+                                   AML/sanction hooks and investigation lifecycle.
+
+Dashboard Widgets / Summary Cards
+
+ Failed logins today
+ Locked users
+ Suspicious txn count
+ Audit events today
+ Open investigation cases
+ AML flags today
+
+Tables & Columns
+
+security_event_log
+
+ id
+ event_code
+ event_name
+ user_id
+ ip_address
+ device_info
+ reference_module
+ reference_id
+ event_time
+ severity_level
+ remarks
+ status
+
+audit_log
+
+ id
+ module_name
+ reference_id
+ action_name
+ old_value_json
+ new_value_json
+ performed_by
+ performed_at
+ status
+
+investigation_case
+
+ id
+ case_no
+ case_type
+ reference_module
+ reference_id
+ opened_by
+ opened_at
+
+                    SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ assigned_to
+ case_status
+ remarks
+ status
+ created_at
+
+Forms / Field Source / Save Mapping
+
+Security/investigation forms
+
+Field                         UI Type                           Source                          Save Target
+Event Code/Name               System                            security event                  security_event_log
+Module/Reference              System                            source action                   reference_module/
+                                                                                                reference_id
+Severity Level                Dropdown                          static                          security_event_log.severity_
+                                                                                                level
+Case No                       Auto                              system                          investigation_case.case_no
+Case Type                     Dropdown                          static/lookup                   investigation_case.case_type
+Assigned To                   By-search                         app_user                        investigation_case.assigned_
+                                                                                                to
+Remarks                       Textarea                          manual                          remarks
+
+Backend Files / Package Guide
+
+ com.sbms.security.controller/ISecurityController.java
+ IAuditLogController.java
+ IInvestigationController.java
+ service/repository/entity/dto for event, audit, investigation
+
+Angular Pages & Files                                           Details
+                                                                · security-dashboard
+ Category                                                       · security-event-list
+ Pages                                                          · security-event-view
+                                                                · suspicious-activity-list
+ Core Angular files                                             · suspicious-activity-view
+                                                                · investigation-case-list
+Suggested APIs                                                  · investigation-case-view
+                                                                · investigation-case-action
+ GET /api/security/events/list                                  · models/security.model.ts
+ GET /api/security/events/{id}                                  · services/security.service.ts
+ GET /api/security/suspicious-activities/list                   · security-routing.module.ts
+ GET /api/security/suspicious-activities/{id}                   · security.module.ts
+ GET /api/security/investigation-cases/list
+ GET /api/security/investigation-cases/{id}
+ POST /api/security/investigation-cases/{id}/assign
+ POST /api/security/investigation-cases/{id}/close
+ GET /api/security/dashboard-summary
+
+                  SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Business Flow / Workflow
+
+278.User logs in or transaction occurs
+279.Security/compliance rules scan event
+280.Suspicious activity may be raised
+281.Investigation case created
+282.Admin/compliance officer reviews
+283.Decision/closure stored
+
+Important Validations / Business Rules
+
+ Suspicious cases must have lifecycle and comments
+ High-risk events must not disappear from view
+ AML/sanction hooks should be modular
+ Sensitive actions must be logged
+
+View Page Requirement
+
+Security event detail, audit diff, investigation lifecycle, assigned user and closure remarks.
+
+Action Column Buttons
+
+ View
+ Assign
+ Close
+ Export
+
+Implementation Order for This Module
+
+284.Security event list/detail
+285.Audit log list/detail
+286.Investigation create/list/detail/update/assign/close
+287. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Module 22: Workflow Support              Details
+                                         Sprint 18
+ Category                                /api/workflows
+ Sprint/Phase                            Provide generic workflow history, comments, pending
+ Base API path                           approval queues and submission tracking.
+ Goal
+
+Dashboard Widgets / Summary Cards
+
+ Pending approvals
+ My pending tasks
+ Recent completed tasks
+ Workflow bottlenecks
+
+Tables & Columns
+
+workflow_history
+
+ id
+ module_name
+ reference_id
+ action_name
+ from_status
+ to_status
+ action_by
+ action_at
+ remarks
+ status
+
+workflow_comment
+
+ id
+ module_name
+ reference_id
+ comment_text
+ comment_by
+ comment_at
+ status
+
+Forms / Field Source / Save Mapping
+
+Workflow/comment forms  UI Type          Source             Save Target
+                        System           source module      workflow_history.module_n
+ Field                                   source record      ame
+ Module Name                             workflow action    workflow_history.reference
+                                         status transition  _id
+Reference ID            System           manual             workflow_history.action_na
+                                                            me
+Action Name             Dropdown/system                     workflow_history.from_stat
+                                                            us/to_status
+From/To Status          System                              workflow_history.remarks/
+                                                            workflow_comment.comme
+Remarks/Comment         Textarea                            nt_text
+
+                 SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Backend Files / Package Guide
+
+ com.sbms.workflow.controller/IWorkflowController.java
+ service/repository/entity/dto for workflow history and comments
+
+Angular Pages & Files                      Details
+                                           · workflow-dashboard
+ Category                                  · workflow-history-list
+ Pages                                     · workflow-history-view
+                                           · pending-approval-queue
+ Core Angular files                        · my-submissions
+                                           · models/workflow.model.ts
+                                           · services/workflow.service.ts
+                                           · workflow-routing.module.ts
+                                           · workflow.module.ts
+
+Suggested APIs
+
+ GET /api/workflows/history/list
+ GET /api/workflows/history/{id}
+ GET /api/workflows/pending
+ GET /api/workflows/my-submissions
+ GET /api/workflows/dashboard-summary
+
+Business Flow / Workflow
+
+288.Source module creates/updates status
+289.Workflow history row inserted
+290.Pending queues query actionable items
+291.Users review/approve/reject/return
+292.History/timeline remains traceable
+
+Important Validations / Business Rules
+
+ Every workflow transition must store actor and timestamp
+ Invalid direct jumps should be blocked
+ Workflow comments/history normally should not be deleted
+ Source record must exist
+
+View Page Requirement
+
+Workflow action record, source module, old/new status, action actor, remarks, related comments.
+
+Action Column Buttons
+
+ View
+ Open source record
+ Export
+
+Implementation Order for This Module
+
+293.Workflow history list/view
+294.Pending approvals
+295.My submissions
+296. Comments/timeline
+297. Dashboard
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Add-on Module: Verification / OTP / Email / SMS
+
+Category          Details
+Sprint/Phase      Phase 0 + Sprint 1-2 + Sprint 4 + Sprint 15 + Sprint 17
+Base API path     /api/verification plus
+                  auth/customer/notification/integration hooks
+Goal              Support user/customer email verification, mobile
+                  verification, login OTP, password reset OTP and critical
+                  action verification.
+
+Dashboard Widgets / Summary Cards
+
+ Auth: pending password resets, OTP sent/failed today, locked users due to OTP failure
+ Customer: unverified mobile/email count
+ Notification: email/SMS sent/failed, queue pending, retry pending
+ Integration: active providers, sandbox providers, provider failure rate
+ Security: OTP failure spike, suspicious login attempts
+
+Tables & Columns
+
+verification_channel
+
+ id
+ channel_code
+ channel_name
+ provider_type
+ is_otp_channel
+ is_active
+ status
+ created_at
+ updated_at
+
+verification_template
+
+ id
+ template_code
+ template_name
+ channel_id
+ module_name
+ subject_text
+ body_text
+ otp_length
+ expiry_minutes
+ max_retry_count
+ is_active
+ status
+ created_at
+ updated_at
+
+contact_verification_status
+
+ id
+ reference_module
+ reference_id
+ contact_type
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ contact_value
+ is_primary
+ is_verified
+ verified_at
+ verified_by
+ verification_method
+ last_verification_request_id
+ status
+ created_at
+ updated_at
+
+otp_verification_request
+
+ id
+ request_no
+ reference_module
+ reference_id
+ purpose_code
+ channel_type
+ template_id
+ provider_id
+ recipient_name
+ contact_type
+ contact_value
+ country_code
+ otp_code_hash
+ otp_length
+ sent_message_id
+ sent_at
+ expires_at
+ verified_at
+ attempt_count
+ max_attempt_count
+ resend_count
+ max_resend_count
+ request_status
+ provider_response
+ failure_reason
+ ip_address
+ device_info
+ status
+ created_at
+ updated_at
+
+verification_dispatch_queue
+
+ id
+ reference_module
+ reference_id
+ request_id
+ template_id
+ provider_id
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ channel_type
+ recipient_to
+ subject_text
+ body_text
+ payload_json
+ queue_status
+ retry_count
+ next_retry_at
+ last_error
+ locked_by
+ locked_at
+ processed_at
+ status
+ created_at
+ updated_at
+
+password_reset_request
+
+ id
+ request_no
+ user_id
+ reference_value
+ channel_type
+ provider_id
+ token_code_hash
+ token_type
+ sent_at
+ expires_at
+ used_at
+ attempt_count
+ request_status
+ provider_response
+ status
+ created_at
+ updated_at
+
+verification_attempt_log
+
+ id
+ request_id
+ attempt_type
+ attempt_value_masked
+ attempt_status
+ remarks
+ ip_address
+ device_info
+ created_by
+ created_at
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Forms / Field Source / Save Mapping
+
+Verification-related forms  UI Type               Source                       Save Target
+                            Checkbox              static                       verification_dispatch_queue
+ Field                                            customer contact             / app_user flags
+ User create verification   Action button         manual                       otp_verification_request.con
+ flags                                            manual                       tact_value
+ Customer mobile/email      6-digit input         logs                         verification request
+ verification buttons                                                          validation only
+ Login OTP code                                                                password_reset_request
+
+Forgot password             Text/radio                                         verification logs
+identifier/channel
+Admin verification console  Date/module/channel/
+filters                     status/provider
+
+Backend Files / Package Guide
+
+ com.sbms.verification.controller/VerificationController.java
+ service/VerificationService.java
+ repository for channel/template/contact/OTP/queue/password reset/attempt log
+ entity package for all verification tables
+ enums: ChannelType, VerificationPurpose, VerificationStatus, TokenType
+ util: OtpGeneratorUtil, OtpHashUtil, MaskingUtil
+
+Angular Pages & Files                             Details
+                                                  · verification-dashboard
+ Category                                         · otp-verify
+ Pages                                            · forgot-password
+                                                  · reset-password
+ Core Angular files                               · verification-log-list
+                                                  · provider-test-console
+                                                  · models/otp-request.model.ts
+                                                  · models/verification-log.model.ts
+                                                  · models/verification-template.model.ts
+                                                  · services/verification.service.ts
+                                                  · verification-routing.module.ts
+                                                  · verification.module.ts
+
+Suggested APIs
+
+ POST /api/auth/send-otp
+ POST /api/auth/verify-otp
+ POST /api/auth/forgot-password
+ POST /api/auth/reset-password
+ Verification module APIs: sendEmailVerificationOtp, sendMobileVerificationOtp, verifyOtp, resendOtp, expireOtp,
+
+      sendPasswordResetToken
+
+Business Flow / Workflow
+
+298.User/customer/contact action requires verification
+299.OTP request created
+300.Dispatch queue row created
+301.Provider sends email/SMS or local log is stored
+302.User submits OTP
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+303.System validates hash/expiry/attempts
+304.Verified flags updated
+305.Attempt log inserted
+
+Important Validations / Business Rules
+
+ email format
+ mobile format
+ duplicate email/mobile
+ resend cooldown seconds
+ expiry time not crossed
+ attempt count not exceeded
+ user not locked
+ customer not blocked
+ correct module + reference id exists before sending OTP
+ one active unexpired OTP at a time per purpose per contact
+
+View Page Requirement
+
+Verification admin console with request, queue, attempt, provider response and contact verification status.
+
+Action Column Buttons
+
+ Send OTP
+ Verify OTP
+ Resend
+ Expire
+ Mark failed
+ Inspect provider response
+ Export logs
+
+Implementation Order for This Module
+
+306.Create verification tables
+307.Seed channels/purposes/templates
+308.Integrate user create flow
+309.Integrate customer onboarding flow
+310.Implement send/verify/resend/expire methods
+311.Add provider adapter layer
+312.Update verified flags after success
+313.Secure abuse points
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Support Concept: Calculation Engine
+
+Category                                      Details
+Sprint/Phase                                  Advanced support for Financing/Profit/Deposit Scheme
+Base API path                                 Internal service / optional /api/calculations
+Goal                                          Provide formula engine for Murabaha, Ijara,
+                                              Musharaka/Mudaraba P&L, installment planning,
+                                              restructuring, partial settlement and early payment.
+
+Dashboard Widgets / Summary Cards
+
+ Recent calculations
+ Failed calculations
+ Product-wise simulation counts
+
+Tables & Columns
+
+No dedicated table listed in handbook; usually implemented as shared/internal service or source-module records.
+
+Forms / Field Source / Save Mapping
+
+Calculation inputs           UI Type          Source                     Save Target
+                             Dropdown         financing/deposit product  formula selection
+ Field                       Currency         manual/source module       calculation input
+ Product Type                Decimal/rule     product                    calculation input
+ Principal/Cost/Asset Value  Number/dropdown  manual/product             schedule input
+ Profit/Markup/Rental Rule
+ Tenure/Frequency
+
+Backend Files / Package Guide
+
+ com.sbms.calculation.service/CalculationEngineService.java
+ Formula strategy/helper classes
+ DTOs for calculation request/response
+
+Angular Pages & Files                         Details
+                                              · Optional calculation simulator
+ Category                                     · Used inside financing/product/schedule pages
+ Pages                                        · models/calculation.model.ts
+                                              · services/calculation.service.ts
+ Core Angular files
+
+Suggested APIs
+
+ Optional POST /api/calculations/simulate
+ Internal service calls from financing/profit/deposit modules
+
+Business Flow / Workflow
+
+314.Business module sends parameters
+315.Engine selects formula by product
+316.Values calculated
+317.Schedule/result returned
+318.Results stored in source module table
+
+Important Validations / Business Rules
+
+ Do not hardcode interest logic
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+ Formula must depend on Islamic product type
+ Schedule must be reproducible for audit
+ Inputs must be positive and business-valid
+
+View Page Requirement
+
+Simulation/result details inside source module.
+
+Action Column Buttons
+
+ Calculate
+ Preview schedule
+ Apply result
+
+Implementation Order for This Module
+
+319.Define formula rules
+320.Create calculation service
+321.Return schedule/result
+322.Store result in source module table
+
+                                           SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+Appendix A: Standard Frontend Foundation
+
+ Bootstrap + SCSS enabled
+ Font Awesome 4 integrated
+ SweetAlert2 integrated
+ Shared DataTable strategy with search/filter/pagination/export
+ Global navigation search
+ AuthInterceptor, ErrorInterceptor, optional LoadingInterceptor
+ AuthGuard and PermissionGuard
+ Core API service, Alert service, Storage/token utility
+ Shared page header, page title, status badge, table actions, dashboard card, empty/loading state
+ Topbar, Sidebar, Layout shell
+ Export/print helper
+
+Appendix B: Standard Soft Delete Decision
+
+Category                       Details
+Soft delete yes                role, user, lookup value, branch, terminal, customer,
+                               address, identity, kyc profile, account type, card, deposit
+No hard delete / keep history  scheme, financing product/application, contract/template,
+                               notification template, integration provider, report
+Use status instead of delete   definition, beneficiary
+Button wording                 transaction journal, cash transaction, fund transfer,
+                               transaction reversal, profit posting, audit log, security
+                               event log, workflow history, user session, notification log,
+                               integration execution log, report request log, charity
+                               payout, financing disbursement
+                               account, vault balance, teller limit, profit schedule,
+                               statement request, shariah decision, investigation case
+                               Role/User/Branch/Template = Archive;
+                               Customer/Card/Product = Deactivate; Account =
+                               Block/Freeze/Close; Transaction = Reverse
+
+Appendix C: Universal Business Mindset
+
+ Not just CRUD - think workflow.
+ Not just data save - think role and approval.
+ Not just form - think dashboard/report/statement impact.
+ Not just backend - think frontend queue and action buttons.
+ Not just success path - think reject/correction/failure path.
+ Not just one table - think main + detail + workflow + log tables.
+ Not just visible menu - think backend permission check too.
+ Not just financial output - think Shariah and audit trace too.
+
+SBMS Module-Wise Implementation Playbook - reorganized from handbook.md
+

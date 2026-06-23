@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Customer Account Opening Form</title>
+    <style th:text="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Islamic Banking Document Template</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent" style="background:linear-gradient(90deg,#0c5d44,#d4af37,#1f6d57);"></div>
+
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" th:alt="${bankName}" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}"></div>
+                <div class="doc-bank-sub" th:text="${bankAddress}"></div>
+                <div class="doc-bank-sub" th:text="${bankContact}"></div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Form Type</div>
+            <div class="doc-chip">Account Opening Form</div>
+            <div class="doc-chip-meta" th:text="${response.requestNo()}"></div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Retail Onboarding</div>
+            <h1>Customer Account Opening Form</h1>
+            <div class="hero-note">Official account opening application prepared for branch onboarding, verification and approval.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Request No</span><strong th:text="${response.requestNo()}"></strong></div>
+            <div><span>Requested Date</span><strong th:text="${response.requestedDate()}"></strong></div>
+            <div><span>Status</span><strong th:text="${response.requestStatus()}"></strong></div>
+        </div>
+    </div>
+
+    <div class="info-layout">
+        <div class="info-card">
+            <div class="card-title">Applicant Information</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>Customer Name</span><strong th:text="${response.customerName()}"></strong></div>
+                <div class="info-row"><span>Customer Code</span><strong th:text="${response.customerCode()}"></strong></div>
+                <div class="info-row"><span>Branch ID</span><strong th:text="${response.branchId()}"></strong></div>
+                <div class="info-row"><span>Linked Account</span><strong th:text="${response.accountId() != null ? response.accountId() : '-'}"></strong></div>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="card-title">Requested Product</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>Account Type</span><strong th:text="${response.accountTypeName()}"></strong></div>
+                <div class="info-row"><span>Type Code</span><strong th:text="${response.accountTypeCode()}"></strong></div>
+                <div class="info-row"><span>Initial Deposit</span><strong th:text="${response.initialDepositAmount()}"></strong></div>
+                <div class="info-row"><span>Applicant Image</span><strong th:text="${response.applicantImageName() != null ? 'Attached in profile' : 'Not attached'}"></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric-card"><span>Workflow Status</span><strong th:text="${response.requestStatus()}"></strong></div>
+        <div class="metric-card"><span>Verified By</span><strong th:text="${response.verifiedBy() != null ? response.verifiedBy() : '-'}"></strong></div>
+        <div class="metric-card"><span>Approved By</span><strong th:text="${response.approvedBy() != null ? response.approvedBy() : '-'}"></strong></div>
+        <div class="metric-card"><span>Deposit Amount</span><strong th:text="${response.initialDepositAmount()}"></strong></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Review Note</div>
+        <div class="table-card">
+            <div class="info-row"><span>Remarks</span><strong th:text="${response.remarks() != null ? response.remarks() : 'No remarks recorded'}"></strong></div>
+            <div class="info-row"><span>Verified At</span><strong th:text="${response.verifiedAt() != null ? response.verifiedAt() : '-'}"></strong></div>
+            <div class="info-row"><span>Approved At</span><strong th:text="${response.approvedAt() != null ? response.approvedAt() : '-'}"></strong></div>
+        </div>
+    </div>
+
+    <div class="signature-strip">
+        <div class="signature-box"><span>Applicant Signature</span><strong>Customer / Applicant</strong></div>
+        <div class="signature-box"><span>Verifier Signature</span><strong th:text="${response.verifiedBy() != null ? response.verifiedBy() : 'Operations Officer'}"></strong></div>
+        <div class="signature-box"><span>Authorized Signature</span><strong th:text="${response.approvedBy() != null ? response.approvedBy() : 'Branch Manager'}"></strong></div>
+    </div>
+
+    <div class="doc-footer">
+        <div>Generated from SBMS | Account opening document preview / print / download copy</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>

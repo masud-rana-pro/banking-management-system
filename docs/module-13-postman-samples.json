@@ -1,0 +1,53 @@
+{
+  "module": "Module 13 - Deposit Scheme",
+  "baseUrl": "http://localhost:8080/api/deposit-schemes",
+  "notes": [
+    "Create all scheme masters first, then create enrollment rows.",
+    "Schedule and profit distribution rows are generated automatically from enrollment create flow.",
+    "For the current seeded environment, active account/customer pairs like 1/1, 3/3, 7/7, 9/9, 11/11, 13/13, 15/15 are valid.",
+    "If you want the same mix as current local seed, archive scheme ids 2 and 5 after creation, then mark enrollment ids 6, 10 and 14 as early withdrawal requested from SQL."
+  ],
+  "createSchemes": [
+    { "schemeCode": "", "schemeName": "Monthly Saver Plus", "schemeType": "MONTHLY_SAVINGS", "tenureMonths": 6, "minimumInstallment": 1000, "profitRatio": 4.5000, "profitFrequency": "MONTHLY" },
+    { "schemeCode": "", "schemeName": "Hajj Vision Plan", "schemeType": "HAJJ_SAVINGS", "tenureMonths": 12, "minimumInstallment": 1500, "profitRatio": 5.2500, "profitFrequency": "QUARTERLY" },
+    { "schemeCode": "", "schemeName": "Education Future Care", "schemeType": "EDUCATION_SAVINGS", "tenureMonths": 18, "minimumInstallment": 1200, "profitRatio": 5.1000, "profitFrequency": "HALF_YEARLY" },
+    { "schemeCode": "", "schemeName": "Marriage Goal Deposit", "schemeType": "MARRIAGE_SAVINGS", "tenureMonths": 24, "minimumInstallment": 2000, "profitRatio": 5.7500, "profitFrequency": "YEARLY" },
+    { "schemeCode": "", "schemeName": "Pension Comfort", "schemeType": "PENSION_SAVINGS", "tenureMonths": 12, "minimumInstallment": 1800, "profitRatio": 4.9500, "profitFrequency": "MONTHLY" },
+    { "schemeCode": "", "schemeName": "General Saver Mini", "schemeType": "GENERAL_SAVINGS", "tenureMonths": 6, "minimumInstallment": 900, "profitRatio": 4.2500, "profitFrequency": "MONTHLY" },
+    { "schemeCode": "", "schemeName": "Umrah Preparation Scheme", "schemeType": "HAJJ_SAVINGS", "tenureMonths": 9, "minimumInstallment": 1100, "profitRatio": 4.8500, "profitFrequency": "QUARTERLY" },
+    { "schemeCode": "", "schemeName": "Student Growth Deposit", "schemeType": "EDUCATION_SAVINGS", "tenureMonths": 12, "minimumInstallment": 800, "profitRatio": 4.4000, "profitFrequency": "MONTHLY" },
+    { "schemeCode": "", "schemeName": "Family Monthly Nest", "schemeType": "MONTHLY_SAVINGS", "tenureMonths": 18, "minimumInstallment": 1300, "profitRatio": 5.0000, "profitFrequency": "HALF_YEARLY" },
+    { "schemeCode": "", "schemeName": "Micro Saver Plan", "schemeType": "GENERAL_SAVINGS", "tenureMonths": 6, "minimumInstallment": 700, "profitRatio": 4.0000, "profitFrequency": "MONTHLY" },
+    { "schemeCode": "", "schemeName": "Women Prosperity Deposit", "schemeType": "GENERAL_SAVINGS", "tenureMonths": 12, "minimumInstallment": 1400, "profitRatio": 5.3500, "profitFrequency": "QUARTERLY" },
+    { "schemeCode": "", "schemeName": "Senior Peace Scheme", "schemeType": "PENSION_SAVINGS", "tenureMonths": 24, "minimumInstallment": 1600, "profitRatio": 5.6000, "profitFrequency": "HALF_YEARLY" },
+    { "schemeCode": "", "schemeName": "NRB Family Support", "schemeType": "GENERAL_SAVINGS", "tenureMonths": 9, "minimumInstallment": 1250, "profitRatio": 4.7000, "profitFrequency": "QUARTERLY" },
+    { "schemeCode": "", "schemeName": "Marriage Premium Shield", "schemeType": "MARRIAGE_SAVINGS", "tenureMonths": 12, "minimumInstallment": 2200, "profitRatio": 5.9000, "profitFrequency": "MONTHLY" },
+    { "schemeCode": "", "schemeName": "Digital Saver Flex", "schemeType": "MONTHLY_SAVINGS", "tenureMonths": 6, "minimumInstallment": 950, "profitRatio": 4.6500, "profitFrequency": "MONTHLY" }
+  ],
+  "createEnrollments": [
+    { "schemeId": 1, "customerId": 1, "linkedAccountId": 1, "startDate": "2025-01-01", "installmentAmount": 1500, "remarks": "Seed matured enrollment" },
+    { "schemeId": 2, "customerId": 3, "linkedAccountId": 3, "startDate": "2025-02-01", "installmentAmount": 1800, "remarks": "Seed matured enrollment" },
+    { "schemeId": 3, "customerId": 7, "linkedAccountId": 7, "startDate": "2025-03-01", "installmentAmount": 1600, "remarks": "Seed matured enrollment" },
+    { "schemeId": 4, "customerId": 9, "linkedAccountId": 9, "startDate": "2025-04-01", "installmentAmount": 2400, "remarks": "Seed matured enrollment" },
+    { "schemeId": 5, "customerId": 11, "linkedAccountId": 11, "startDate": "2025-05-01", "installmentAmount": 2000, "remarks": "Seed matured enrollment" },
+    { "schemeId": 6, "customerId": 13, "linkedAccountId": 13, "startDate": "2025-09-01", "installmentAmount": 1000, "remarks": "Active due enrollment" },
+    { "schemeId": 7, "customerId": 15, "linkedAccountId": 15, "startDate": "2025-10-01", "installmentAmount": 1250, "remarks": "Active due enrollment" },
+    { "schemeId": 8, "customerId": 1, "linkedAccountId": 1, "startDate": "2025-11-01", "installmentAmount": 900, "remarks": "Active due enrollment" },
+    { "schemeId": 9, "customerId": 3, "linkedAccountId": 3, "startDate": "2025-12-01", "installmentAmount": 1500, "remarks": "Active due enrollment" },
+    { "schemeId": 10, "customerId": 7, "linkedAccountId": 7, "startDate": "2026-01-01", "installmentAmount": 850, "remarks": "Fresh enrollment" },
+    { "schemeId": 11, "customerId": 9, "linkedAccountId": 9, "startDate": "2026-02-01", "installmentAmount": 1700, "remarks": "Fresh enrollment" },
+    { "schemeId": 12, "customerId": 11, "linkedAccountId": 11, "startDate": "2026-03-01", "installmentAmount": 1900, "remarks": "Fresh enrollment" },
+    { "schemeId": 13, "customerId": 13, "linkedAccountId": 13, "startDate": "2026-01-15", "installmentAmount": 1300, "remarks": "Quarterly enrollment" },
+    { "schemeId": 14, "customerId": 15, "linkedAccountId": 15, "startDate": "2026-02-15", "installmentAmount": 2500, "remarks": "Premium enrollment" },
+    { "schemeId": 15, "customerId": 1, "linkedAccountId": 1, "startDate": "2026-03-15", "installmentAmount": 1100, "remarks": "Digital enrollment" }
+  ],
+  "workflowExamples": {
+    "archiveScheme": "DELETE http://localhost:8080/api/deposit-schemes/2",
+    "restoreScheme": "PUT http://localhost:8080/api/deposit-schemes/2/restore",
+    "schemeList": "GET http://localhost:8080/api/deposit-schemes/list",
+    "enrollmentList": "GET http://localhost:8080/api/deposit-schemes/enrollment/list",
+    "scheduleView": "GET http://localhost:8080/api/deposit-schemes/enrollment/1/schedule",
+    "profitView": "GET http://localhost:8080/api/deposit-schemes/enrollment/1/profit",
+    "dashboard": "GET http://localhost:8080/api/deposit-schemes/dashboard-summary"
+  }
+}
