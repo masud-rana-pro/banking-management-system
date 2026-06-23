@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>ATM Terminal Profile</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band"><div class="doc-top-line"></div><div class="doc-top-title">ATM / CDM Terminal Profile</div><div class="doc-top-line"></div></div>
+  <div class="doc-accent"></div>
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Tagline</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Address</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Terminal Code</span>
+      <span class="doc-chip" th:text="${response.terminalCode}">ATM-01</span>
+      <div class="doc-chip-meta">Type: <strong th:text="${response.terminalType}">ATM</strong></div>
+      <div class="doc-chip-meta">Status: <strong th:text="${response.status}">ACTIVE</strong></div>
+    </div>
+  </div>
+
+  <div class="doc-title-row">
+    <div>
+      <div class="doc-section-kicker">Terminal Operations</div>
+      <h1 th:text="${response.terminalName}">Terminal Name</h1>
+      <div class="hero-note">Operational device profile with branch mapping, cash bin position and latest reconciliation footprint.</div>
+    </div>
+    <div class="doc-reference-box">
+      <div><span>Branch ID</span><strong th:text="${response.branchId}">1</strong></div>
+      <div><span>Install Date</span><strong th:text="${response.installDate != null ? #temporals.format(response.installDate,'dd MMM yyyy') : '-'}">-</strong></div>
+      <div><span>Vendor</span><strong th:text="${response.vendorName != null ? response.vendorName : '-'}">-</strong></div>
+      <div><span>IP Address</span><strong th:text="${response.ipAddress != null ? response.ipAddress : '-'}">-</strong></div>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card"><span>Cash Bins</span><strong th:text="${#lists.size(cashBins)}">0</strong></div>
+    <div class="metric-card"><span>Replenishments</span><strong th:text="${#lists.size(replenishments)}">0</strong></div>
+    <div class="metric-card"><span>Reconciliations</span><strong th:text="${#lists.size(reconciliations)}">0</strong></div>
+    <div class="metric-card"><span>Journal Events</span><strong th:text="${#lists.size(journal)}">0</strong></div>
+  </div>
+
+  <div class="info-layout">
+    <div class="info-card">
+      <div class="card-title">Terminal Detail</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Terminal Name</span><strong th:text="${response.terminalName}">-</strong></div>
+        <div class="info-row"><span>Terminal Type</span><strong th:text="${response.terminalType}">-</strong></div>
+        <div class="info-row"><span>Serial No</span><strong th:text="${response.serialNo != null ? response.serialNo : '-'}">-</strong></div>
+        <div class="info-row"><span>Location Note</span><strong th:text="${response.locationNote != null ? response.locationNote : '-'}">-</strong></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Latest Operations</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Latest Replenishment</span><strong th:text="${latestReplenishment != null and latestReplenishment.replenishmentDate != null ? #temporals.format(latestReplenishment.replenishmentDate,'dd MMM yyyy') : '-'}">-</strong></div>
+        <div class="info-row"><span>Latest Reconciliation</span><strong th:text="${latestReconciliation != null and latestReconciliation.reconDate != null ? #temporals.format(latestReconciliation.reconDate,'dd MMM yyyy') : '-'}">-</strong></div>
+        <div class="info-row"><span>Latest Variance</span><strong th:text="${latestReconciliation != null and latestReconciliation.varianceAmount != null ? #numbers.formatDecimal(latestReconciliation.varianceAmount,1,'COMMA',2,'POINT') : '0.00'}">0.00</strong></div>
+        <div class="info-row"><span>Current Status</span><strong th:text="${response.status}">ACTIVE</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Cash Bin Summary</div>
+    <table>
+      <thead><tr><th>Bin No</th><th>Denomination</th><th>Current Count</th><th>Current Amount</th><th>Status</th></tr></thead>
+      <tbody>
+      <tr th:each="item : ${cashBins}">
+        <td th:text="${item.binNo}">1</td>
+        <td th:text="${item.denomination}">1000</td>
+        <td th:text="${item.currentCount}">0</td>
+        <td th:text="${#numbers.formatDecimal(item.currentAmount,1,'COMMA',2,'POINT')}">0.00</td>
+        <td th:text="${item.status}">ACTIVE</td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(cashBins)}"><td colspan="5" class="empty-row">No cash bin configured for this terminal.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Recent Device Journal</div>
+    <table>
+      <thead><tr><th>Event Type</th><th>Reference</th><th>Amount</th><th>Status</th><th>Event Date</th></tr></thead>
+      <tbody>
+      <tr th:each="item : ${journal}">
+        <td th:text="${item.eventType}">EVENT</td>
+        <td th:text="${item.referenceNo}">REF</td>
+        <td th:text="${item.amount != null ? #numbers.formatDecimal(item.amount,1,'COMMA',2,'POINT') : '0.00'}">0.00</td>
+        <td th:text="${item.status}">ACTIVE</td>
+        <td th:text="${item.eventDate != null ? #temporals.format(item.eventDate,'dd MMM yyyy hh:mm a') : '-'}">-</td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(journal)}"><td colspan="5" class="empty-row">No journal activity available.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="doc-footer"><div>System-generated ATM terminal profile for operations, audit and field support.</div><div th:text="${bankContact}">Contact</div></div>
+</div>
+</body>
+</html>

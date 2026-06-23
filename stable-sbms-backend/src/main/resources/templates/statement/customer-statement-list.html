@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Customer Statement Export</title>
+    <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Statement Register Export</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent customer-accent"></div>
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img class="doc-logo" th:if="${logoDataUri}" th:src="${logoDataUri}" alt="Logo" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Bank</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}">Tagline</div>
+                <div class="doc-bank-sub" th:text="${bankAddress}">Address</div>
+                <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Register Type</div>
+            <div class="doc-chip">Statement Register</div>
+            <div class="doc-chip-meta" th:text="${generatedAt}">Generated At</div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Statement Operations Register</div>
+            <h1>Customer Statement Register</h1>
+            <div class="hero-note">Register of generated customer statement requests, balances and transaction activity.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Search</span><strong th:text="${searchLabel}">All</strong></div>
+            <div><span>Status</span><strong th:text="${statusLabel}">All</strong></div>
+            <div><span>Total Requests</span><strong th:text="${totalCount}">0</strong></div>
+        </div>
+    </div>
+
+    <div class="meta-grid">
+        <div class="meta-item"><span>Total Balance</span><strong th:text="${totalBalance}">0.00</strong></div>
+        <div class="meta-item"><span>Total Debit</span><strong th:text="${totalDebit}">0.00</strong></div>
+        <div class="meta-item"><span>Total Credit</span><strong th:text="${totalCredit}">0.00</strong></div>
+        <div class="meta-item"><span>Profit Posted</span><strong th:text="${profitPosted}">0.00</strong></div>
+    </div>
+
+    <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><span>Transactions</span><strong th:text="${transactionCount}">0</strong></div>
+        <div class="metric-card"><span>Register Rows</span><strong th:text="${totalCount}">0</strong></div>
+        <div class="metric-card"><span>Review Scope</span><strong>Customer Statements</strong></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Request Register</div>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Request No</th>
+                <th>Customer</th>
+                <th>Account</th>
+                <th>Period</th>
+                <th>Status</th>
+                <th>Transactions</th>
+                <th>Balance</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, stat : ${items}">
+                <td th:text="${stat.count}">1</td>
+                <td th:text="${item.requestNo()}">REQ</td>
+                <td th:text="${item.customerCode() + ' - ' + item.customerName()}">Customer</td>
+                <td th:text="${item.accountNumber()}">Account</td>
+                <td th:text="${item.dateFrom() + ' to ' + item.dateTo()}">Range</td>
+                <td th:text="${item.requestStatus()}">Status</td>
+                <td th:text="${item.transactionCount()}">0</td>
+                <td th:text="${item.currentBalance()}">0.00</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(items)}">
+                <td colspan="8" class="empty-row">No customer statement request found for the selected filter.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="doc-footer">
+        <div>Generated from SBMS statement register export.</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>

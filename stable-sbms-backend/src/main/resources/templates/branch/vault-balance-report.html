@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vault Balance Report</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band"><div class="doc-top-line"></div><div class="doc-top-title">Vault Balance Report</div><div class="doc-top-line"></div></div>
+  <div class="doc-accent"></div>
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Vault Reference</span>
+      <span class="doc-chip" th:text="${'VAULT-' + item.id}">VAULT-1</span>
+      <div class="doc-chip-meta">Branch: <strong th:text="${branch != null ? branch.branchName : 'Branch #' + item.branchId}">Branch</strong></div>
+      <div class="doc-chip-meta">Issued: <strong th:text="${issuedDate}">16 May 2026</strong></div>
+    </div>
+  </div>
+  <div class="metric-grid">
+    <div class="metric-card"><span>Opening Balance</span><strong th:text="${#numbers.formatDecimal(item.openingBalance,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Total Cash In</span><strong th:text="${#numbers.formatDecimal(item.totalCashIn,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Total Cash Out</span><strong th:text="${#numbers.formatDecimal(item.totalCashOut,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Closing Balance</span><strong th:text="${#numbers.formatDecimal(item.closingBalance,1,'COMMA',2,'POINT')}">0.00</strong></div>
+  </div>
+  <div class="info-layout">
+    <div class="info-card">
+      <div class="card-title">Vault Posture</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Balance Date</span><strong th:text="${item.balanceDate}">2026-05-16</strong></div>
+        <div class="info-row"><span>Status</span><strong th:text="${item.status}">ACTIVE</strong></div>
+        <div class="info-row"><span>Is Closed</span><strong th:text="${item.isClosed ? 'YES' : 'NO'}">NO</strong></div>
+        <div class="info-row"><span>Closed By</span><strong th:text="${item.closedBy != null ? item.closedBy : '-'}">-</strong></div>
+        <div class="info-row"><span>Closed At</span><strong th:text="${item.closedAt != null ? #temporals.format(item.closedAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+        <div class="info-row"><span>Created At</span><strong th:text="${item.createdAt != null ? #temporals.format(item.createdAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Branch Information</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Branch Code</span><strong th:text="${branch != null ? branch.branchCode : item.branchId}">001</strong></div>
+        <div class="info-row"><span>Branch Name</span><strong th:text="${branch != null ? branch.branchName : 'Branch #' + item.branchId}">Branch</strong></div>
+        <div class="info-row"><span>Routing No</span><strong th:text="${branch != null ? branch.routingNo : '-'}">-</strong></div>
+        <div class="info-row"><span>Opened Date</span><strong th:text="${branch != null and branch.openedDate != null ? branch.openedDate : '-'}">-</strong></div>
+        <div class="info-row"><span>Remarks</span><strong th:text="${item.remarks != null ? item.remarks : '-'}">-</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="signature-strip">
+    <div class="signature-box"><span>Prepared By</span><strong>Vault Officer</strong></div>
+    <div class="signature-box"><span>Reviewed By</span><strong>Cash Control</strong></div>
+    <div class="signature-box"><span>Authorized By</span><strong>Branch Manager</strong></div>
+  </div>
+  <div class="doc-footer">
+    <div>This report is generated from the branch vault module for operational review and closing evidence.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

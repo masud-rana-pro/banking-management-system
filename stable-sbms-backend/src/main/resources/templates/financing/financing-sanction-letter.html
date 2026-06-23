@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Financing Sanction Letter</title>
+    <style th:text="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Islamic Banking Document Template</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent" style="background:linear-gradient(90deg,#0c5d44,#d4af37,#1f6d57);"></div>
+
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" th:alt="${bankName}" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}"></div>
+                <div class="doc-bank-sub" th:text="${bankAddress}"></div>
+                <div class="doc-bank-sub" th:text="${bankContact}"></div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Letter Type</div>
+            <div class="doc-chip">Sanction Letter</div>
+            <div class="doc-chip-meta" th:text="${response.applicationNo}"></div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Financing Desk</div>
+            <h1>Loan / Investment Sanction Letter</h1>
+            <div class="hero-note">Sanction advice prepared for Islamic financing approval, customer briefing and branch execution.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Application No</span><strong th:text="${response.applicationNo}"></strong></div>
+            <div><span>Approval Status</span><strong th:text="${response.applicationStatus}"></strong></div>
+            <div><span>Approved By</span><strong th:text="${response.approvedBy != null ? response.approvedBy : '-'}"></strong></div>
+        </div>
+    </div>
+
+    <div class="info-layout">
+        <div class="info-card">
+            <div class="card-title">Applicant &amp; Product</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>Customer</span><strong th:text="${response.customerName}"></strong></div>
+                <div class="info-row"><span>Customer Code</span><strong th:text="${response.customerCode}"></strong></div>
+                <div class="info-row"><span>Product</span><strong th:text="${response.productName}"></strong></div>
+                <div class="info-row"><span>Type</span><strong th:text="${response.financingType}"></strong></div>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="card-title">Sanction Terms</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>Requested Amount</span><strong th:text="${response.requestedAmount}"></strong></div>
+                <div class="info-row"><span>Branch ID</span><strong th:text="${response.branchId}"></strong></div>
+                <div class="info-row"><span>Total Outstanding</span><strong th:text="${response.totalOutstandingAmount}"></strong></div>
+                <div class="info-row"><span>Total Paid</span><strong th:text="${response.totalPaidAmount}"></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Letter Body</div>
+        <div class="table-card">
+            <div class="info-row"><span>Purpose</span><strong th:text="${response.purpose}"></strong></div>
+            <div class="info-row"><span>Asset Description</span><strong th:text="${response.assetDescription}"></strong></div>
+            <div class="info-row"><span>Supporting Document</span><strong th:text="${response.supportingDocumentName != null ? response.supportingDocumentName : 'No supporting document linked'}"></strong></div>
+            <div class="info-row"><span>Management Remarks</span><strong th:text="${response.remarks != null ? response.remarks : 'No remarks recorded'}"></strong></div>
+        </div>
+    </div>
+
+    <div class="metric-grid">
+        <div class="metric-card"><span>Schedule Count</span><strong th:text="${scheduleCount}"></strong></div>
+        <div class="metric-card"><span>Disbursement Ref</span><strong th:text="${disbursementNo}"></strong></div>
+        <div class="metric-card"><span>Disbursement Amount</span><strong th:text="${disbursedAmount}"></strong></div>
+        <div class="metric-card"><span>Charity Amount</span><strong th:text="${response.totalCharityAmount}"></strong></div>
+    </div>
+
+    <div class="signature-strip">
+        <div class="signature-box"><span>Prepared By</span><strong>Investment Officer</strong></div>
+        <div class="signature-box"><span>Reviewed By</span><strong th:text="${response.approvedBy != null ? response.approvedBy : 'Shariah / Operations'}"></strong></div>
+        <div class="signature-box"><span>Authorized Signature</span><strong>Branch / Head Office</strong></div>
+    </div>
+
+    <div class="doc-footer">
+        <div>Generated from SBMS | Financing sanction letter preview / print / download copy</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>

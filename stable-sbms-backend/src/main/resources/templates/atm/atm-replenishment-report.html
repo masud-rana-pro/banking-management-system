@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>ATM Replenishment Report</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band"><div class="doc-top-line"></div><div class="doc-top-title">ATM / CDM Replenishment Report</div><div class="doc-top-line"></div></div>
+  <div class="doc-accent"></div>
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Tagline</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Address</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Replenishment Ref</span>
+      <span class="doc-chip" th:text="${'REP-' + response.id}">REP-1</span>
+      <div class="doc-chip-meta">Terminal: <strong th:text="${response.terminalCode}">ATM-01</strong></div>
+      <div class="doc-chip-meta">Status: <strong th:text="${response.status}">COMPLETED</strong></div>
+    </div>
+  </div>
+
+  <div class="doc-title-row">
+    <div>
+      <div class="doc-section-kicker">Cash Loading Record</div>
+      <h1>ATM Replenishment Report</h1>
+      <div class="hero-note">Official ATM/CDM loading record showing quantity, amount, operator and execution detail.</div>
+    </div>
+    <div class="doc-reference-box">
+      <div><span>Replenishment Date</span><strong th:text="${response.replenishmentDate != null ? #temporals.format(response.replenishmentDate,'dd MMM yyyy') : '-'}">-</strong></div>
+      <div><span>Terminal Name</span><strong th:text="${response.terminalName}">Terminal</strong></div>
+      <div><span>Performed By</span><strong th:text="${response.performedBy != null ? response.performedBy : '-'}">-</strong></div>
+      <div><span>Created At</span><strong th:text="${response.createdAt != null ? #temporals.format(response.createdAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card"><span>Bin No</span><strong th:text="${response.binNo}">A1</strong></div>
+    <div class="metric-card"><span>Denomination</span><strong th:text="${response.denomination}">1000</strong></div>
+    <div class="metric-card"><span>Quantity Added</span><strong th:text="${response.quantityAdded}">100</strong></div>
+    <div class="metric-card"><span>Amount Added</span><strong th:text="${response.amountAdded != null ? #numbers.formatDecimal(response.amountAdded,1,'COMMA',2,'POINT') : '0.00'}">0.00</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Execution Detail</div>
+    <table>
+      <tbody>
+      <tr><th>Terminal Code</th><td th:text="${response.terminalCode}">ATM-01</td></tr>
+      <tr><th>Terminal Name</th><td th:text="${response.terminalName}">Terminal</td></tr>
+      <tr><th>Bin No</th><td th:text="${response.binNo}">A1</td></tr>
+      <tr><th>Denomination</th><td th:text="${response.denomination}">1000</td></tr>
+      <tr><th>Quantity Added</th><td th:text="${response.quantityAdded}">100</td></tr>
+      <tr><th>Amount Added</th><td th:text="${response.amountAdded != null ? #numbers.formatDecimal(response.amountAdded,1,'COMMA',2,'POINT') : '0.00'}">0.00</td></tr>
+      <tr><th>Performed By</th><td th:text="${response.performedBy != null ? response.performedBy : '-'}">-</td></tr>
+      <tr><th>Status</th><td th:text="${response.status}">COMPLETED</td></tr>
+      <tr><th>Remarks</th><td th:text="${response.remarks != null ? response.remarks : '-'}">-</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="signature-strip">
+    <div class="signature-box"><span>Prepared By</span><strong th:text="${response.performedBy != null ? response.performedBy : '-'}">-</strong></div>
+    <div class="signature-box"><span>Terminal</span><strong th:text="${response.terminalCode}">ATM-01</strong></div>
+    <div class="signature-box"><span>Record Type</span><strong>System Generated</strong></div>
+  </div>
+
+  <div class="doc-footer"><div>System-generated replenishment report for branch cash operations and ATM control review.</div><div th:text="${bankContact}">Contact</div></div>
+</div>
+</body>
+</html>

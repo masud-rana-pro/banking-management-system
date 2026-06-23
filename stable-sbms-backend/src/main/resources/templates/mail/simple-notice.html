@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${headline}">System Notice</title>
+</head>
+<body style="margin:0;padding:0;background:#edf5f7;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;background:#edf5f7;">
+    <tr>
+        <td align="center" style="padding:28px 12px;">
+            <table role="presentation" width="660" cellspacing="0" cellpadding="0" style="width:100%;max-width:660px;border-collapse:separate;border-spacing:0;background:#ffffff;border:1px solid #d8e7ee;border-radius:22px;overflow:hidden;box-shadow:0 18px 42px rgba(15,23,42,0.10);">
+                <tr>
+                    <td style="height:8px;background:#0f9d94;border-right:220px solid #2b6cb0;"></td>
+                </tr>
+                <tr>
+                    <td style="padding:28px 32px 8px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                            <tr>
+                                <td width="72" valign="middle" style="width:72px;">
+                                    <img th:if="${logoSrc != null and !#strings.isEmpty(logoSrc)}" th:src="${logoSrc}" alt="Bank Logo" width="58" height="58" style="display:block;width:58px;height:58px;border-radius:16px;border:1px solid #cfe5df;background:#f7fbfa;padding:7px;object-fit:contain;" />
+                                </td>
+                                <td valign="middle" style="padding-left:14px;">
+                                    <div style="font-size:11px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#0f9d94;">Automated Notice</div>
+                                    <div style="font-size:24px;line-height:1.15;font-weight:800;color:#07152d;" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+                                    <div style="font-size:13px;line-height:1.45;color:#506784;" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:18px 32px 6px;">
+                        <div style="font-size:28px;line-height:1.18;font-weight:800;color:#07152d;" th:text="${headline}">System Notice</div>
+                        <div style="margin-top:10px;font-size:14px;line-height:1.7;color:#475569;" th:text="${intro}">An automated update is available for you.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:16px 32px 0;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate;border-spacing:0;border:1px solid #e1ebf0;background:#f8fbfd;border-radius:16px;">
+                            <tr>
+                                <td style="padding:16px 18px;font-size:14px;line-height:1.8;color:#334155;" th:utext="${primaryDetails}">
+                                    Primary details
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr th:if="${secondaryDetails != null}">
+                    <td style="padding:14px 32px 0;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                            <tr>
+                                <td style="font-size:13px;line-height:1.7;color:#64748b;" th:text="${secondaryDetails}">Secondary details</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr th:if="${ctaUrl != null}">
+                    <td style="padding:22px 32px 4px;">
+                        <a th:href="${ctaUrl}" style="display:inline-block;padding:12px 20px;border-radius:12px;background:#0f9d94;color:#ffffff;text-decoration:none;font-size:14px;font-weight:800;" th:text="${ctaLabel}">Open</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:20px 32px 26px;font-size:12px;line-height:1.7;color:#64748b;">
+                        Need help? Contact <strong style="color:#0f172a;" th:text="${supportEmail}">support@albarakahbank.local</strong>
+                        <span style="color:#b6c2cf;"> | </span>
+                        <strong style="color:#0f172a;" th:text="${supportPhone}">+880 2 000000</strong>.
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:16px 32px;background:#f8fbfd;border-top:1px solid #e5eef3;font-size:11px;line-height:1.6;color:#8a9aad;">
+                        &copy; <span th:text="${currentYear}">2026</span> <span th:text="${bankName}">Al-Barakah Shariah Bank PLC</span>. This message was generated automatically by SBMS.
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

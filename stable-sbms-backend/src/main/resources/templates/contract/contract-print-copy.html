@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contract Print Copy</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band">
+    <div class="doc-top-line"></div>
+    <div class="doc-top-title">Contract Print Copy</div>
+    <div class="doc-top-line"></div>
+  </div>
+  <div class="doc-accent"></div>
+
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Contract No</span>
+      <span class="doc-chip" th:text="${item.contractNo}">CTR-00001</span>
+      <div class="doc-chip-meta">Template: <strong th:text="${item.templateCode}">TMP-01</strong></div>
+      <div class="doc-chip-meta">Issued: <strong th:text="${issuedDate}">16 May 2026</strong></div>
+    </div>
+  </div>
+
+  <div class="doc-title-row">
+    <div>
+      <div class="doc-section-kicker">Customer Agreement Copy</div>
+      <h1 th:text="${item.templateName}">Murabaha Contract</h1>
+      <div class="hero-note">
+        Contract Type:
+        <strong th:text="${item.contractType}">MURABAHA</strong>
+        &#160;|&#160; Customer:
+        <strong th:text="${item.customerCode + ' - ' + item.customerName}">CUS-0001 - Customer</strong>
+      </div>
+    </div>
+    <div class="doc-reference-box">
+      <div><span>Reference Module</span><strong th:text="${item.referenceModule}">FINANCING</strong></div>
+      <div><span>Reference ID</span><strong th:text="${item.referenceId}">12</strong></div>
+      <div><span>Contract Status</span><strong th:text="${item.contractStatus}">LOCKED</strong></div>
+      <div><span>Version</span><strong th:text="${'v' + item.templateVersionNo}">v1</strong></div>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card"><span>Customer Signer</span><strong th:text="${item.signedByCustomer != null ? item.signedByCustomer : 'Pending'}">Pending</strong></div>
+    <div class="metric-card"><span>Shariah Signer</span><strong th:text="${item.signedByShariah != null ? item.signedByShariah : 'Pending'}">Pending</strong></div>
+    <div class="metric-card"><span>Signed Date</span><strong th:text="${item.signedDate != null ? #temporals.format(item.signedDate,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+    <div class="metric-card"><span>Supporting File</span><strong th:text="${item.supportingDocumentName != null ? item.supportingDocumentName : '-'}">-</strong></div>
+  </div>
+
+  <div class="dual-meta">
+    <div class="info-card">
+      <div class="card-title">Contract Posture</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Template</span><strong th:text="${item.templateName}">Template</strong></div>
+        <div class="info-row"><span>Version</span><strong th:text="${item.templateVersionNo}">1</strong></div>
+        <div class="info-row"><span>Created At</span><strong th:text="${item.createdAt != null ? #temporals.format(item.createdAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+        <div class="info-row"><span>Updated At</span><strong th:text="${item.updatedAt != null ? #temporals.format(item.updatedAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Approval Note</div>
+      <div class="legal-note">
+        <span class="approval-ribbon" th:text="${item.contractStatus}">LOCKED</span>
+        <p style="margin:14px 0 0;">This print copy is generated from the active contract ledger of SBMS and is suitable for customer file, branch review, Shariah board review and audit evidence.</p>
+        <p style="margin:10px 0 0;">Remarks: <strong th:text="${item.remarks != null ? item.remarks : '-'}">-</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="legal-card">
+    <div class="section-title" style="padding-top:24px;">Contract Text</div>
+    <div class="legal-body" th:text="${item.contractText}">Contract body goes here.</div>
+  </div>
+
+  <div class="signature-strip">
+    <div class="signature-box"><span>Customer Signature</span><strong th:text="${item.signedByCustomer != null ? item.signedByCustomer : 'Pending'}">Pending</strong></div>
+    <div class="signature-box"><span>Shariah Signature</span><strong th:text="${item.signedByShariah != null ? item.signedByShariah : 'Pending'}">Pending</strong></div>
+    <div class="signature-box"><span>Authorized Copy</span><strong>System Generated</strong></div>
+  </div>
+
+  <div class="doc-footer">
+    <div>This contract copy is generated from the banking contract registry and should be preserved with the related customer file.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

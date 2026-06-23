@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Charity Payout Receipt</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band">
+    <div class="doc-top-line"></div>
+    <div class="doc-top-title">Charity Payout Receipt</div>
+    <div class="doc-top-line"></div>
+  </div>
+  <div class="doc-accent"></div>
+
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Receipt No</span>
+      <span class="doc-chip" th:text="${'PAY-' + item.id}">PAY-1</span>
+      <div class="doc-chip-meta">Issued: <strong th:text="${issuedDate}">16 May 2026</strong></div>
+      <div class="doc-chip-meta">Status: <strong th:text="${item.status}">ACTIVE</strong></div>
+    </div>
+  </div>
+
+  <div class="doc-title-row">
+    <div>
+      <div class="doc-section-kicker">Zakat &amp; Charity Distribution</div>
+      <h1>Beneficiary Payout Receipt</h1>
+      <div class="hero-note">Official acknowledgement of a charity disbursement from the zakat and charity fund ledger.</div>
+    </div>
+    <div class="doc-reference-box">
+      <div><span>Beneficiary Code</span><strong th:text="${item.beneficiaryCode}">BEN-0001</strong></div>
+      <div><span>Beneficiary Name</span><strong th:text="${item.beneficiaryName}">Beneficiary</strong></div>
+      <div><span>Payout Date</span><strong th:text="${item.payoutDate}">2026-05-16</strong></div>
+      <div><span>Approved By</span><strong th:text="${item.approvedBy}">Officer</strong></div>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card"><span>Payout Amount</span><strong th:text="${'BDT ' + #numbers.formatDecimal(item.amount,1,'COMMA',2,'POINT')}">BDT 0.00</strong></div>
+    <div class="metric-card"><span>Beneficiary</span><strong th:text="${item.beneficiaryCode + ' - ' + item.beneficiaryName}">BEN-0001 - Name</strong></div>
+    <div class="metric-card"><span>Approved By</span><strong th:text="${item.approvedBy}">Officer</strong></div>
+    <div class="metric-card"><span>Created At</span><strong th:text="${item.createdAt != null ? #temporals.format(item.createdAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+  </div>
+
+  <div class="receipt-panel">
+    <div class="receipt-highlight">
+      <div class="card-title">Official Receipt Statement</div>
+      <div class="receipt-note">
+        This is to acknowledge that an approved charity payout amounting to
+        <strong th:text="${'BDT ' + #numbers.formatDecimal(item.amount,1,'COMMA',2,'POINT')}">BDT 0.00</strong>
+        has been released in favour of
+        <strong th:text="${item.beneficiaryName}">Beneficiary</strong>
+        under beneficiary code
+        <strong th:text="${item.beneficiaryCode}">BEN-0001</strong>.
+      </div>
+      <div class="receipt-note" style="margin-top:12px;">
+        Remarks:
+        <strong th:text="${item.remarks != null ? item.remarks : '-'}">-</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-layout">
+    <div class="info-card">
+      <div class="card-title">Beneficiary File</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Beneficiary Code</span><strong th:text="${item.beneficiaryCode}">BEN-0001</strong></div>
+        <div class="info-row"><span>Beneficiary Name</span><strong th:text="${item.beneficiaryName}">Beneficiary</strong></div>
+        <div class="info-row"><span>Payout Date</span><strong th:text="${item.payoutDate}">2026-05-16</strong></div>
+        <div class="info-row"><span>Status</span><strong th:text="${item.status}">ACTIVE</strong></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Control Reference</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Receipt No</span><strong th:text="${'PAY-' + item.id}">PAY-1</strong></div>
+        <div class="info-row"><span>Approved By</span><strong th:text="${item.approvedBy}">Officer</strong></div>
+        <div class="info-row"><span>Issued Date</span><strong th:text="${issuedDate}">16 May 2026</strong></div>
+        <div class="info-row"><span>Amount</span><strong th:text="${'BDT ' + #numbers.formatDecimal(item.amount,1,'COMMA',2,'POINT')}">BDT 0.00</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Disbursement Detail</div>
+    <table>
+      <tbody>
+      <tr><th>Receipt Reference</th><td th:text="${'PAY-' + item.id}">PAY-1</td></tr>
+      <tr><th>Beneficiary</th><td th:text="${item.beneficiaryCode + ' - ' + item.beneficiaryName}">BEN-0001 - Name</td></tr>
+      <tr><th>Payout Date</th><td th:text="${item.payoutDate}">2026-05-16</td></tr>
+      <tr><th>Amount</th><td th:text="${'BDT ' + #numbers.formatDecimal(item.amount,1,'COMMA',2,'POINT')}">BDT 0.00</td></tr>
+      <tr><th>Approved By</th><td th:text="${item.approvedBy}">Officer</td></tr>
+      <tr><th>Remarks</th><td th:text="${item.remarks != null ? item.remarks : '-'}">-</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="signature-strip">
+    <div class="signature-box"><span>Prepared By</span><strong>Zakat Operations</strong></div>
+    <div class="signature-box"><span>Approved By</span><strong th:text="${item.approvedBy}">Officer</strong></div>
+    <div class="signature-box"><span>Receipt Date</span><strong th:text="${issuedDate}">16 May 2026</strong></div>
+  </div>
+
+  <div class="doc-footer">
+    <div>This receipt is system generated and may be used for beneficiary file, charity audit and fund reconciliation.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

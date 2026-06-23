@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>ATM Cash Bin Profile</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band"><div class="doc-top-line"></div><div class="doc-top-title">ATM Cash Bin Profile</div><div class="doc-top-line"></div></div>
+  <div class="doc-accent"></div>
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Tagline</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Address</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Bin No</span>
+      <span class="doc-chip" th:text="${response.binNo}">A1</span>
+      <div class="doc-chip-meta">Terminal: <strong th:text="${response.terminalCode}">ATM-01</strong></div>
+      <div class="doc-chip-meta">Status: <strong th:text="${response.status}">ACTIVE</strong></div>
+    </div>
+  </div>
+
+  <div class="doc-title-row">
+    <div>
+      <div class="doc-section-kicker">Cash Position</div>
+      <h1>Terminal Cash Bin Profile</h1>
+      <div class="hero-note">Operational cash cassette profile with denomination, capacity and real cash position for reconciliation support.</div>
+    </div>
+    <div class="doc-reference-box">
+      <div><span>Terminal Name</span><strong th:text="${response.terminalName}">Terminal</strong></div>
+      <div><span>Created At</span><strong th:text="${response.createdAt != null ? #temporals.format(response.createdAt,'dd MMM yyyy hh:mm a') : '-'}">-</strong></div>
+      <div><span>Current Count</span><strong th:text="${response.currentCount}">0</strong></div>
+      <div><span>Current Amount</span><strong th:text="${response.currentAmount != null ? #numbers.formatDecimal(response.currentAmount,1,'COMMA',2,'POINT') : '0.00'}">0.00</strong></div>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card"><span>Denomination</span><strong th:text="${response.denomination}">1000</strong></div>
+    <div class="metric-card"><span>Capacity</span><strong th:text="${response.maxCapacity}">0</strong></div>
+    <div class="metric-card"><span>Current Count</span><strong th:text="${response.currentCount}">0</strong></div>
+    <div class="metric-card"><span>Status</span><strong th:text="${response.status}">ACTIVE</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Profile Detail</div>
+    <table>
+      <tbody>
+      <tr><th>Terminal Code</th><td th:text="${response.terminalCode}">ATM-01</td></tr>
+      <tr><th>Terminal Name</th><td th:text="${response.terminalName}">Terminal</td></tr>
+      <tr><th>Bin No</th><td th:text="${response.binNo}">A1</td></tr>
+      <tr><th>Denomination</th><td th:text="${response.denomination}">1000</td></tr>
+      <tr><th>Maximum Capacity</th><td th:text="${response.maxCapacity}">1000</td></tr>
+      <tr><th>Current Count</th><td th:text="${response.currentCount}">400</td></tr>
+      <tr><th>Current Amount</th><td th:text="${response.currentAmount != null ? #numbers.formatDecimal(response.currentAmount,1,'COMMA',2,'POINT') : '0.00'}">0.00</td></tr>
+      <tr><th>Status</th><td th:text="${response.status}">ACTIVE</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="doc-footer"><div>System-generated cash bin control profile for ATM operations and internal control review.</div><div th:text="${bankContact}">Contact</div></div>
+</div>
+</body>
+</html>

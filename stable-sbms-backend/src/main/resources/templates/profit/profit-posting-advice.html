@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profit Posting Advice</title>
+  <style th:utext="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band"><div class="doc-top-line"></div><div class="doc-top-title">Profit Posting Advice</div><div class="doc-top-line"></div></div>
+  <div class="doc-accent"></div>
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Posting Ref</span>
+      <span class="doc-chip" th:text="${item.postingRef}">PRF-00001</span>
+      <div class="doc-chip-meta">Issued: <strong th:text="${issuedDate}">16 May 2026</strong></div>
+      <div class="doc-chip-meta">Status: <strong th:text="${item.status}">POSTED</strong></div>
+    </div>
+  </div>
+  <div class="metric-grid">
+    <div class="metric-card"><span>Profit Amount</span><strong th:text="${#numbers.formatDecimal(item.profitAmount,1,'COMMA',2,'POINT')}">0.00</strong></div>
+    <div class="metric-card"><span>Posting Date</span><strong th:text="${item.postingDate}">2026-05-16</strong></div>
+    <div class="metric-card"><span>Account</span><strong th:text="${item.accountNumber}">12345</strong></div>
+    <div class="metric-card"><span>Ratio Code</span><strong th:text="${item.ratioCode != null ? item.ratioCode : '-'}">-</strong></div>
+  </div>
+  <div class="info-layout">
+    <div class="info-card">
+      <div class="card-title">Posting Detail</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Customer</span><strong th:text="${item.customerCode + ' - ' + item.customerName}">Customer</strong></div>
+        <div class="info-row"><span>Schedule ID</span><strong th:text="${item.scheduleId}">1</strong></div>
+        <div class="info-row"><span>Frequency</span><strong th:text="${item.profitFrequency}">MONTHLY</strong></div>
+        <div class="info-row"><span>Posted By</span><strong th:text="${item.postedBy != null ? item.postedBy : '-'}">-</strong></div>
+        <div class="info-row"><span>Period From</span><strong th:text="${item.periodFrom}">2026-05-01</strong></div>
+        <div class="info-row"><span>Period To</span><strong th:text="${item.periodTo}">2026-05-31</strong></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Balance Snapshot</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Closing Balance</span><strong th:text="${item.snapshotBalance != null ? #numbers.formatDecimal(item.snapshotBalance,1,'COMMA',2,'POINT') : '-'}">-</strong></div>
+        <div class="info-row"><span>Average Balance</span><strong th:text="${item.snapshotAverageBalance != null ? #numbers.formatDecimal(item.snapshotAverageBalance,1,'COMMA',2,'POINT') : '-'}">-</strong></div>
+        <div class="info-row"><span>Failure Reason</span><strong th:text="${item.failureReason != null ? item.failureReason : '-'}">-</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="signature-strip">
+    <div class="signature-box"><span>Prepared By</span><strong>Profit Engine</strong></div>
+    <div class="signature-box"><span>Checked By</span><strong>Finance Control</strong></div>
+    <div class="signature-box"><span>Authorized Copy</span><strong>System Generated</strong></div>
+  </div>
+  <div class="doc-footer">
+    <div>This advice is generated from the profit posting engine for customer account review and finance audit reference.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

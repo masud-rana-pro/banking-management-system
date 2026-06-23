@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transaction Voucher</title>
+  <style th:text="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+  <div class="doc-top-band">
+    <div class="doc-top-line"></div>
+    <div class="doc-top-title">Official Transaction Voucher</div>
+    <div class="doc-top-line"></div>
+  </div>
+  <div class="doc-accent"></div>
+
+  <div class="doc-header">
+    <div class="doc-brand-row">
+      <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" alt="Bank Logo" />
+      <div class="doc-bank-meta">
+        <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank PLC</div>
+        <div class="doc-bank-sub" th:text="${bankTagline}">Islamic Banking Document &amp; Report Center</div>
+        <div class="doc-bank-sub" th:text="${bankAddress}">Head Office</div>
+        <div class="doc-bank-sub" th:text="${bankContact}">Contact</div>
+      </div>
+    </div>
+    <div class="doc-chip-panel">
+      <span class="doc-chip-label">Voucher Code</span>
+      <span class="doc-chip" th:text="${response.transactionRef()}">TXN-000001</span>
+      <div class="doc-chip-meta">Status: <strong th:text="${response.transactionStatus()}">POSTED</strong></div>
+      <div class="doc-chip-meta">Channel: <strong th:text="${response.channelType()}">BRANCH_COUNTER</strong></div>
+    </div>
+  </div>
+
+  <div class="doc-title-row">
+    <div>
+      <div class="doc-section-kicker">Transaction Posting Record</div>
+      <h1 th:text="${response.transactionType() + ' Voucher'}">Deposit Voucher</h1>
+      <div class="hero-note">Official transaction voucher generated from the SBMS posting engine for branch service and audit record.</div>
+    </div>
+    <div class="doc-reference-box">
+      <div><span>Transaction Date</span><strong th:text="${response.transactionDate() != null ? #temporals.format(response.transactionDate(),'dd MMM yyyy hh:mm a') : '-'}">15 May 2026</strong></div>
+      <div><span>Branch ID</span><strong th:text="${response.branchId() != null ? response.branchId() : '-'}">1</strong></div>
+      <div><span>Posted By</span><strong th:text="${response.postedBy() != null ? response.postedBy() : '-'}">admin</strong></div>
+      <div><span>Approved By</span><strong th:text="${response.approvedBy() != null ? response.approvedBy() : '-'}">manager</strong></div>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card"><span>Amount</span><strong th:text="${response.amount() != null ? #numbers.formatDecimal(response.amount(),1,'COMMA',2,'POINT') : '0.00'}">0.00</strong></div>
+    <div class="metric-card"><span>Debit Account</span><strong th:text="${response.debitAccountNumber() != null ? response.debitAccountNumber() : '-'}">-</strong></div>
+    <div class="metric-card"><span>Credit Account</span><strong th:text="${response.creditAccountNumber() != null ? response.creditAccountNumber() : '-'}">-</strong></div>
+    <div class="metric-card"><span>Reversal Flag</span><strong th:text="${response.reversalFlag() != null and response.reversalFlag() ? 'YES' : 'NO'}">NO</strong></div>
+  </div>
+
+  <div class="info-layout">
+    <div class="info-card">
+      <div class="card-title">Debit / Withdrawal Side</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Customer</span><strong th:text="${debitCustomer}">-</strong></div>
+        <div class="info-row"><span>Account</span><strong th:text="${response.debitAccountNumber() != null ? response.debitAccountNumber() : '-'}">-</strong></div>
+        <div class="info-row"><span>Cash Direction</span><strong th:text="${response.cashDirection() != null ? response.cashDirection() : '-'}">-</strong></div>
+        <div class="info-row"><span>Teller User</span><strong th:text="${response.tellerUserId() != null ? response.tellerUserId() : '-'}">-</strong></div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Credit / Deposit Side</div>
+      <div class="info-grid info-grid-2">
+        <div class="info-row"><span>Customer</span><strong th:text="${creditCustomer}">-</strong></div>
+        <div class="info-row"><span>Account</span><strong th:text="${response.creditAccountNumber() != null ? response.creditAccountNumber() : '-'}">-</strong></div>
+        <div class="info-row"><span>Transfer Mode</span><strong th:text="${response.transferMode() != null ? response.transferMode() : '-'}">-</strong></div>
+        <div class="info-row"><span>Cheque Status</span><strong th:text="${response.chequeStatus() != null ? response.chequeStatus() : '-'}">-</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Narration &amp; Audit Detail</div>
+    <table>
+      <tbody>
+      <tr>
+        <th>Narration</th>
+        <td th:text="${response.narration() != null ? response.narration() : '-'}">Narration</td>
+      </tr>
+      <tr>
+        <th>Transfer Remarks</th>
+        <td th:text="${response.transferRemarks() != null ? response.transferRemarks() : '-'}">-</td>
+      </tr>
+      <tr>
+        <th>Cheque No / Drawee Bank</th>
+        <td th:text="${(response.chequeNo() != null ? response.chequeNo() : '-') + ' / ' + (response.draweeBank() != null ? response.draweeBank() : '-')}">-</td>
+      </tr>
+      <tr>
+        <th>Reversal Reference</th>
+        <td th:text="${response.parentTransactionRef() != null ? response.parentTransactionRef() : '-'}">-</td>
+      </tr>
+      <tr>
+        <th>Reversal Reason</th>
+        <td th:text="${response.reversalReason() != null ? response.reversalReason() : '-'}">-</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="signature-strip">
+    <div class="signature-box"><span>Posted By</span><strong th:text="${response.postedBy() != null ? response.postedBy() : '-'}">-</strong></div>
+    <div class="signature-box"><span>Approved By</span><strong th:text="${response.approvedBy() != null ? response.approvedBy() : '-'}">-</strong></div>
+    <div class="signature-box"><span>Customer Service Copy</span><strong>System Generated</strong></div>
+  </div>
+
+  <div class="doc-footer">
+    <div>This voucher is system generated and valid for branch operation, review and customer support.</div>
+    <div th:text="${bankContact}">Contact</div>
+  </div>
+</div>
+</body>
+</html>

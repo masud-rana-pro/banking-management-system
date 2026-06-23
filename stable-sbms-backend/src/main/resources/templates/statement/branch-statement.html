@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Branch Statement</title>
+    <style th:text="${documentStyle}"></style>
+</head>
+<body>
+<div class="doc-shell">
+    <div class="doc-top-band">
+        <div class="doc-top-line"></div>
+        <div class="doc-top-title">Official Branch Statement</div>
+        <div class="doc-top-line"></div>
+    </div>
+    <div class="doc-accent branch-accent"></div>
+    <div class="doc-header">
+        <div class="doc-brand-row">
+            <img th:if="${logoDataUri != null and !#strings.isEmpty(logoDataUri)}" class="doc-logo" th:src="${logoDataUri}" th:alt="${bankName}" />
+            <div class="doc-bank-meta">
+                <div class="doc-brand" th:text="${bankName}">Al-Barakah Shariah Bank</div>
+                <div class="doc-bank-sub" th:text="${bankTagline}"></div>
+                <div class="doc-bank-sub" th:text="${bankAddress}"></div>
+                <div class="doc-bank-sub" th:text="${bankContact}"></div>
+            </div>
+        </div>
+        <div class="doc-chip-panel">
+            <div class="doc-chip-label">Document Type</div>
+            <div class="doc-chip">Daily Cash Report</div>
+            <div class="doc-chip-meta" th:text="|Request ${response.requestNo()}|"></div>
+        </div>
+    </div>
+
+    <div class="doc-title-row">
+        <div>
+            <div class="doc-section-kicker">Branch Operations Statement</div>
+            <h1>Branch Statement & Cash Summary</h1>
+            <div class="hero-note">Branch cash, vault and transaction movement summary for the selected operational period.</div>
+        </div>
+        <div class="doc-reference-box">
+            <div><span>Statement Ref</span><strong th:text="${response.requestNo()}"></strong></div>
+            <div><span>Status</span><strong th:text="${response.requestStatus()}"></strong></div>
+            <div><span>Requested By</span><strong th:text="${response.requestedBy()}"></strong></div>
+        </div>
+    </div>
+
+    <div class="info-layout">
+        <div class="info-card">
+            <div class="card-title">Branch Information</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>Branch Name</span><strong th:text="${response.branchName()}"></strong></div>
+                <div class="info-row"><span>Branch Code</span><strong th:text="${response.branchCode()}"></strong></div>
+                <div class="info-row"><span>Date From</span><strong th:text="${response.dateFrom()}"></strong></div>
+                <div class="info-row"><span>Date To</span><strong th:text="${response.dateTo()}"></strong></div>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="card-title">Operational Snapshot</div>
+            <div class="info-grid info-grid-2">
+                <div class="info-row"><span>Total Amount</span><strong th:text="${response.totalTransactionAmount()}"></strong></div>
+                <div class="info-row"><span>Vault Closing</span><strong th:text="${response.vaultClosingBalance()}"></strong></div>
+                <div class="info-row"><span>Cash In</span><strong th:text="${response.totalCashIn()}"></strong></div>
+                <div class="info-row"><span>Cash Out</span><strong th:text="${response.totalCashOut()}"></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><span>Transaction Count</span><strong th:text="${response.transactionCount()}"></strong></div>
+        <div class="metric-card"><span>Total Amount</span><strong th:text="${response.totalTransactionAmount()}"></strong></div>
+        <div class="metric-card"><span>Total Cash In</span><strong th:text="${response.totalCashIn()}"></strong></div>
+        <div class="metric-card"><span>Total Cash Out</span><strong th:text="${response.totalCashOut()}"></strong></div>
+        <div class="metric-card"><span>Vault Closing Balance</span><strong th:text="${response.vaultClosingBalance()}"></strong></div>
+        <div class="metric-card"><span>Active Terminals</span><strong th:text="${response.activeTerminalCount()}"></strong></div>
+    </div>
+
+    <div class="visual-section">
+        <div class="visual-card">
+            <h3>Cash Flow Split</h3>
+            <p>Cash in and cash out comparison for the requested branch period.</p>
+            <div class="bar-track">
+                <div class="bar-fill primary" th:style="|width:${cashInShare}%|"></div>
+                <div class="bar-fill danger" th:style="|width:${cashOutShare}%|"></div>
+            </div>
+            <div class="legend-row">
+                <span th:text="|Cash In ${response.totalCashIn()}|"></span>
+                <span th:text="|Cash Out ${response.totalCashOut()}|"></span>
+            </div>
+        </div>
+        <div class="visual-card">
+            <h3>Operational Snapshot</h3>
+            <p>High-level branch movement and self-service footprint summary.</p>
+            <div class="legend-row"><span>Total Amount</span><strong th:text="${response.totalTransactionAmount()}"></strong></div>
+            <div class="legend-row"><span>Vault Closing Balance</span><strong th:text="${response.vaultClosingBalance()}"></strong></div>
+            <div class="legend-row"><span>Active Terminals</span><strong th:text="${response.activeTerminalCount()}"></strong></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Operational Lines</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th>Channel</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>Narration</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(response.lines())}">
+                <td colspan="7" class="empty-row">No branch operational rows found for the selected range.</td>
+            </tr>
+            <tr th:each="line : ${response.lines()}">
+                <td th:text="${line.lineDate()}"></td>
+                <td th:text="${line.lineType()}"></td>
+                <td th:text="${line.referenceNo()}"></td>
+                <td th:text="${line.channel()}"></td>
+                <td th:text="${line.debitAmount()}"></td>
+                <td th:text="${line.creditAmount()}"></td>
+                <td th:text="${line.narration()}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="signature-strip">
+        <div class="signature-box"><span>Prepared By</span><strong>Branch Cash Desk</strong></div>
+        <div class="signature-box"><span>Checked By</span><strong>Branch Manager</strong></div>
+        <div class="signature-box"><span>Authorized By</span><strong>Operations Control</strong></div>
+    </div>
+
+    <div class="doc-footer">
+        <div>Generated from SBMS branch operations register.</div>
+        <div th:text="${bankContact}"></div>
+    </div>
+</div>
+</body>
+</html>
