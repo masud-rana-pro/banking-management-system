@@ -1,0 +1,505 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Financing Dashboard"
+    subtitle="Track financing demand, approval readiness, disbursement exposure, product appetite and repayment risk in one portfolio cockpit">
+
+    <button *ngIf="can('REPORTING_REGULATORY_ACCESS')" class="btn btn-outline-secondary" routerLink="/reports/financing-portfolio" title="Open financing portfolio report">
+      <i class="fa fa-bar-chart"></i> Portfolio Report
+    </button>
+
+    <button *ngIf="can('REPORTING_REGULATORY_ACCESS')" class="btn btn-outline-secondary" type="button" (click)="openRecoveryReport()" title="Open loan recovery report">
+      <i class="fa fa-life-ring"></i> Recovery Report
+    </button>
+
+    <button *ngIf="can('FINANCING_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openProducts()" title="Open financing product list">
+      <i class="fa fa-tags"></i> Product List
+    </button>
+
+    <button *ngIf="can('FINANCING_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openApplications()" title="Open financing applications">
+      <i class="fa fa-folder-open"></i> Application List
+    </button>
+
+    <button *ngIf="can('FINANCING_COLLECT_PAYMENT')" class="btn btn-outline-primary" type="button" (click)="openRecoveryQueue()" title="Open overdue recovery queue">
+      <i class="fa fa-credit-card"></i> Recovery Queue
+    </button>
+
+    <button *ngIf="can('FINANCING_APPLICATION_CREATE')" class="btn btn-primary" type="button" (click)="openNewApplication()" title="Create financing application">
+      <i class="fa fa-plus"></i> New Application
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading financing dashboard...
+  </div>
+
+  <div *ngIf="!loading && summary as item" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow">
+            <span class="taka-icon" aria-hidden="true">&#2547;</span>
+            Financing Book
+          </span>
+        </div>
+
+        <h3 class="dashboard-title">Portfolio scale, product demand and disbursement pulse at a glance</h3>
+        <p class="dashboard-subtitle">
+          Move quickly between product appetite, approval pressure and repayment risk without leaving the executive financing view.
+        </p>
+
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Disbursed Amount</span>
+            <div class="dashboard-hero-metric-value">{{ item.disbursedAmount | number:'1.2-2' }}</div>
+            <div class="dashboard-hero-metric-note">current value already moved into customer use</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Approval Rate</span>
+            <div class="dashboard-hero-metric-value">{{ approvalRate }}%</div>
+            <div class="dashboard-hero-metric-note">approved share across visible application funnel</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Average Ticket</span>
+            <div class="dashboard-hero-metric-value">{{ averageTicket | number:'1.2-2' }}</div>
+            <div class="dashboard-hero-metric-note">mean requested amount across recent files</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Risk and Pipeline</span>
+            <h3 class="dashboard-title">Collection and review pressure</h3>
+            <p class="dashboard-subtitle">Keep one eye on overdue schedules while managing the queue that is nearing approval or disbursement.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-focus-value">{{ item.overdueInstallments || 0 }}</div>
+        <div class="dashboard-focus-note">installments currently overdue and likely to need collection follow-up</div>
+
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Pending</span>
+            <strong class="dashboard-mini-value">{{ item.pendingApplications || 0 }}</strong>
+            <span class="dashboard-mini-note">files still moving through review stages</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Approved</span>
+            <strong class="dashboard-mini-value">{{ item.approvedApplications || 0 }}</strong>
+            <span class="dashboard-mini-note">cases ready for final execution steps</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Charity Fee Pool</span>
+            <strong class="dashboard-mini-value">{{ item.charityLateFeeAmount | number:'1.2-2' }}</strong>
+            <span class="dashboard-mini-note">late-fee charity amount under administration</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Product Demand</span>
+            <strong class="dashboard-mini-value">{{ item.financingByProduct.length }}</strong>
+            <span class="dashboard-mini-note">financing product families in visible demand</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-chip-row">
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Recent Files</span>
+        <strong class="dashboard-chip-value">{{ item.recentApplications.length }}</strong>
+        <span class="dashboard-chip-note">fresh applications visible on the executive surface</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Portfolio Demand</span>
+        <strong class="dashboard-chip-value">{{ productBars.length }}</strong>
+        <span class="dashboard-chip-note">product families contributing to demand mix</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Approval Health</span>
+        <strong class="dashboard-chip-value">{{ approvalRate }}%</strong>
+        <span class="dashboard-chip-note">current conversion between pending and approved pipeline</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Repayment Risk</span>
+        <strong class="dashboard-chip-value">{{ item.overdueInstallments }}</strong>
+        <span class="dashboard-chip-note">overdue installments visible right now</span>
+      </div>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Pending Applications</div><div class="summary-value">{{ item.pendingApplications || 0 }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Approved Applications</div><div class="summary-value">{{ item.approvedApplications || 0 }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon primary"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Disbursed Amount</div><div class="summary-value small">{{ item.disbursedAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div>
+        <div><div class="summary-label">Overdue Installments</div><div class="summary-value">{{ item.overdueInstallments || 0 }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-heart"></i></div>
+        <div><div class="summary-label">Charity Late Fee</div><div class="summary-value small">{{ item.charityLateFeeAmount | number:'1.2-2' }}</div></div>
+      </div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Pipeline Distribution</h4>
+            <p class="dashboard-subtitle">Portfolio split across review queue, approved files, overdue pressure and the live financing book.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="financingPipelineGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ item.pendingApplications + item.approvedApplications }}</div>
+                  <div class="dashboard-donut-label">visible pipeline files under review or approval</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-legend">
+            <div *ngFor="let metric of pipelineLegend" class="dashboard-legend-item">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="metric.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ metric.label }}</span>
+                  <span class="dashboard-legend-note">{{ metric.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ metric.value }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Product Demand Profile</h4>
+            <p class="dashboard-subtitle">Each vertical bar shows how many financing applications belong to a product. Taller bars mean stronger current customer demand.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+
+        <div *ngIf="productColumns.length; else noMetrics" class="dashboard-column-chart financing-product-chart">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of productAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let metric of productColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ metric.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + metric.tone" [style.height.%]="metric.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="metric.label">{{ metric.shortLabel }}</span>
+            <span class="dashboard-column-caption">{{ metric.label }}</span>
+          </div>
+        </div>
+        <div class="dashboard-chart-note" *ngIf="productBars.length">
+          <strong>What this chart means</strong>
+          <span>The highest bar marks the most-requested financing product in the current pipeline and recent file mix.</span>
+        </div>
+        <ng-template #noMetrics>
+          <div class="empty-mini">No financing application metric found.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Application Momentum</h4>
+            <p class="dashboard-subtitle">Recent application value movement over time using the latest submitted financing files.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+        </div>
+
+        <div *ngIf="applicationTrendPoints.length; else noRecentAmounts" class="financing-line-chart-shell">
+          <svg class="financing-line-chart" viewBox="0 0 520 220" preserveAspectRatio="none">
+            <line x1="28" y1="28" x2="28" y2="196" class="financing-line-axis"></line>
+            <line x1="28" y1="196" x2="492" y2="196" class="financing-line-axis"></line>
+            <line x1="28" y1="150" x2="492" y2="150" class="financing-line-grid"></line>
+            <line x1="28" y1="104" x2="492" y2="104" class="financing-line-grid"></line>
+            <line x1="28" y1="58" x2="492" y2="58" class="financing-line-grid"></line>
+            <path [attr.d]="applicationTrendAreaPath" class="financing-line-area"></path>
+            <path [attr.d]="applicationTrendPath" class="financing-line-path"></path>
+            <g *ngFor="let point of applicationTrendPoints">
+              <circle
+                class="financing-line-point"
+                [class.active]="point.applicationId === selectedApplication?.id"
+                [attr.cx]="point.x"
+                [attr.cy]="point.y"
+                r="6"
+                (click)="selectTrendPoint(point)">
+              </circle>
+            </g>
+          </svg>
+
+          <div class="financing-line-axis-labels">
+            <button
+              *ngFor="let point of applicationTrendPoints"
+              type="button"
+              class="financing-line-label"
+              [class.active]="point.applicationId === selectedApplication?.id"
+              (click)="selectTrendPoint(point)">
+              <strong>{{ point.label }}</strong>
+              <span>{{ point.fullLabel }}</span>
+            </button>
+          </div>
+
+          <div class="dashboard-chart-note" *ngIf="selectedApplication">
+            <strong>{{ selectedApplication.applicationNo }}</strong>
+            <span>{{ selectedApplication.customerName }} | {{ selectedApplication.requestedAmount | number:'1.2-2' }} | {{ getLabel(selectedApplication.applicationStatus) }}</span>
+          </div>
+        </div>
+        <ng-template #noRecentAmounts>
+          <div class="empty-mini">No recent financing application found.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Requested Amount Ranking</h4>
+            <p class="dashboard-subtitle">Largest recent files by requested amount with immediate customer and workflow posture.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-signal"></i></span>
+        </div>
+
+        <div *ngIf="recentAmountBars.length; else noRanking" class="dashboard-bar-list">
+          <button
+            *ngFor="let metric of recentAmountBars"
+            type="button"
+            class="dashboard-bar-item dashboard-bar-item-action"
+            [class.active]="metric.id === selectedApplication?.id"
+            (click)="selectApplication(metric.id)">
+            <div class="dashboard-bar-head">
+              <span class="dashboard-bar-label">{{ metric.label }}</span>
+              <span class="dashboard-bar-value">{{ metric.value | number:'1.2-2' }}</span>
+            </div>
+            <div class="dashboard-bar-track">
+              <div class="dashboard-bar-fill" [ngClass]="'tone-' + metric.tone" [style.width.%]="metric.share"></div>
+            </div>
+            <span class="dashboard-bar-note">{{ metric.note }}</span>
+          </button>
+        </div>
+        <ng-template #noRanking>
+          <div class="empty-mini">No ranked financing files found.</div>
+        </ng-template>
+      </article>
+    </section>
+
+    <section class="dashboard-analytics-grid financing-analytics-grid mt-3">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Exposure Comparison</h4>
+            <p class="dashboard-subtitle">Requested amount against current outstanding exposure for the heaviest financing files.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-columns"></i></span>
+        </div>
+
+        <div *ngIf="exposureColumns.length; else noExposure" class="financing-double-column-chart">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of exposureAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <button
+            *ngFor="let metric of exposureColumns"
+            type="button"
+            class="financing-double-column"
+            [class.active]="metric.id === selectedApplication?.id"
+            (click)="selectExposureColumn(metric)">
+            <div class="financing-double-column-plot">
+              <div class="financing-double-column-bar requested" [style.height.%]="metric.requestedHeight"></div>
+              <div class="financing-double-column-bar outstanding" [style.height.%]="metric.outstandingHeight"></div>
+            </div>
+            <span class="financing-double-column-label">{{ metric.shortLabel }}</span>
+            <small>{{ metric.note }}</small>
+          </button>
+        </div>
+
+        <div class="financing-double-legend">
+          <span><i class="legend-dot requested"></i> Requested</span>
+          <span><i class="legend-dot outstanding"></i> Outstanding</span>
+        </div>
+        <ng-template #noExposure>
+          <div class="empty-mini">No exposure comparison available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Portfolio Control Matrix</h4>
+            <p class="dashboard-subtitle">Financing type concentration across review, approval, live-book and exception states.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+        </div>
+
+        <div class="financing-heatmap" *ngIf="portfolioHeatRows.length; else noHeat">
+          <div class="financing-heatmap-head">
+            <span>Type</span>
+            <span *ngFor="let cell of portfolioHeatRows[0].cells">{{ cell.label }}</span>
+          </div>
+          <div class="financing-heatmap-row" *ngFor="let row of portfolioHeatRows">
+            <span class="financing-heatmap-label">{{ row.label }}</span>
+            <div
+              *ngFor="let cell of row.cells"
+              class="financing-heatmap-cell"
+              [style.opacity]="cell.intensity / 100"
+              [attr.title]="row.label + ' | ' + cell.label + ' : ' + cell.value">
+              <strong>{{ cell.value }}</strong>
+            </div>
+          </div>
+        </div>
+        <ng-template #noHeat>
+          <div class="empty-mini">No portfolio control matrix available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel financing-spotlight-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Selected Financing File</h4>
+            <p class="dashboard-subtitle">Live customer and file context from the currently selected application across the charts.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-user-circle-o"></i></span>
+        </div>
+
+        <div class="financing-spotlight-card" *ngIf="selectedApplication as application; else noSpotlight">
+          <div class="financing-spotlight-head">
+            <img
+              *ngIf="getCustomerImageUrl(application.customerId); else financingSpotlightFallback"
+              class="financing-spotlight-avatar"
+              [src]="getCustomerImageUrl(application.customerId)"
+              [alt]="application.customerName">
+            <ng-template #financingSpotlightFallback>
+              <span class="financing-spotlight-avatar financing-spotlight-fallback">
+                <i class="fa fa-user"></i>
+              </span>
+            </ng-template>
+
+            <div class="financing-spotlight-copy">
+              <h5>{{ application.customerName }}</h5>
+              <div class="financing-spotlight-meta">{{ application.customerCode }} | {{ application.applicationNo }}</div>
+              <app-status-badge [status]="application.applicationStatus"></app-status-badge>
+            </div>
+          </div>
+
+          <div class="financing-spotlight-grid">
+            <div class="financing-spotlight-metric">
+              <span>Product</span>
+              <strong>{{ application.productName }}</strong>
+            </div>
+            <div class="financing-spotlight-metric">
+              <span>Financing Type</span>
+              <strong>{{ getLabel(application.financingType) }}</strong>
+            </div>
+            <div class="financing-spotlight-metric">
+              <span>Requested</span>
+              <strong>{{ application.requestedAmount | number:'1.2-2' }}</strong>
+            </div>
+            <div class="financing-spotlight-metric">
+              <span>Outstanding</span>
+              <strong>{{ application.totalOutstandingAmount | number:'1.2-2' }}</strong>
+            </div>
+            <div class="financing-spotlight-metric">
+              <span>Total Paid</span>
+              <strong>{{ application.totalPaidAmount | number:'1.2-2' }}</strong>
+            </div>
+            <div class="financing-spotlight-metric">
+              <span>Charity Amount</span>
+              <strong>{{ application.totalCharityAmount | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+
+          <div class="dashboard-info-stack financing-risk-stack">
+            <div *ngFor="let row of riskRows" class="dashboard-info-row">
+              <span class="dashboard-info-label">{{ row.label }}</span>
+              <span class="dashboard-info-value">{{ row.value }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noSpotlight>
+          <div class="empty-mini">No financing file selected.</div>
+        </ng-template>
+      </article>
+    </section>
+
+    <div class="table-card mt-3">
+      <div class="card-heading">
+        <i class="fa fa-user-circle-o"></i>
+        <div>
+          <h4>Recent Customer Files</h4>
+          <p>Latest financing applications with customer photo, product and workflow posture.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Application</th>
+              <th>Product</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let application of item.recentApplications | slice:0:6">
+              <td>
+                <div class="entity-inline-profile">
+                  <img *ngIf="getCustomerImageUrl(application.customerId); else financingDashboardAvatarFallback" class="entity-avatar" [src]="getCustomerImageUrl(application.customerId)" [alt]="application.customerName">
+                  <ng-template #financingDashboardAvatarFallback>
+                    <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                  </ng-template>
+                  <div>
+                    <strong>{{ application.customerName }}</strong><br>
+                    <span>{{ application.customerCode }}</span>
+                  </div>
+                </div>
+              </td>
+              <td><strong>{{ application.applicationNo }}</strong><br><span>{{ application.createdAt || '-' }}</span></td>
+              <td><strong>{{ application.productName }}</strong><br><span>{{ application.productCode }}</span></td>
+              <td>{{ application.requestedAmount | number:'1.2-2' }}</td>
+              <td><app-status-badge [status]="application.applicationStatus"></app-status-badge></td>
+              <td class="text-center"><button class="action-btn view" type="button" (click)="openView(application.id)" title="Open financing application"><i class="fa fa-eye"></i></button></td>
+            </tr>
+            <tr *ngIf="!item.recentApplications.length">
+              <td colspan="6" class="text-center">No recent financing application found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

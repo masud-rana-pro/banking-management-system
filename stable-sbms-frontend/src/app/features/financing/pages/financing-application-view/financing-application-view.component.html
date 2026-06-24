@@ -1,0 +1,252 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/applications"
+    currentLabel="Application View">
+  </app-page-header>
+
+  <app-page-title
+    title="Financing Application View"
+    subtitle="Review application data, asset verification, disbursement, schedule and repayment posture before the next workflow action">
+
+    <button class="btn btn-outline-secondary" routerLink="/financing/applications">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="previewSanctionLetter()" [disabled]="!item">
+      <i class="fa fa-eye"></i> Preview Letter
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="downloadSanctionLetter()" [disabled]="!item">
+      <i class="fa fa-download"></i> Download PDF
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openEdit()" [disabled]="!item">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openReview()" [disabled]="!item">
+      <i class="fa fa-check-square-o"></i> Review
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openDisbursement()" [disabled]="!item">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Disbursement
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openSchedule()" [disabled]="!item">
+      <i class="fa fa-calendar"></i> Schedule
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openRepayment()" [disabled]="!item">
+      <i class="fa fa-credit-card"></i> Repayment
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openContracts()" [disabled]="!item">
+      <i class="fa fa-file-text-o"></i> Contracts
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="generateContract()" [disabled]="!item">
+      <i class="fa fa-plus-circle"></i> Generate Contract
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openShariahCases()">
+      <i class="fa fa-balance-scale"></i> Shariah Cases
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="submitShariahCase()" [disabled]="!item">
+      <i class="fa fa-gavel"></i> Submit Review
+    </button>
+
+    <button *ngIf="item?.applicationStatus === 'DRAFT' || item?.applicationStatus === 'RETURNED'" class="btn btn-primary" type="button" (click)="submit()">
+      <i class="fa fa-paper-plane"></i> Submit
+    </button>
+
+    <button *ngIf="item?.status !== 'ARCHIVED'" class="btn btn-outline-danger" type="button" (click)="toggleArchive()" [disabled]="!item">
+      <i class="fa fa-archive"></i> Archive
+    </button>
+
+    <button *ngIf="item?.status === 'ARCHIVED'" class="btn btn-outline-success" type="button" (click)="toggleArchive()" [disabled]="!item">
+      <i class="fa fa-undo"></i> Restore
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading financing application view...
+  </div>
+
+  <div *ngIf="!loading && item as application">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <img *ngIf="customerImageUrl; else financingViewHeroFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="application.customerName">
+        <ng-template #financingViewHeroFallback>
+          <div class="hero-icon"><i class="fa fa-folder-open-o"></i></div>
+        </ng-template>
+        <div>
+          <h3>{{ application.applicationNo }}</h3>
+          <p>{{ application.customerCode }} | {{ application.customerName }} | {{ application.productCode }} | {{ getBranchName(application.branchId) }}</p>
+        </div>
+      </div>
+      <div>
+        <app-status-badge [status]="application.applicationStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Requested Amount</div><div class="summary-value small">{{ application.requestedAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-credit-card"></i></div>
+        <div><div class="summary-label">Total Paid</div><div class="summary-value small">{{ application.totalPaidAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-balance-scale"></i></div>
+        <div><div class="summary-label">Outstanding</div><div class="summary-value small">{{ application.totalOutstandingAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-heart"></i></div>
+        <div><div class="summary-label">Charity Fee</div><div class="summary-value small">{{ application.totalCharityAmount | number:'1.2-2' }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Application Snapshot</h4>
+            <p>Customer, product, branch and purpose captured at initiation time.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+          <div class="info-row"><span>Customer</span><strong>{{ application.customerName }}</strong></div>
+          <div class="info-row"><span>Customer Code</span><strong>{{ application.customerCode }}</strong></div>
+          <div class="info-row"><span>Product</span><strong>{{ application.productName }}</strong></div>
+          <div class="info-row"><span>Financing Type</span><strong>{{ getLabel(application.financingType) }}</strong></div>
+          <div class="info-row"><span>Branch</span><strong>{{ getBranchName(application.branchId) }}</strong></div>
+          <div class="info-row"><span>Purpose</span><strong>{{ application.purpose }}</strong></div>
+          <div class="info-row">
+            <span>Supporting Document</span>
+            <strong>
+              <ng-container *ngIf="application.supportingDocumentName; else noSupportingDocument">
+                <button class="btn btn-sm btn-outline-primary" type="button" (click)="previewSupportingDocument()">
+                  <i class="fa fa-eye"></i> {{ application.supportingDocumentName | displayFileName }}
+                </button>
+              </ng-container>
+              <ng-template #noSupportingDocument>-</ng-template>
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-cube"></i>
+          <div>
+            <h4>Asset & Workflow</h4>
+            <p>Asset verification, remarks and approval trail for financing control.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Asset Description</span><strong>{{ application.assetDescription }}</strong></div>
+          <div class="info-row"><span>Workflow Status</span><strong>{{ getLabel(application.applicationStatus) }}</strong></div>
+          <div class="info-row"><span>Submitted At</span><strong>{{ application.submittedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Approved By</span><strong>{{ application.approvedBy || '-' }}</strong></div>
+          <div class="info-row"><span>Approved At</span><strong>{{ application.approvedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Remarks</span><strong>{{ application.remarks || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-check-square-o"></i>
+          <div>
+            <h4>Asset Verification</h4>
+            <p>Verified asset value and verification note captured during review.</p>
+          </div>
+        </div>
+        <div *ngIf="application.assetVerification; else noVerification" class="info-list">
+          <div class="info-row"><span>Asset Value</span><strong>{{ application.assetVerification?.assetValue | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Verified By</span><strong>{{ application.assetVerification?.verifiedBy }}</strong></div>
+          <div class="info-row"><span>Verified At</span><strong>{{ application.assetVerification?.verifiedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Note</span><strong>{{ application.assetVerification?.verificationNote }}</strong></div>
+        </div>
+        <ng-template #noVerification>
+          <div class="empty-mini">Asset verification not completed yet.</div>
+        </ng-template>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+          <div>
+            <h4>Disbursement</h4>
+            <p>Disbursement reference and credited account information.</p>
+          </div>
+        </div>
+        <div *ngIf="application.disbursement; else noDisbursement" class="info-list">
+          <div class="info-row"><span>Disbursement No</span><strong>{{ application.disbursement?.disbursementNo }}</strong></div>
+          <div class="info-row"><span>Date</span><strong>{{ application.disbursement?.disbursementDate }}</strong></div>
+          <div class="info-row"><span>Amount</span><strong>{{ application.disbursement?.disbursedAmount | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Credited Account</span><strong>{{ application.disbursement?.creditedAccountNumber || application.disbursement?.creditedAccountId }}</strong></div>
+          <div class="info-row"><span>Disbursed By</span><strong>{{ application.disbursement?.disbursedBy }}</strong></div>
+        </div>
+        <ng-template #noDisbursement>
+          <div class="empty-mini">Disbursement not completed yet.</div>
+        </ng-template>
+      </div>
+
+      <div class="table-card" style="grid-column: 1 / -1;">
+        <div class="card-heading">
+          <i class="fa fa-calendar"></i>
+          <div>
+            <h4>Installment Schedule</h4>
+            <p>Installment, profit, charity fee and payment posture for the financing account.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Due Date</th>
+                <th>Principal</th>
+                <th>Profit</th>
+                <th>Charity</th>
+                <th>Paid</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let schedule of application.schedules">
+                <td>{{ schedule.installmentNo }}</td>
+                <td>{{ schedule.dueDate }}</td>
+                <td>{{ schedule.principalAmount | number:'1.2-2' }}</td>
+                <td>{{ schedule.profitAmount | number:'1.2-2' }}</td>
+                <td>{{ schedule.charityAmount | number:'1.2-2' }}</td>
+                <td>{{ schedule.paidAmount | number:'1.2-2' }}</td>
+                <td><app-status-badge [status]="schedule.scheduleStatus"></app-status-badge></td>
+              </tr>
+              <tr *ngIf="!application.schedules.length">
+                <td colspan="7" class="text-center">No schedule generated yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

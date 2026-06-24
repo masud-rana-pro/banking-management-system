@@ -1,0 +1,60 @@
+.sbms-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
+.action-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: all 0.15s ease;
+  background: transparent;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+}
+
+/* View */
+.action-btn.view {
+  color: var(--info);
+  background: var(--info-bg);
+  border-color: rgba(37,99,235,0.15);
+
+  &:hover {
+    background: #bfdbfe;
+    border-color: rgba(37,99,235,0.3);
+  }
+}
+
+/* Edit */
+.action-btn.edit {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: rgba(var(--primary-rgb),0.15);
+
+  &:hover {
+    background: #99f6e4;
+    border-color: rgba(var(--primary-rgb),0.3);
+  }
+}
+
+/* Delete */
+.action-btn.delete {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: rgba(220,38,38,0.15);
+
+  &:hover {
+    background: #fecaca;
+    border-color: rgba(220,38,38,0.3);
+  }
+}

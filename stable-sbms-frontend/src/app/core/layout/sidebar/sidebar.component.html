@@ -1,0 +1,112 @@
+<aside
+  class="app-sidebar"
+  [class.collapsed]="collapsed && !mobileOpen"
+  [class.mobile-open]="mobileOpen"
+>
+  <!-- BRAND -->
+  <div class="sidebar-fixed-top">
+    <div class="sidebar-inner">
+      <div class="brand-box">
+        <div class="brand-logo">
+          <img src="assets/branding/sbms-logo-mark.png" sizes="" alt="SBMS logo">
+        </div>
+        <div class="brand-text" *ngIf="!collapsed || mobileOpen">
+          <h4>Al-Barakah <br> Shariah Bank PLC</h4>
+          <small>{{ 'Banking Management System' | sbmsTranslate }}</small>
+        </div>
+      </div>
+
+      <div class="role-pill" *ngIf="!collapsed || mobileOpen">
+        <i class="bi bi-shield-check me-1"></i>{{ currentRole }}
+      </div>
+    </div>
+    <div class="sidebar-divider" *ngIf="!collapsed || mobileOpen"></div>
+  </div>
+
+  <!-- NAV -->
+  <div class="sidebar-scroll-area">
+    <div class="sidebar-nav">
+      <ng-container *ngFor="let section of menuSections; trackBy: trackBySection">
+        <div class="menu-section" *ngIf="!collapsed || mobileOpen">
+          {{ section.name | sbmsTranslate }}
+        </div>
+
+        <ng-container *ngFor="let item of section.items; trackBy: trackByItem">
+
+          <!-- With children -->
+          <ng-container *ngIf="item.children && item.children.length; else singleMenu">
+            <button
+              type="button"
+              class="menu-link menu-toggle-btn"
+              (click)="toggleMenu(item.label)"
+            >
+              <div class="menu-left">
+                <span class="menu-icon">
+                  <i [class]="item.icon"></i>
+                </span>
+                <span class="menu-label" *ngIf="!collapsed || mobileOpen">{{ item.label | sbmsTranslate }}</span>
+              </div>
+              <i
+                *ngIf="!collapsed || mobileOpen"
+                class="bi bi-chevron-right toggle-arrow"
+                [class.open]="isMenuOpen(item.label)"
+              ></i>
+            </button>
+
+            <div class="submenu" *ngIf="isMenuOpen(item.label) && (!collapsed || mobileOpen)">
+              <ng-container *ngFor="let child of item.children; trackBy: trackByChild">
+                <a
+                  *ngIf="child.enabled && child.route; else disabledChild"
+                  [routerLink]="child.route"
+                  routerLinkActive="active-sub"
+                  class="submenu-link"
+                  (click)="onMenuClick()"
+                >
+                  {{ child.label | sbmsTranslate }}
+                </a>
+                <ng-template #disabledChild>
+                  <span class="submenu-link disabled-sub">{{ child.label | sbmsTranslate }}</span>
+                </ng-template>
+              </ng-container>
+            </div>
+          </ng-container>
+
+          <!-- Single -->
+          <ng-template #singleMenu>
+            <a
+              *ngIf="item.enabled && item.route; else disabledSingle"
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              class="menu-link"
+              (click)="onMenuClick()"
+            >
+              <div class="menu-left">
+                <span class="menu-icon">
+                  <i [class]="item.icon"></i>
+                </span>
+                <span class="menu-label" *ngIf="!collapsed || mobileOpen">{{ item.label | sbmsTranslate }}</span>
+              </div>
+            </a>
+            <ng-template #disabledSingle>
+              <span class="menu-link disabled-link">
+                <div class="menu-left">
+                  <span class="menu-icon">
+                    <i [class]="item.icon"></i>
+                  </span>
+                  <span class="menu-label" *ngIf="!collapsed || mobileOpen">{{ item.label | sbmsTranslate }}</span>
+                </div>
+              </span>
+            </ng-template>
+          </ng-template>
+
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="sidebar-footer" *ngIf="!collapsed || mobileOpen">
+    <i class="bi bi-patch-check-fill me-1" style="color: var(--primary)"></i>
+    {{ 'Shariah Banking Management System' | sbmsTranslate }}
+  </div>
+</aside>

@@ -1,0 +1,204 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/cash-bins"
+    currentLabel="Cash Bin Profile">
+  </app-page-header>
+
+  <app-page-title
+    title="Cash Bin Profile"
+    subtitle="View terminal cash cassette/bin mapping, denomination, capacity, cash level and status">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button *ngIf="cashBin" class="btn btn-outline-secondary" type="button" (click)="previewProfile()">
+      <i class="fa fa-eye"></i> Preview Profile
+    </button>
+
+    <button *ngIf="cashBin" class="btn btn-outline-primary" type="button" (click)="downloadProfile()">
+      <i class="fa fa-download"></i> Download PDF
+    </button>
+
+    <button *ngIf="cashBin" class="btn btn-outline-success" type="button" (click)="printProfile()">
+      <i class="fa fa-print"></i> Print Profile
+    </button>
+
+    <button *ngIf="can('ATM_CASH_BIN_EDIT')" class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!cashBin">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button *ngIf="cashBin?.status !== 'ARCHIVED' && can('ATM_CASH_BIN_EDIT')" class="btn btn-outline-danger" type="button" (click)="archive()" [disabled]="!cashBin">
+      <i class="fa fa-archive"></i> Archive
+    </button>
+
+    <button *ngIf="cashBin?.status === 'ARCHIVED' && can('ATM_CASH_BIN_EDIT')" class="btn btn-outline-success" type="button" (click)="restore()" [disabled]="!cashBin">
+      <i class="fa fa-undo"></i> Restore
+    </button>
+
+    <button class="btn btn-success" type="button" (click)="viewTerminal()" [disabled]="!cashBin">
+      <i class="fa fa-credit-card"></i> View Terminal
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading cash bin profile...
+  </div>
+
+  <div *ngIf="!loading && cashBin as c" class="cash-view-shell">
+
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+        </div>
+
+        <div>
+          <h3>{{ c.binNo }}</h3>
+          <p>
+            {{ c.terminalCode }}
+            <span>Ã¢â‚¬Â¢</span>
+            {{ c.terminalName }}
+            <span>Ã¢â‚¬Â¢</span>
+            Denomination: {{ c.denomination }}
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <app-status-badge [status]="c.status"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+
+      <div class="summary-card">
+        <div class="summary-icon primary">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+        </div>
+        <div>
+          <div class="summary-label">Denomination</div>
+          <div class="summary-value small">{{ c.denomination }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon success">
+          <i class="fa fa-database"></i>
+        </div>
+        <div>
+          <div class="summary-label">Max Capacity</div>
+          <div class="summary-value small">{{ c.maxCapacity }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon warning">
+          <i class="fa fa-sort-numeric-asc"></i>
+        </div>
+        <div>
+          <div class="summary-label">Current Count</div>
+          <div class="summary-value small">{{ c.currentCount }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon info">
+          <i class="fa fa-calculator"></i>
+        </div>
+        <div>
+          <div class="summary-label">Current Amount</div>
+          <div class="summary-value small">{{ c.currentAmount }}</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="details-grid">
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-credit-card"></i>
+          <div>
+            <h4>Terminal Mapping</h4>
+            <p>Cash bin belongs to this ATM/CDM terminal.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row">
+            <span>Terminal Code</span>
+            <strong>{{ c.terminalCode }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Terminal Name</span>
+            <strong>{{ c.terminalName }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Terminal ID</span>
+            <strong>{{ c.terminalId }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-archive"></i>
+          <div>
+            <h4>Cash Bin Details</h4>
+            <p>Denomination, capacity and current note/cash level.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row">
+            <span>Bin No</span>
+            <strong>{{ c.binNo }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Denomination</span>
+            <strong>{{ c.denomination }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Max Capacity</span>
+            <strong>{{ c.maxCapacity }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Current Count</span>
+            <strong>{{ c.currentCount }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Current Amount</span>
+            <strong>{{ c.currentAmount }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Status</span>
+            <strong>{{ c.status }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Created At</span>
+            <strong>{{ c.createdAt || '-' }}</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>

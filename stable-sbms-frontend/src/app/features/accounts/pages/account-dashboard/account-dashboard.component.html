@@ -1,0 +1,385 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Account Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Account Dashboard"
+    subtitle="Track Islamic account setup, balance footprint, request workflow and activation pipeline from one control surface">
+
+    <button class="btn btn-outline-primary" routerLink="/accounts/account-types" title="Open account type list">
+      <i class="fa fa-tags"></i> Account Types
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/accounts/opening-requests" title="Open account opening requests">
+      <i class="fa fa-file-text-o"></i> Opening Requests
+    </button>
+
+    <button *ngIf="can('ACCOUNT_REQUEST_CREATE')" class="btn btn-primary" routerLink="/accounts/opening-requests/new" title="Create opening request">
+      <i class="fa fa-plus"></i> New Opening Request
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading account dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-bank"></i>
+              Islamic Portfolio
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Account growth, liquidity and activation momentum in one place</h3>
+          <p class="dashboard-subtitle">
+            Keep account onboarding smooth while monitoring operational restrictions and usable branch balance footprint.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Ledger Balance</span>
+              <div class="dashboard-hero-metric-value">{{ totalLedgerBalance | number:'1.2-2' }}</div>
+              <div class="dashboard-hero-metric-note">total portfolio book balance</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Available Balance</span>
+              <div class="dashboard-hero-metric-value">{{ totalAvailableBalance | number:'1.2-2' }}</div>
+              <div class="dashboard-hero-metric-note">usable customer balance exposure</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Active Coverage</span>
+              <div class="dashboard-hero-metric-value">{{ summary.activeAccounts }}</div>
+              <div class="dashboard-hero-metric-note">{{ accountTypes.length }} account products currently configured</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Pipeline Control</span>
+              <h3 class="dashboard-title">Opening and activation pressure</h3>
+              <p class="dashboard-subtitle">Watch the queue that still needs review, verification or branch-level activation attention.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ summary.pendingOpeningRequests + awaitingActivation.length }}</div>
+          <div class="dashboard-focus-note">requests and approved accounts currently sitting in live workflow queues</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Pending Requests</span>
+              <strong class="dashboard-mini-value">{{ summary.pendingOpeningRequests }}</strong>
+              <span class="dashboard-mini-note">submission and review pipeline</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Awaiting Verification</span>
+              <strong class="dashboard-mini-value">{{ summary.awaitingVerificationAccounts }}</strong>
+              <span class="dashboard-mini-note">document and control review backlog</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Pending Activation</span>
+              <strong class="dashboard-mini-value">{{ awaitingActivation.length }}</strong>
+              <span class="dashboard-mini-note">approved accounts not yet live</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Blocked or Frozen</span>
+              <strong class="dashboard-mini-value">{{ summary.blockedAccounts + summary.frozenAccounts }}</strong>
+              <span class="dashboard-mini-note">restricted relationships needing branch action</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Portfolio Types</span>
+          <strong class="dashboard-chip-value">{{ accountTypes.length }}</strong>
+          <span class="dashboard-chip-note">Islamic account products available for opening</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Recent Workflow</span>
+          <strong class="dashboard-chip-value">{{ recentAccounts.length }}</strong>
+          <span class="dashboard-chip-note">latest accounts updated across branches</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Branch Exposure</span>
+          <strong class="dashboard-chip-value">{{ branchExposureBars.length }}</strong>
+          <span class="dashboard-chip-note">branches carrying visible balance weight</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Restriction Queue</span>
+          <strong class="dashboard-chip-value">{{ blockedFrozenAccounts.length }}</strong>
+          <span class="dashboard-chip-note">accounts under hold or special control</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card">
+          <div class="summary-icon primary"><i class="fa fa-bank"></i></div>
+          <div><div class="summary-label">Total Accounts</div><div class="summary-value">{{ summary.totalAccounts }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+          <div><div class="summary-label">Pending Requests</div><div class="summary-value">{{ summary.pendingOpeningRequests }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+          <div><div class="summary-label">Active Accounts</div><div class="summary-value">{{ summary.activeAccounts }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon danger"><i class="fa fa-lock"></i></div>
+          <div><div class="summary-label">Blocked / Frozen</div><div class="summary-value">{{ summary.blockedAccounts + summary.frozenAccounts }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon info"><i class="fa fa-search"></i></div>
+          <div><div class="summary-label">Awaiting Verification</div><div class="summary-value">{{ summary.awaitingVerificationAccounts }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon primary"><i class="fa fa-sitemap"></i></div>
+          <div><div class="summary-label">Account Types</div><div class="summary-value">{{ accountTypes.length }}</div></div>
+        </div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Opening Pipeline</h4>
+              <p class="dashboard-subtitle">Track where onboarding is slowing down before verification, approval and account activation.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-random"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let item of pipelineBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ item.label }}</span>
+                <span class="dashboard-summary-band-value">{{ item.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+              </div>
+              <small>{{ item.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Account Status Distribution</h4>
+              <p class="dashboard-subtitle">A portfolio split across active, pending, review and restricted account states.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="accountStatusGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ summary.totalAccounts }}</div>
+                    <div class="dashboard-donut-label">accounts in the current Islamic portfolio book</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of statusLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Account Type Distribution</h4>
+              <p class="dashboard-subtitle">Compare how the live account base is distributed across Islamic account products.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="typeBars.length; else noTypeBars" class="dashboard-column-chart account-type-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of typeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <button *ngFor="let item of typeBars" class="dashboard-column account-type-column" type="button" [title]="'View ' + item.label + ' mix'" (click)="selectTypeBar(item)">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.share"></div>
+              </div>
+              <span class="dashboard-column-label account-type-label" [title]="item.label">{{ item.label }}</span>
+            </button>
+          </div>
+          <div *ngIf="selectedTypeBar" class="account-chart-note">
+            <strong>{{ selectedTypeBar.label }}</strong> currently represents {{ selectedTypeBar.value }} live accounts, which is {{ selectedTypeBar.note }}.
+          </div>
+          <ng-template #noTypeBars>
+            <div class="empty-mini">No account type distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Branch Liquidity Exposure</h4>
+              <p class="dashboard-subtitle">Compare where customer balances are concentrated across the active branch network.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="exposureColumns.length; else noBranchExposure" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of exposureAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of exposureColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value | number:'1.0-0' }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noBranchExposure>
+            <div class="empty-mini">No branch balance exposure found.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Monthly Account Openings</h4>
+              <p class="dashboard-subtitle">A rolling six-month view of accounts that moved into the live portfolio book.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+
+          <div *ngIf="accountTrendPoints.length; else noAccountTrend" class="account-line-chart-shell">
+            <svg class="account-line-chart" viewBox="0 0 620 220" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="accountTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#12b3a6"></stop>
+                  <stop offset="100%" stop-color="#12b3a6" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <line x1="28" y1="188" x2="592" y2="188" class="account-line-axis"></line>
+              <line x1="28" y1="40" x2="28" y2="188" class="account-line-axis"></line>
+              <path *ngIf="accountTrendAreaPath" [attr.d]="accountTrendAreaPath" class="account-line-area"></path>
+              <path *ngIf="accountTrendPath" [attr.d]="accountTrendPath" class="account-line-path"></path>
+              <g *ngFor="let point of accountTrendPoints">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5.5" class="account-line-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 12" text-anchor="middle" class="account-line-value">{{ point.value }}</text>
+                <text [attr.x]="point.x" y="208" text-anchor="middle" class="account-line-label">{{ point.label }}</text>
+              </g>
+            </svg>
+          </div>
+          <ng-template #noAccountTrend>
+            <div class="empty-mini">No monthly account opening trend available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Portfolio Spotlight</h4>
+              <p class="dashboard-subtitle">Highlight the visible account carrying the heaviest immediately usable balance exposure.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-user-circle-o"></i></span>
+          </div>
+
+          <button *ngIf="spotlightAccount as item; else noSpotlight" class="account-spotlight-card" type="button" (click)="openAccount(item.id)">
+            <div class="account-spotlight-avatar">
+              <img *ngIf="hasAccountHolderImage(item); else spotlightFallback" [src]="getAccountHolderImageUrl(item)" alt="Account holder image">
+              <ng-template #spotlightFallback>
+                <img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder">
+              </ng-template>
+            </div>
+            <div class="account-spotlight-body">
+              <div class="account-spotlight-title">{{ item.customerName }}</div>
+              <div class="account-spotlight-subtitle">{{ item.accountNumber }} | {{ item.accountTypeName || item.accountTypeCode }}</div>
+              <div class="account-spotlight-meta">{{ getBranchName(item.branchId) }}</div>
+              <div class="account-spotlight-stats">
+                <div>
+                  <span>Available Balance</span>
+                  <strong>{{ item.availableBalance | number:'1.2-2' }}</strong>
+                </div>
+                <div>
+                  <span>Ledger Balance</span>
+                  <strong>{{ item.currentBalance | number:'1.2-2' }}</strong>
+                </div>
+                <div>
+                  <span>Status</span>
+                  <strong>{{ getLabel(item.accountStatus) }}</strong>
+                </div>
+              </div>
+            </div>
+          </button>
+          <ng-template #noSpotlight>
+            <div class="empty-mini">No account spotlight available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Recent Account Timeline</h4>
+              <p class="dashboard-subtitle">Jump directly into the newest account updates, activation work and restriction cases.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-history"></i></span>
+          </div>
+
+          <div *ngIf="recentTimeline.length; else noRecentTimeline" class="dashboard-timeline-list">
+            <button
+              *ngFor="let item of recentTimeline; let i = index"
+              class="dashboard-timeline-item"
+              type="button"
+              [title]="'Open account: ' + item.title"
+              (click)="openAccount(recentAccounts[i].id)">
+              <span class="dashboard-timeline-marker" [ngClass]="'tone-' + item.tone">
+                <img *ngIf="hasAccountHolderImage(recentAccounts[i]); else accountTimelineFallback" [src]="getAccountHolderImageUrl(recentAccounts[i])" alt="Account holder image">
+                <ng-template #accountTimelineFallback>
+                  <img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder">
+                </ng-template>
+              </span>
+              <span>
+                <span class="dashboard-timeline-title">{{ item.title }}</span>
+                <span class="dashboard-timeline-subtitle">{{ item.subtitle }}</span>
+                <span class="dashboard-timeline-meta">{{ item.meta }}</span>
+              </span>
+            </button>
+          </div>
+          <ng-template #noRecentTimeline>
+            <div class="empty-mini">No recent account update found.</div>
+          </ng-template>
+        </article>
+      </section>
+    </div>
+  </ng-container>
+
+</div>
+</div>

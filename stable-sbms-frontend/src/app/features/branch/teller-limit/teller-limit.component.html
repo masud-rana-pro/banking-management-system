@@ -1,0 +1,223 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 branch-form-page">
+
+  <app-page-header title="Teller Limits" homeLabel="Home" homeRoute="/admin/dashboard"
+    currentLabel="Branch Teller Limit">
+  </app-page-header>
+
+  <app-page-title title="Teller Limit Control"
+    subtitle="Configure handbook-based daily deposit, withdraw and single transaction limits">
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('csv')">
+            <i class="fa fa-file-text-o"></i> CSV
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('excel')">
+            <i class="fa fa-file-excel-o"></i> Excel
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('pdf')">
+            <i class="fa fa-file-pdf-o"></i> PDF
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="resetForm()">
+      <i class="fa fa-refresh"></i> Reset Form
+    </button>
+
+  </app-page-title>
+
+  <div class="limit-form-card">
+    <div class="section-title">
+      <i class="fa fa-shield"></i>
+      <div>
+        <h4>{{ editingId ? 'Edit Teller Limit' : 'Create Teller Limit' }}</h4>
+        <p>Set branch teller cash limits exactly according to Module 4 handbook.</p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+
+      <div class="col-md-4">
+        <label class="form-label">Branch <span class="text-danger">*</span></label>
+
+        <div class="smart-lookup-field">
+          <i class="fa fa-bank"></i>
+
+          <input class="form-control" list="branchOptions" placeholder="Type branch code or name"
+            [(ngModel)]="branchSearch" (change)="onBranchPicked()" />
+
+          <datalist id="branchOptions">
+            <option *ngFor="let b of branches" [value]="b.branchCode + ' - ' + b.branchName">
+            </option>
+          </datalist>
+        </div>
+
+        <small class="field-hint">Search and select branch from suggestion list.</small>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Teller User ID <span class="text-danger">*</span></label>
+        <input class="form-control" type="number" placeholder="Enter teller user id" [(ngModel)]="form.userId" />
+        <div class="entity-inline-profile mt-2" *ngIf="form.userId > 0">
+          <img *ngIf="getUserImageUrl(form.userId); else tellerLimitFormUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(form.userId)" [alt]="getUserDisplay(form.userId)">
+          <ng-template #tellerLimitFormUserFallback>
+            <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <div>
+            <strong>{{ getUserDisplay(form.userId) }}</strong>
+            <span>Teller preview context</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Limit Date <span class="text-danger">*</span></label>
+        <input class="form-control" type="date" [(ngModel)]="form.limitDate" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Daily Deposit Limit <span class="text-danger">*</span></label>
+        <input class="form-control" type="number" min="0" placeholder="Example: 500000"
+          [(ngModel)]="form.dailyDepositLimit" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Daily Withdraw Limit <span class="text-danger">*</span></label>
+        <input class="form-control" type="number" min="0" placeholder="Example: 300000"
+          [(ngModel)]="form.dailyWithdrawLimit" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Single Txn Limit <span class="text-danger">*</span></label>
+        <input class="form-control" type="number" min="0" placeholder="Example: 50000"
+          [(ngModel)]="form.singleTxnLimit" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Status</label>
+        <select class="form-select" [(ngModel)]="form.status">
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="INACTIVE">INACTIVE</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="limit-rule-note">
+      <i class="fa fa-info-circle"></i>
+      Rule: Single Txn Limit must be â‰¤ Daily Deposit Limit and â‰¤ Daily Withdraw Limit.
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="resetForm()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="saveLimit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ editingId ? 'Update Limit' : 'Save Limit' }}
+      </button>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search branch / teller user id / limit date" [(ngModel)]="filters.search"
+        (keyup.enter)="onSearch()" />
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let s of statusOptions" [value]="s.value">
+          {{ s.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No teller limits found"
+    emptyMessage="Try adjusting filters or create a new teller limit.">
+
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Branch</th>
+        <th>Teller</th>
+        <th>Limit Date</th>
+        <th>Deposit</th>
+        <th>Withdraw</th>
+        <th>Single Txn</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 130px;">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of limits; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+
+        <td>
+          <div class="branch-cell">
+            <i class="fa fa-bank"></i>
+            <div>
+              <strong>{{ getBranchName(item.branchId) }}</strong>
+              <span>{{ getBranchCode(item.branchId) }}</span>
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getUserImageUrl(item.userId); else tellerLimitListUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.userId)" [alt]="getUserDisplay(item.userId)">
+            <ng-template #tellerLimitListUserFallback>
+              <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ getUserDisplay(item.userId) }}</strong>
+              <span>#{{ item.userId }}</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="date-pill"><i class="fa fa-calendar"></i> {{ item.limitDate }}</span></td>
+
+        <td><span class="amount-pill deposit">à§³ {{ formatAmount(item.dailyDepositLimit) }}</span></td>
+        <td><span class="amount-pill withdraw">à§³ {{ formatAmount(item.dailyWithdrawLimit) }}</span></td>
+        <td><span class="amount-pill single">à§³ {{ formatAmount(item.singleTxnLimit) }}</span></td>
+
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+
+        <td class="text-center">
+          <button class="action-btn edit" title="Edit" (click)="editLimit(item)">
+            <i class="fa fa-pencil"></i>
+          </button>
+
+          <button class="action-btn archive" title="Deactivate" (click)="deactivate(item)">
+            <i class="fa fa-ban"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)">
+  </app-pagination>
+
+</div>
+</div>

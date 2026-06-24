@@ -1,0 +1,31 @@
+<div class="sbms-pagination" *ngIf="totalPages > 1">
+
+  <!-- Previous -->
+  <button
+    class="page-btn"
+    [disabled]="page === 1"
+    (click)="goTo(page - 1)"
+    title="Previous page">
+    <i class="bi bi-chevron-left"></i>
+  </button>
+
+  <!-- Page numbers -->
+  <ng-container *ngFor="let p of pages">
+    <button
+      class="page-btn"
+      [class.active]="p === page"
+      (click)="goTo(p)">
+      {{ p }}
+    </button>
+  </ng-container>
+
+  <!-- Next -->
+  <button
+    class="page-btn"
+    [disabled]="page === totalPages"
+    (click)="goTo(page + 1)"
+    title="Next page">
+    <i class="bi bi-chevron-right"></i>
+  </button>
+
+</div>

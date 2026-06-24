@@ -1,0 +1,16 @@
+@use '../../styles/card-common';
+
+:host {
+  display: block;
+}
+
+.meta-grid {
+  max-width: 1180px;
+  margin: 16px auto 28px;
+}
+
+.form-actions {
+  margin-top: 16px;
+  justify-content: flex-end;
+  gap: 12px;
+}

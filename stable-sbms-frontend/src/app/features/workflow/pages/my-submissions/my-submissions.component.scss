@@ -1,0 +1,39 @@
+@import '../../styles/workflow-common';
+
+.workflow-module .form-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+  margin: 0 0 20px !important;
+  overflow: hidden;
+}
+
+.workflow-module .form-card::after {
+  display: none;
+}
+
+.workflow-module .form-card .card-heading > i {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  margin-top: 0;
+  box-shadow: 0 12px 26px rgba(var(--primary-rgb), 0.24);
+  flex-shrink: 0;
+}
+
+.my-submission-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.my-submission-input {
+  max-width: 320px;
+}

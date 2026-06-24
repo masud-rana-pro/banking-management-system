@@ -1,0 +1,32 @@
+<ng-container *ngIf="state$ | async as state">
+  <div class="route-form-backdrop" *ngIf="state.open" (click)="close()">
+    <section class="route-form-modal" (click)="$event.stopPropagation()">
+      <header class="route-form-header">
+        <div>
+          <span class="route-form-eyebrow">Popup Form</span>
+          <h3>{{ state.title }}</h3>
+        </div>
+        <button class="route-form-close" type="button" title="Close form" (click)="close()">
+          <i class="fa fa-times"></i>
+        </button>
+      </header>
+
+      <div class="route-form-body">
+        <div class="route-form-loader" *ngIf="!frameLoaded">
+          <span class="route-form-spinner"></span>
+          <strong>Loading form</strong>
+        </div>
+
+        <iframe
+          *ngIf="frameUrl"
+          class="route-form-frame"
+          [class.loaded]="frameLoaded"
+          [src]="frameUrl"
+          title="Popup form"
+          scrolling="yes"
+          (load)="onFrameLoad()">
+        </iframe>
+      </div>
+    </section>
+  </div>
+</ng-container>

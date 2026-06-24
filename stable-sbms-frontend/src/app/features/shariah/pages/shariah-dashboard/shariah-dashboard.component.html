@@ -1,0 +1,214 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container shariah-module">
+  <app-page-header title="Shariah Review" homeLabel="Home" homeRoute="/shariah/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Shariah Dashboard" subtitle="Track board review workload, decisions, correction requests and approved case certification flow">
+    <button class="btn btn-outline-primary" routerLink="/reports/shariah-audit"><i class="fa fa-bar-chart"></i> Audit Report</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openCases()"><i class="fa fa-list"></i> Case List</button>
+    <button class="btn btn-outline-warning" type="button" (click)="openCorrectionQueue()"><i class="fa fa-reply"></i> Correction Queue</button>
+    <button class="btn btn-outline-success" type="button" (click)="openCertificates()"><i class="fa fa-certificate"></i> Fatwa Certificates</button>
+    <button class="btn btn-primary" type="button" (click)="openAnnualReport()"><i class="fa fa-bar-chart"></i> Annual Report</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading Shariah dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-certificate"></i>
+              Shariah Governance
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Board review discipline, correction pressure and certification readiness in one view</h3>
+          <p class="dashboard-subtitle">
+            Keep submitted cases moving through review, reduce correction backlog and surface approved decisions ready for certificate issuance.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Pending Review</span>
+              <div class="dashboard-hero-metric-value">{{ data.pendingCases }}</div>
+              <div class="dashboard-hero-metric-note">cases still waiting for board or reviewer action</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Approved Cases</span>
+              <div class="dashboard-hero-metric-value">{{ data.approvedCases }}</div>
+              <div class="dashboard-hero-metric-note">ready for certificate, downstream execution or archival</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Correction Load</span>
+              <div class="dashboard-hero-metric-value">{{ data.correctionRequests }}</div>
+              <div class="dashboard-hero-metric-note">cases currently looping back for rectification</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Board Readiness</span>
+              <h3 class="dashboard-title">Control review backlog before it delays approvals</h3>
+              <p class="dashboard-subtitle">Use this panel to watch pending volume, decision output and the cases still heading back for correction.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.approvedCases + data.rejectedCases }}</div>
+          <div class="dashboard-focus-note">decisions already recorded in the latest board action trail</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Upcoming Reviews</span>
+              <strong class="dashboard-mini-value">{{ data.upcomingReviews }}</strong>
+              <span class="dashboard-mini-note">calendar entries or expected review checkpoints ahead</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Cases</span>
+              <strong class="dashboard-mini-value">{{ data.recentCases.length }}</strong>
+              <span class="dashboard-mini-note">latest submissions visible in the queue</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Decisions</span>
+              <strong class="dashboard-mini-value">{{ data.recentDecisions.length }}</strong>
+              <span class="dashboard-mini-note">latest board actions tracked in the trail</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Module Spread</span>
+              <strong class="dashboard-mini-value">{{ data.moduleBreakdown.length }}</strong>
+              <span class="dashboard-mini-note">source modules currently feeding review demand</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Certification Ready</span>
+          <strong class="dashboard-chip-value">{{ data.approvedCases }}</strong>
+          <span class="dashboard-chip-note">cases that can move toward certificate output or implementation</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Rejection Volume</span>
+          <strong class="dashboard-chip-value">{{ data.rejectedCases }}</strong>
+          <span class="dashboard-chip-note">submissions blocked by non-compliant findings</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Correction Queue</span>
+          <strong class="dashboard-chip-value">{{ data.correctionRequests }}</strong>
+          <span class="dashboard-chip-note">cases still returning to business teams for fixes</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Source Modules</span>
+          <strong class="dashboard-chip-value">{{ data.moduleBreakdown.length }}</strong>
+          <span class="dashboard-chip-note">business areas contributing live review workload</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-clock-o"></i></div><div><div class="summary-label">Pending Cases</div><div class="summary-value">{{ data.pendingCases }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Approved</div><div class="summary-value">{{ data.approvedCases }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-times-circle"></i></div><div><div class="summary-label">Rejected</div><div class="summary-value">{{ data.rejectedCases }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><i class="fa fa-reply"></i></div><div><div class="summary-label">Correction Requests</div><div class="summary-value">{{ data.correctionRequests }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-calendar-check-o"></i></div><div><div class="summary-label">Upcoming Reviews</div><div class="summary-value">{{ data.upcomingReviews }}</div></div></div>
+      </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-folder-open-o"></i>
+          <div>
+            <h4>Recent Cases</h4>
+            <p>Latest submitted cases from financing, contracts and related modules.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Case</th>
+                <th>Reference</th>
+                <th>Status</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of data.recentCases" (click)="openCase(item)" style="cursor:pointer;">
+                <td>{{ item.caseNo }}</td>
+                <td>{{ getLabel(item.referenceModule) }} / {{ item.referenceId }}</td>
+                <td><app-status-badge [status]="item.caseStatus"></app-status-badge></td>
+                <td>{{ item.submittedAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Recent Decisions</h4>
+            <p>Board action trail for approvals, rejections and corrections.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Case</th>
+                <th>Decision</th>
+                <th>By</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of data.recentDecisions">
+                <td>{{ item.caseNo }}</td>
+                <td><app-status-badge [status]="item.decision"></app-status-badge></td>
+                <td>{{ item.decisionBy }}</td>
+                <td>{{ item.decisionAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-sitemap"></i>
+        <div>
+          <h4>Module Breakdown</h4>
+          <p>Annual report ready summary by source module.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Reference Module</th>
+              <th>Total Cases</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of data.moduleBreakdown">
+              <td>{{ getLabel(item.referenceModule) }}</td>
+              <td>{{ item.totalCases }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+  </ng-container>
+</div>
+</div>

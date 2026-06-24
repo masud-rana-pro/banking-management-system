@@ -1,0 +1,30 @@
+<div class="sbms-table-actions">
+
+  <!-- View -->
+  <button
+    type="button"
+    class="action-btn view"
+    title="View details"
+    (click)="view.emit()">
+    <i class="bi bi-eye"></i>
+  </button>
+
+  <!-- Edit -->
+  <button
+    type="button"
+    class="action-btn edit"
+    title="Edit"
+    (click)="edit.emit()">
+    <i class="bi bi-pencil"></i>
+  </button>
+
+  <!-- Delete -->
+  <button
+    type="button"
+    class="action-btn delete"
+    title="Delete"
+    (click)="delete.emit()">
+    <i class="bi bi-trash3"></i>
+  </button>
+
+</div>

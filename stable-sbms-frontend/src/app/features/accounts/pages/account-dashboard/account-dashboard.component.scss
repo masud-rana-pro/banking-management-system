@@ -1,0 +1,189 @@
+@import '../../styles/account-common';
+
+:host {
+  .account-type-chart-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(108px, 1fr);
+    align-items: end;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.5rem;
+    column-gap: 1rem;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .account-type-chart-row .dashboard-column {
+    min-width: 108px;
+  }
+
+  .account-type-column {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .account-type-label {
+    display: block;
+    min-height: 48px;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  .account-chart-note {
+    margin-top: 1rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.22);
+    padding-top: 0.9rem;
+    color: #516276;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .account-line-chart-shell {
+    width: 100%;
+    min-height: 240px;
+    padding: 0.25rem 0 0.5rem;
+  }
+
+  .account-line-chart {
+    width: 100%;
+    height: 240px;
+    overflow: visible;
+  }
+
+  .account-line-axis {
+    stroke: rgba(148, 163, 184, 0.32);
+    stroke-width: 1.2;
+  }
+
+  .account-line-area {
+    fill: url(#accountTrendFill);
+    opacity: 0.2;
+  }
+
+  .account-line-path {
+    fill: none;
+    stroke: #0f8f87;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .account-line-point {
+    fill: #ffffff;
+    stroke: #0f8f87;
+    stroke-width: 3;
+  }
+
+  .account-line-value {
+    fill: #163046;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .account-line-label {
+    fill: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .account-spotlight-card {
+    width: 100%;
+    border: 1px solid rgba(15, 143, 135, 0.14);
+    border-radius: 1.3rem;
+    background: linear-gradient(145deg, rgba(239, 250, 249, 0.92), rgba(255, 255, 255, 0.98));
+    padding: 1.2rem;
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 1rem;
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .account-spotlight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .account-spotlight-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 1.2rem;
+    background: linear-gradient(135deg, #0f8f87, #64c7bf);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 2rem;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  }
+
+  .account-spotlight-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dashboard-timeline-marker img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+  }
+
+  .account-spotlight-title {
+    color: #102a43;
+    font-size: 1.02rem;
+    font-weight: 800;
+  }
+
+  .account-spotlight-subtitle,
+  .account-spotlight-meta {
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .account-spotlight-stats {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+
+  .account-spotlight-stats span {
+    display: block;
+    color: #64748b;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.3rem;
+  }
+
+  .account-spotlight-stats strong {
+    color: #102a43;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  @media (max-width: 991.98px) {
+    .account-spotlight-card {
+      grid-template-columns: 1fr;
+    }
+
+    .account-spotlight-avatar {
+      width: 72px;
+      height: 72px;
+    }
+
+    .account-spotlight-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+}

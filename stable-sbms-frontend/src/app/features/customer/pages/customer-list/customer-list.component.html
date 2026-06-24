@@ -1,0 +1,192 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/customers/dashboard"
+    currentLabel="Customer List">
+  </app-page-header>
+
+  <app-page-title
+    title="Customer List"
+    subtitle="View and manage customer profile, onboarding status, branch mapping and KYC readiness">
+
+    <div class="view-toggle-group">
+      <button class="btn" type="button" [ngClass]="viewMode === 'list' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('list')">
+        <i class="fa fa-list"></i> List View
+      </button>
+      <button class="btn" type="button" [ngClass]="viewMode === 'grid' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('grid')">
+        <i class="fa fa-th-large"></i> Grid View
+      </button>
+    </div>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" routerLink="/customers/search">
+      <i class="fa fa-search"></i> Search
+    </button>
+
+    <button *ngIf="can('CUSTOMER_CREATE')" class="btn btn-primary" routerLink="/customers/new">
+      <i class="fa fa-plus"></i> New Customer
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-users"></i></div>
+      <div><div class="summary-label">Total Customers</div><div class="summary-value">{{ totalAll }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+      <div><div class="summary-label">Pending KYC</div><div class="summary-value">{{ pendingKycCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-ban"></i></div>
+      <div><div class="summary-label">Blocked</div><div class="summary-value">{{ blockedCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search code / name / mobile / email" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="user">
+      <select class="form-select" [(ngModel)]="filters.customerType">
+        <option *ngFor="let item of customerTypeOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.customerStatus">
+        <option *ngFor="let item of customerStatusOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="archive">
+      <select class="form-select" [(ngModel)]="filters.recordStatus">
+        <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <ng-container *ngIf="viewMode === 'list'; else customerGridView">
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No customer found" emptyMessage="Try adjusting filters or create a new customer profile.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Customer</th>
+        <th>Type</th>
+        <th>Branch</th>
+        <th>Mobile</th>
+        <th>KYC Status</th>
+        <th>Record</th>
+        <th style="width: 120px;">Created</th>
+        <th class="text-center" style="width: 300px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of customers; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="entity-inline-profile">
+            <div class="entity-avatar">
+              <img *ngIf="item.profileImageName; else customerAvatarFallback" [src]="getImageUrl(item.profileImageName)" alt="Customer image">
+              <ng-template #customerAvatarFallback><i class="fa fa-user"></i></ng-template>
+            </div>
+            <div class="item-name">
+              <strong>{{ item.fullName }}</strong>
+              <span>{{ item.customerCode }} / {{ item.email || item.mobile }}</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="type-pill">{{ getStatusLabel(item.customerType) }}</span></td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td>{{ item.mobile }}</td>
+        <td><app-status-badge [status]="item.customerStatus"></app-status-badge></td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td>{{ item.createdAt | date:'yyyy-MM-dd' }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('CUSTOMER_EDIT')" class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button *ngIf="can('CUSTOMER_ADDRESS_MANAGE')" class="action-btn manage" type="button" title="Manage Address" (click)="onManageAddress(item)"><i class="fa fa-map-marker"></i></button>
+            <button *ngIf="can('CUSTOMER_IDENTITY_MANAGE')" class="action-btn manage" type="button" title="Manage Identity" (click)="onManageIdentity(item)"><i class="fa fa-id-card"></i></button>
+            <button *ngIf="canAny(['CUSTOMER_ACTIVATE', 'CUSTOMER_BLOCK'])" class="action-btn search" type="button" title="Status Action" (click)="onStatusAction(item)"><i class="fa fa-exchange"></i></button>
+            <button class="action-btn search" type="button" title="Open KYC" (click)="onOpenKyc(item)"><i class="fa fa-shield"></i></button>
+            <button *ngIf="can('ACCOUNT_REQUEST_CREATE')" class="action-btn search" type="button" title="New Account Request" (click)="onNewAccountRequest(item)"><i class="fa fa-bank"></i></button>
+            <button *ngIf="item.customerStatus !== 'ACTIVE' && item.status !== 'ARCHIVED' && can('CUSTOMER_ACTIVATE')" class="action-btn activate" type="button" title="Activate" (click)="onActivate(item)"><i class="fa fa-check"></i></button>
+            <button *ngIf="item.customerStatus !== 'BLOCKED' && item.status !== 'ARCHIVED' && can('CUSTOMER_BLOCK')" class="action-btn block" type="button" title="Block" (click)="onBlock(item)"><i class="fa fa-ban"></i></button>
+            <button *ngIf="item.status !== 'ARCHIVED'" class="action-btn archive" type="button" title="Archive" (click)="onArchive(item)"><i class="fa fa-archive"></i></button>
+            <button *ngIf="item.status === 'ARCHIVED'" class="action-btn restore" type="button" title="Restore" (click)="onRestore(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+  </ng-container>
+
+  <ng-template #customerGridView>
+    <div class="grid-state" *ngIf="loading">
+      <i class="fa fa-spinner fa-spin"></i> Loading customers...
+    </div>
+    <div class="grid-state" *ngIf="!loading && total === 0">
+      <i class="fa fa-inbox"></i> No customer found for the current filter.
+    </div>
+    <div class="entity-grid" *ngIf="!loading && total > 0">
+      <article class="entity-card" *ngFor="let item of customers">
+        <span class="status-chip status-chip--customer">{{ getStatusLabel(item.customerStatus) }}</span>
+        <div class="entity-card-avatar">
+          <img *ngIf="item.profileImageName; else customerGridFallback" [src]="getImageUrl(item.profileImageName)" alt="Customer image">
+          <ng-template #customerGridFallback>
+            <span>{{ (item.fullName || 'C').charAt(0) | uppercase }}</span>
+          </ng-template>
+        </div>
+        <h3>{{ item.fullName }}</h3>
+        <p>{{ item.customerCode }}</p>
+        <span class="meta-pill">{{ getStatusLabel(item.customerType) }}</span>
+        <div class="entity-card-meta">
+          <div><span>Branch</span><strong>{{ getBranchName(item.branchId) }}</strong></div>
+          <div><span>Mobile</span><strong>{{ item.mobile }}</strong></div>
+          <div><span>KYC</span><strong>{{ getStatusLabel(item.customerStatus) }}</strong></div>
+          <div><span>Record</span><strong>{{ getStatusLabel(item.status) }}</strong></div>
+        </div>
+        <div class="entity-card-actions">
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="onView(item)">View</button>
+          <button *ngIf="can('CUSTOMER_EDIT')" class="btn btn-sm btn-outline-secondary" type="button" (click)="onEdit(item)">Edit</button>
+          <button class="btn btn-sm btn-outline-info" type="button" (click)="onOpenKyc(item)">KYC</button>
+        </div>
+      </article>
+    </div>
+  </ng-template>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

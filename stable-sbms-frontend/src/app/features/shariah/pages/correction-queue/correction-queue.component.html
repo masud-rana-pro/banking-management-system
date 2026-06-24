@@ -1,0 +1,39 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container shariah-module">
+  <app-page-header title="Shariah Review" homeLabel="Home" homeRoute="/shariah/dashboard" currentLabel="Correction Queue"></app-page-header>
+
+  <app-page-title title="Correction Queue" subtitle="Monitor returned cases that need correction and follow-up before final board decision">
+    <button class="btn btn-outline-primary" type="button" (click)="openCaseList()"><i class="fa fa-list"></i> Case List</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-reply"></i></div><div><div class="summary-label">Returned Cases</div><div class="summary-value">{{ items.length }}</div></div></div>
+  </div>
+
+  <app-data-table [loading]="loading" [empty]="!loading && items.length === 0" emptyTitle="No correction case found" emptyMessage="Returned cases will appear here for follow-up.">
+    <thead>
+      <tr>
+        <th>Case</th>
+        <th>Reference</th>
+        <th>Submitted By</th>
+        <th>Remarks</th>
+        <th class="text-center" style="width: 140px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items">
+        <td>{{ item.caseNo }}</td>
+        <td>{{ getLabel(item.referenceModule) }} / {{ item.referenceId }}</td>
+        <td>{{ item.submittedBy }}</td>
+        <td>{{ item.remarks || '-' }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="openCase(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn review" type="button" (click)="openReview(item)"><i class="fa fa-list-alt"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

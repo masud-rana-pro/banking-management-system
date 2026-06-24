@@ -1,0 +1,135 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 transaction-module">
+  <app-page-header title="Transactions" homeLabel="Home" homeRoute="/transactions/dashboard" currentLabel="Cheque Clearing"></app-page-header>
+
+  <app-page-title title="Cheque Clearing" subtitle="Post cheque clearing against active account with bank and cheque trace in the transaction journal">
+    <button class="btn btn-outline-secondary" routerLink="/transactions/dashboard"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-primary" routerLink="/transactions/list"><i class="fa fa-list"></i> Transaction List</button>
+    <button class="btn btn-outline-success" routerLink="/transactions/deposit"><i class="fa fa-plus-circle"></i> Deposit</button>
+    <button class="btn btn-outline-primary" routerLink="/transactions/standing-instructions"><i class="fa fa-calendar"></i> Standing Instructions</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading" class="transaction-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-file-text-o"></i>
+        </div>
+        <div>
+          <h3>Cheque Clearing Posting</h3>
+          <p>Record drawee bank, cheque number and beneficiary account clearly before the clearing entry is posted.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        READY
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-bank"></i>
+          <div>
+            <h4>Branch & Beneficiary Account</h4>
+            <p>Choose the branch and credit account that will receive the cleared cheque amount.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Branch</label>
+            <div class="input-with-icon">
+              <i class="fa fa-building-o"></i>
+              <select class="form-select" [(ngModel)]="form.branchId"><option [ngValue]="null">Select branch</option><option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option></select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Credit Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-credit-card"></i>
+              <select class="form-select" [(ngModel)]="form.creditAccountId"><option [ngValue]="null">Select account</option><option *ngFor="let item of accounts" [ngValue]="item.id">{{ getAccountLabel(item) }}</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-university"></i>
+          <div>
+            <h4>Cheque Detail</h4>
+            <p>Preserve cheque number, bank reference, amount and posting time for audit and dispute traceability.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Cheque No</label>
+            <div class="input-with-icon">
+              <i class="fa fa-hashtag"></i>
+              <input class="form-control" [(ngModel)]="form.chequeNo">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Drawee Bank</label>
+            <div class="input-with-icon">
+              <i class="fa fa-university"></i>
+              <input class="form-control" [(ngModel)]="form.draweeBank">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Amount</label>
+
+            
+              
+              <input class="form-control" type="number" [(ngModel)]="form.amount">
+            
+          </div>
+          <div>
+            <label class="form-label">Transaction Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="datetime-local" [(ngModel)]="form.transactionDate">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Clearing Note</h4>
+            <p>Use remarks to capture any practical note needed by operations, statements or later review.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Remarks</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-commenting-o"></i>
+              <textarea class="form-control" rows="4" [(ngModel)]="form.remarks"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" routerLink="/transactions/dashboard" type="button">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        Post Cheque Clearing
+      </button>
+    </div>
+  </div>
+</div>
+</div>

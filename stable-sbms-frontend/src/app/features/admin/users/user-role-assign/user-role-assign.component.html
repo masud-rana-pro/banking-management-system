@@ -1,0 +1,37 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container user-module">
+  <app-page-header title="User Management" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="Assign Role"></app-page-header>
+
+  <app-page-title title="Assign User Role" subtitle="Map the appropriate operating role to the selected user">
+    <button class="btn btn-outline-primary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()"><i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i> Save Role</button>
+  </app-page-title>
+
+  <div *ngIf="!loading && user as data" class="form-card">
+    <div class="card-heading">
+      <div class="entity-inline-profile">
+        <img *ngIf="data.profileImageName; else assignUserAvatarFallback" class="entity-avatar-lg" [src]="getProfileImageUrl(data.profileImageName)" [alt]="data.fullName">
+        <ng-template #assignUserAvatarFallback>
+          <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+        </ng-template>
+        <div>
+          <h4>{{ data.username }} / {{ data.fullName }}</h4>
+          <p>Branch-bound roles require a valid branch assignment before the role is saved.</p>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="form">
+      <div class="form-grid">
+        <div class="full-span">
+          <label class="form-label">Role</label>
+          <select class="form-select" formControlName="roleId">
+            <option [ngValue]="null">Select Role</option>
+            <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.code }} - {{ role.name }}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+</div>

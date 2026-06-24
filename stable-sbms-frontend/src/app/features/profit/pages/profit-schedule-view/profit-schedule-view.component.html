@@ -1,0 +1,80 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container profit-module">
+  <app-page-header title="Profit Management" homeLabel="Home" homeRoute="/profit/dashboard" currentLabel="Profit Schedule View"></app-page-header>
+
+  <app-page-title title="Profit Schedule View" subtitle="Inspect scheduled account, current ratio linkage, next cycle and posting history">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openAccount()" [disabled]="!item"><i class="fa fa-bank"></i> Account</button>
+    <button class="btn btn-outline-success" type="button" (click)="openRatio()" [disabled]="!item"><i class="fa fa-percent"></i> Ratio</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openCalculator()" [disabled]="!item"><i class="fa fa-calculator"></i> Calculate</button>
+    <button class="btn btn-primary" type="button" (click)="openPostingRun()" [disabled]="!item"><i class="fa fa-play"></i> Run Posting</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="item && !loading">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-calendar"></i></div>
+        <div><div class="summary-label">Frequency</div><div class="summary-value small">{{ getLabel(item.profitFrequency) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Next Posting</div><div class="summary-value small">{{ item.nextPostingDate }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Last Posting</div><div class="summary-value small">{{ item.lastPostingDate || '-' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-list-ul"></i></div>
+        <div><div class="summary-label">Posting History</div><div class="summary-value">{{ postingHistory.length }}</div></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-title-row">
+        <div class="entity-inline-profile">
+          <img *ngIf="customerImageUrl; else profitScheduleViewFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="item.customerName">
+          <ng-template #profitScheduleViewFallback>
+            <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <h5 class="mb-0">{{ item.accountNumber }}</h5>
+        </div>
+        <app-status-badge [status]="item.status"></app-status-badge>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><small>Profile</small><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="meta-item"><small>Customer</small><strong>{{ item.customerCode }} - {{ item.customerName }}</strong></div>
+        <div class="meta-item"><small>Account Type</small><strong>{{ item.accountTypeCode }} - {{ item.accountTypeName }}</strong></div>
+        <div class="meta-item"><small>Current Balance</small><strong>{{ item.currentBalance | number:'1.2-2' }}</strong></div>
+        <div class="meta-item"><small>Current Ratio</small><strong>{{ currentRatio?.ratioCode || 'No active ratio' }}</strong></div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-title-row">
+        <h5 class="mb-0">Posting History</h5>
+        <button class="btn btn-sm btn-outline-primary" type="button" (click)="openPostingRun()">Run Again</button>
+      </div>
+      <table class="sub-table">
+        <thead>
+          <tr><th>Posting Ref</th><th>Date</th><th>Amount</th><th>Status</th><th class="print-hide"></th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let posting of postingHistory | slice:0:10">
+            <td>{{ posting.postingRef }}</td>
+            <td>{{ posting.postingDate }}</td>
+            <td>{{ posting.profitAmount | number:'1.2-2' }}</td>
+            <td><app-status-badge [status]="posting.status"></app-status-badge></td>
+            <td class="text-end print-hide"><button class="btn btn-sm btn-outline-primary" (click)="openPosting(posting.id)">View</button></td>
+          </tr>
+          <tr *ngIf="postingHistory.length === 0">
+            <td colspan="5" class="text-center text-muted">No posting history found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>

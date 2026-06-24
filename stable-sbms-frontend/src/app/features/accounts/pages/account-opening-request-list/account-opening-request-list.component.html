@@ -1,0 +1,150 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/dashboard"
+    currentLabel="Account Opening Request List">
+  </app-page-header>
+
+  <app-page-title
+    title="Account Opening Request List"
+    subtitle="Manage request submission, verification, approval, rejection, return and navigation to customer or account">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" routerLink="/accounts/list">
+      <i class="fa fa-bank"></i> Account List
+    </button>
+
+    <button class="btn btn-primary" routerLink="/accounts/opening-requests/new">
+      <i class="fa fa-plus"></i> New Opening Request
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-folder-open"></i></div>
+      <div><div class="summary-label">Total Requests</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+      <div><div class="summary-label">Pending</div><div class="summary-value">{{ pendingCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Approved</div><div class="summary-value">{{ approvedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-search"></i></div>
+      <div><div class="summary-label">Verified</div><div class="summary-value">{{ verifiedCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search request / customer / account type" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.requestStatus">
+        <option value="">All Request Status</option>
+        <option value="DRAFT">DRAFT</option>
+        <option value="SUBMITTED">SUBMITTED</option>
+        <option value="VERIFIED">VERIFIED</option>
+        <option value="APPROVED">APPROVED</option>
+        <option value="REJECTED">REJECTED</option>
+        <option value="SENT_BACK">SENT BACK</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId" [disabled]="isBranchSelectionLocked">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No opening request found" emptyMessage="Try adjusting filters or create a new opening request.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Request</th>
+        <th>Customer</th>
+        <th>Type</th>
+        <th>Branch</th>
+        <th>Initial Deposit</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 340px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.requestNo }}</strong>
+            <span>{{ item.requestedDate || '-' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="entity-inline-profile">
+            <div class="entity-avatar">
+              <img *ngIf="hasRequestHolderImage(item); else accountApplicantFallback" [src]="getRequestHolderImageUrl(item)" alt="Applicant image">
+              <ng-template #accountApplicantFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder"></ng-template>
+            </div>
+            <div class="item-name">
+              <strong>{{ item.customerName }}</strong>
+              <span>{{ item.customerCode }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.accountTypeName }}</strong>
+            <span>{{ item.accountTypeCode }}</span>
+          </div>
+        </td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td>{{ item.initialDepositAmount | number:'1.2-2' }}</td>
+        <td><app-status-badge [status]="item.requestStatus"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="item.applicantImageName" class="action-btn search" type="button" title="Preview Applicant File" (click)="openApplicantPreview(item.applicantImageName)"><i class="fa fa-image"></i></button>
+            <button class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn manage" type="button" title="Review" (click)="onReview(item)"><i class="fa fa-search-plus"></i></button>
+            <button class="action-btn search" type="button" title="Customer" (click)="onOpenCustomer(item)"><i class="fa fa-user"></i></button>
+            <button class="action-btn type" type="button" title="Account Type" (click)="onOpenType(item)"><i class="fa fa-tags"></i></button>
+            <button *ngIf="item.accountId" class="action-btn request" type="button" title="View Account" (click)="onOpenAccount(item)"><i class="fa fa-bank"></i></button>
+            <button *ngIf="item.requestStatus === 'DRAFT' || item.requestStatus === 'SENT_BACK'" class="action-btn submit" type="button" title="Submit" (click)="onSubmit(item)"><i class="fa fa-paper-plane"></i></button>
+            <button *ngIf="item.requestStatus === 'SUBMITTED'" class="action-btn verify" type="button" title="Verify" (click)="onVerify(item)"><i class="fa fa-check-square"></i></button>
+            <button *ngIf="item.requestStatus === 'VERIFIED'" class="action-btn approve" type="button" title="Approve" (click)="onApprove(item)"><i class="fa fa-thumbs-up"></i></button>
+            <button *ngIf="item.requestStatus !== 'APPROVED' && item.requestStatus !== 'REJECTED'" class="action-btn reject" type="button" title="Reject" (click)="onReject(item)"><i class="fa fa-ban"></i></button>
+            <button *ngIf="item.requestStatus === 'SUBMITTED' || item.requestStatus === 'VERIFIED'" class="action-btn return" type="button" title="Return" (click)="onReturn(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

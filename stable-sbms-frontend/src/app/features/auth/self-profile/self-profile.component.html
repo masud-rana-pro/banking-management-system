@@ -1,0 +1,135 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+  <app-page-header
+    title="Account"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="My Profile">
+  </app-page-header>
+
+  <app-page-title
+    title="My Profile"
+    subtitle="Review your signed-in account identity, branch assignment and contact details.">
+    <button class="btn btn-primary" type="button" (click)="openChangePassword()">
+      <i class="bi bi-key"></i> Change Password
+    </button>
+  </app-page-title>
+
+  <div class="profile-loading" *ngIf="loading">
+    <i class="bi bi-arrow-repeat spin"></i>
+    Loading your profile...
+  </div>
+
+  <div class="profile-shell" *ngIf="!loading && user">
+    <section class="profile-hero-card">
+      <div class="profile-hero-media">
+        <div class="profile-avatar avatar-photo" *ngIf="avatarUrl; else selfProfileAvatarFallback">
+          <img [src]="avatarUrl" [alt]="user.fullName" (error)="onAvatarError()">
+        </div>
+        <ng-template #selfProfileAvatarFallback>
+          <div class="profile-avatar profile-avatar-fallback">{{ getUserInitials() }}</div>
+        </ng-template>
+      </div>
+
+      <div class="profile-hero-copy">
+        <span class="profile-chip">{{ user.roleCode || 'NO_ROLE' }}</span>
+        <h3>{{ user.fullName }}</h3>
+        <p>@{{ user.username }}</p>
+
+        <div class="profile-hero-meta">
+          <div class="meta-pill">
+            <i class="bi bi-geo-alt"></i>
+            <span>{{ user.branchName || 'Head Office' }}</span>
+          </div>
+          <div class="meta-pill">
+            <i class="bi bi-briefcase"></i>
+            <span>{{ user.roleName || 'No assigned role' }}</span>
+          </div>
+          <div class="meta-pill">
+            <i class="bi bi-check-circle"></i>
+            <span>{{ user.status }}</span>
+          </div>
+          <div class="meta-pill presence-pill" [ngClass]="isOnline ? 'online' : 'offline'">
+            <span class="presence-dot"></span>
+            <span>{{ isOnline ? 'Online Now' : 'Offline' }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="profile-grid">
+      <section class="profile-card">
+        <div class="card-head">
+          <i class="bi bi-person-badge"></i>
+          <div>
+            <h4>Identity</h4>
+            <p>Your registered account identity and staff mapping.</p>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span>Full Name</span>
+            <strong>{{ user.fullName || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Username</span>
+            <strong>{{ user.username || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>User Code</span>
+            <strong>{{ user.userCode || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>User Type</span>
+            <strong>{{ user.userType || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Designation</span>
+            <strong>{{ user.designation || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Employee No</span>
+            <strong>{{ user.employeeNo || 'N/A' }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="profile-card">
+        <div class="card-head">
+          <i class="bi bi-envelope-paper"></i>
+          <div>
+            <h4>Contact & Access</h4>
+            <p>Delivery channels and operational assignment currently active on your account.</p>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span>Email</span>
+            <strong>{{ user.email || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Mobile</span>
+            <strong>{{ user.mobile || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Branch</span>
+            <strong>{{ user.branchCode ? (user.branchCode + ' - ' + user.branchName) : (user.branchName || 'N/A') }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Role</span>
+            <strong>{{ user.roleName || user.roleCode || 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Last Login</span>
+            <strong>{{ user.lastLoginAt ? (user.lastLoginAt | date:'medium') : 'N/A' }}</strong>
+          </div>
+          <div class="info-item">
+            <span>Password Changed</span>
+            <strong>{{ user.passwordChangedAt ? (user.passwordChangedAt | date:'medium') : 'N/A' }}</strong>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

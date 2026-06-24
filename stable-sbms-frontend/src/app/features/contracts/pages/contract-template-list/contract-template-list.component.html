@@ -1,0 +1,73 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/contracts/dashboard" currentLabel="Template List"></app-page-header>
+
+  <app-page-title title="Contract Template List" subtitle="Manage contract template library, version numbers, reusable clauses and generation entry points">
+    <button *ngIf="can('CONTRACTS_ACCESS')" class="btn btn-outline-primary" routerLink="/contracts/list"><i class="fa fa-folder-open"></i> Contract List</button>
+    <button *ngIf="can('CONTRACT_TEMPLATE_CREATE')" class="btn btn-primary" routerLink="/contracts/templates/new"><i class="fa fa-plus"></i> New Template</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-file-text-o"></i></div><div><div class="summary-label">Total Templates</div><div class="summary-value">{{ allItems.length }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-archive"></i></div><div><div class="summary-label">Archived</div><div class="summary-value">{{ archivedCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon info"><i class="fa fa-files-o"></i></div><div><div class="summary-label">Generated Contracts</div><div class="summary-value">{{ generatedCount }}</div></div></div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search code / name / clause" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="tags">
+      <select class="form-select" [(ngModel)]="filters.contractType">
+        <option value="">All Contract Type</option>
+        <option value="ACCOUNT_OPENING">ACCOUNT OPENING</option>
+        <option value="FINANCING">FINANCING</option>
+        <option value="DEPOSIT_SCHEME">DEPOSIT SCHEME</option>
+        <option value="CARD_ISSUE">CARD ISSUE</option>
+        <option value="GENERAL">GENERAL</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No contract template found" emptyMessage="Create templates before generating contracts.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Template</th>
+        <th>Type</th>
+        <th>Version</th>
+        <th>Generated</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 220px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.templateCode }}</strong><span>{{ item.templateName }}</span></div></td>
+        <td>{{ getLabel(item.contractType) }}</td>
+        <td>v{{ item.versionNo }}</td>
+        <td>{{ item.generatedContractCount }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('CONTRACT_TEMPLATE_EDIT')" class="action-btn edit" type="button" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button *ngIf="can('CONTRACT_GENERATE')" class="action-btn generate" type="button" (click)="onGenerate(item)"><i class="fa fa-plus-circle"></i></button>
+            <button *ngIf="item.status !== 'ARCHIVED' && can('CONTRACT_TEMPLATE_EDIT')" class="action-btn archive" type="button" (click)="toggleArchive(item)"><i class="fa fa-archive"></i></button>
+            <button *ngIf="item.status === 'ARCHIVED' && can('CONTRACT_TEMPLATE_EDIT')" class="action-btn restore" type="button" (click)="toggleArchive(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

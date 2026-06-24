@@ -1,0 +1,167 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/opening-requests"
+    currentLabel="Opening Review">
+  </app-page-header>
+
+  <app-page-title
+    title="Opening Review Workspace"
+    subtitle="Review request data, update remarks and perform submit, verify, approve, reject or return actions">
+
+    <button class="btn btn-outline-secondary" routerLink="/accounts/opening-requests">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openView()" [disabled]="!item">
+      <i class="fa fa-eye"></i> View Request
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!item">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openType()" [disabled]="!item">
+      <i class="fa fa-tags"></i> View Type
+    </button>
+
+    <button *ngIf="item?.accountId" class="btn btn-outline-primary" type="button" (click)="openAccount()">
+      <i class="fa fa-bank"></i> View Account
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading opening review page...
+  </div>
+
+  <div *ngIf="!loading && item" class="manage-shell">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="entity-avatar">
+          <img *ngIf="resolvedImageName; else reviewApplicantFallback" [src]="getResolvedImageUrl()" alt="Applicant image">
+          <ng-template #reviewApplicantFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder"></ng-template>
+        </div>
+        <div><div class="summary-label">Customer</div><div class="summary-value small">{{ item.customerCode }}</div><div class="summary-hint">{{ item.customerName }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-tags"></i></div>
+        <div><div class="summary-label">Type</div><div class="summary-value small">{{ item.accountTypeCode }}</div><div class="summary-hint">{{ item.accountTypeName }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Initial Deposit</div><div class="summary-value small">{{ item.initialDepositAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-check-square-o"></i></div>
+        <div><div class="summary-label">Current Status</div><div class="summary-value small">{{ getLabel(item.requestStatus) }}</div></div>
+      </div>
+    </div>
+
+    <div class="manage-grid">
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-pencil-square-o"></i>
+          <div>
+            <h4>Review Form</h4>
+            <p>Update request status, deposit amount and remarks before workflow action.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Branch</label>
+            <div class="readonly-chip">{{ getBranchName(form.branchId) }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Applicant Image</label>
+            <div *ngIf="resolvedImageName; else noReviewApplicantImage" class="entity-inline-profile">
+              <div class="entity-thumb">
+                <img [src]="getResolvedImageUrl()" alt="Applicant image">
+              </div>
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="openApplicantPreview(resolvedImageName)">
+                <i class="fa fa-eye"></i> Preview
+              </button>
+            </div>
+            <ng-template #noReviewApplicantImage><div class="readonly-chip">No applicant image</div></ng-template>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Requested Date</label>
+            <input class="form-control" type="date" [(ngModel)]="form.requestedDate">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Initial Deposit</label>
+            <input class="form-control" type="number" min="0" [(ngModel)]="form.initialDepositAmount">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Request Status</label>
+            <select class="form-select" [(ngModel)]="form.requestStatus">
+              <option *ngFor="let option of requestStatusOptions" [value]="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Record Status</label>
+            <select class="form-select" [(ngModel)]="form.status">
+              <option *ngFor="let option of recordStatusOptions" [value]="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Remarks</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="form.remarks" placeholder="Add verification note, rejection reason or correction remark"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+          <button class="btn btn-outline-primary" type="button" [disabled]="saving" (click)="saveReview()">
+            <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+            Save Review
+          </button>
+        </div>
+      </div>
+
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-exchange"></i>
+          <div>
+            <h4>Workflow Actions</h4>
+            <p>Perform request workflow according to playbook sequence.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="state-card">
+            <h5>Submit / Verify</h5>
+            <p>Move request from draft to submitted and then verified state.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-outline-primary" type="button" [disabled]="saving" (click)="submit()">Submit</button>
+              <button class="btn btn-primary" type="button" [disabled]="saving" (click)="verify()">Verify</button>
+            </div>
+          </div>
+
+          <div class="state-card">
+            <h5>Approve</h5>
+            <p>Approve request and create the linked account automatically.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-success" type="button" [disabled]="saving" (click)="approve()">Approve Request</button>
+            </div>
+          </div>
+
+          <div class="state-card">
+            <h5>Reject / Return</h5>
+            <p>Reject outright or send back for correction with remarks.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-outline-danger" type="button" [disabled]="saving" (click)="reject()">Reject</button>
+              <button class="btn btn-outline-warning" type="button" [disabled]="saving" (click)="returnForCorrection()">Return</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

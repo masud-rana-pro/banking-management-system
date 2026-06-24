@@ -1,0 +1,422 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container notification-module">
+  <app-page-header title="Notification & Alerts" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Notification Dashboard" subtitle="Monitor channel throughput, failures, retry pressure and recent delivery activity from one alert-control surface">
+    <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openTemplates()" title="Open notification templates"><i class="fa fa-file-text-o"></i> Templates</button>
+    <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openEvents()" title="Open notification event rules"><i class="fa fa-bolt"></i> Event Rules</button>
+    <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openLogs()" title="Open delivery logs"><i class="fa fa-list-alt"></i> Delivery Logs</button>
+    <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openIntegrations()" title="Open integration dashboard"><i class="fa fa-plug"></i> Integrations</button>
+    <button *ngIf="canAny(['NOTIFICATION_ALERTS_ACCESS', 'NOTIFICATION_RETRY'])" class="btn btn-primary" type="button" (click)="openRetryQueue()" title="Open retry queue"><i class="fa fa-refresh"></i> Retry Queue</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading notification dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-paper-plane"></i>
+              Delivery Control
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Keep customer communication reliable across email, SMS and push channels</h3>
+          <p class="dashboard-subtitle">
+            Watch successful throughput, failure load and retry pressure so operational alerts and customer messages remain dependable.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Sent Today</span>
+              <div class="dashboard-hero-metric-value">{{ data.sentToday }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.messagesSentToday }} messages processed today</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Failures</span>
+              <div class="dashboard-hero-metric-value">{{ data.failedToday }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.failedDeliveries }} failed deliveries remain in the overall book</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Retry Queue</span>
+              <div class="dashboard-hero-metric-value">{{ data.retryQueue }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.channelWiseSummary.length }} active delivery channels in watch</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Operational Readiness</span>
+              <h3 class="dashboard-title">Reliable delivery versus channel strain</h3>
+              <p class="dashboard-subtitle">This panel highlights whether the alerting backbone is comfortably healthy or under pressure.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.sentToday }}</div>
+          <div class="dashboard-focus-note">messages completed successfully through the current delivery network today</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Failed Today</span>
+              <strong class="dashboard-mini-value">{{ data.failedToday }}</strong>
+              <span class="dashboard-mini-note">same-day failure count</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Retry Queue</span>
+              <strong class="dashboard-mini-value">{{ data.retryQueue }}</strong>
+              <span class="dashboard-mini-note">waiting for replay</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Channels</span>
+              <strong class="dashboard-mini-value">{{ data.channelWiseSummary.length }}</strong>
+              <span class="dashboard-mini-note">active delivery paths</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Logs</span>
+              <strong class="dashboard-mini-value">{{ data.recentLogs.length }}</strong>
+              <span class="dashboard-mini-note">current delivery activity feed</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Successful Throughput</span>
+          <strong class="dashboard-chip-value">{{ data.sentToday }}</strong>
+          <span class="dashboard-chip-note">messages successfully delivered today</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Failure Load</span>
+          <strong class="dashboard-chip-value">{{ data.failedToday }}</strong>
+          <span class="dashboard-chip-note">same-day delivery failures</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Retry Queue</span>
+          <strong class="dashboard-chip-value">{{ data.retryQueue }}</strong>
+          <span class="dashboard-chip-note">messages waiting for replay</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Recent Feed</span>
+          <strong class="dashboard-chip-value">{{ data.recentLogs.length }}</strong>
+          <span class="dashboard-chip-note">recent delivery log entries</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-paper-plane"></i></div><div><div class="summary-label">Sent Today</div><div class="summary-value">{{ data.sentToday }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-times-circle"></i></div><div><div class="summary-label">Failed Today</div><div class="summary-value">{{ data.failedToday }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-refresh"></i></div><div><div class="summary-label">Retry Queue</div><div class="summary-value">{{ data.retryQueue }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-envelope"></i></div><div><div class="summary-label">Messages Today</div><div class="summary-value">{{ data.messagesSentToday }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><i class="fa fa-exclamation-triangle"></i></div><div><div class="summary-label">Failed Deliveries</div><div class="summary-value">{{ data.failedDeliveries }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Delivery Pressure Bands</h4>
+              <p class="dashboard-subtitle">Watch the balance between success, failure and retry load before message latency grows.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let band of notificationBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ band.label }}</span>
+                <span class="dashboard-summary-band-value">{{ band.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+              </div>
+              <small>{{ band.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Delivery Operations Distribution</h4>
+              <p class="dashboard-subtitle">See how successful sends, failures, retries and historical failure weight are shaping the current notification workload.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="notificationGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.messagesSentToday }}</div>
+                    <div class="dashboard-donut-label">messages processed through the alerting engine today</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let legend of notificationLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ legend.label }}</span>
+                    <span class="dashboard-legend-note">{{ legend.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ legend.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Channel Throughput Distribution</h4>
+              <p class="dashboard-subtitle">Each bar shows successful send volume by channel. Taller bars indicate the busiest delivery path today.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="channelColumns.length; else noChannelBars" class="dashboard-column-chart notification-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of channelAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of channelColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noChannelBars>
+            <div class="empty-mini">No channel throughput distribution available.</div>
+          </ng-template>
+          <div class="dashboard-chart-note">Use this chart to confirm which delivery channel is currently carrying the primary communication load.</div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Failure and Retry Pressure</h4>
+              <p class="dashboard-subtitle">Compare which channels are creating the most repair work through failed sends and retry backlog.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-warning"></i></span>
+          </div>
+
+          <div *ngIf="failureColumns.length; else noFailureBars" class="dashboard-column-chart notification-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of failureAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of failureColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noFailureBars>
+            <div class="empty-mini">No failure or retry distribution available.</div>
+          </ng-template>
+          <div class="dashboard-chart-note">Higher bars mean more operational follow-up is needed for that specific delivery channel.</div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Delivery Activity Trend</h4>
+              <p class="dashboard-subtitle">Recent notification activity trend based on the latest delivery timestamps already visible in the operational feed.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+
+          <div *ngIf="deliveryTrend.length; else noDeliveryTrend" class="dashboard-trend-shell">
+            <div class="dashboard-trend-axis">
+              <span *ngFor="let tick of deliveryTrendTicks" class="dashboard-trend-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div class="notification-line-card">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="notification-line-svg">
+                <defs>
+                  <linearGradient id="notificationTrendFill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(20,184,166,0.28)"></stop>
+                    <stop offset="100%" stop-color="rgba(20,184,166,0.03)"></stop>
+                  </linearGradient>
+                </defs>
+                <path [attr.d]="deliveryTrendAreaPath" fill="url(#notificationTrendFill)"></path>
+                <path [attr.d]="deliveryTrendPath" class="notification-line-path"></path>
+                <g *ngFor="let point of deliveryTrend">
+                  <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" class="dashboard-trend-point"></circle>
+                  <text [attr.x]="point.x" [attr.y]="point.y - 5" text-anchor="middle" class="notification-line-value">{{ point.value }}</text>
+                </g>
+              </svg>
+              <div class="notification-line-labels">
+                <span *ngFor="let point of deliveryTrend">{{ point.shortLabel }}</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noDeliveryTrend>
+            <div class="empty-mini">No recent delivery trend available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Delivery Spotlight</h4>
+              <p class="dashboard-subtitle">Highlight the most sensitive recent message attempt so operations can inspect the channel, template and retry posture quickly.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-crosshairs"></i></span>
+          </div>
+
+          <div *ngIf="selectedLog as log; else noSpotlight" class="notification-spotlight">
+            <div class="notification-spotlight-hero">
+              <div class="notification-spotlight-badge">{{ selectedLogBadgeText }}</div>
+              <div class="notification-spotlight-copy">
+                <h5>{{ log.eventCode }} | {{ log.templateCode }}</h5>
+                <p>{{ log.recipientTo }}</p>
+                <span class="notification-spotlight-module">{{ log.eventName }} | {{ log.templateName }}</span>
+              </div>
+            </div>
+
+            <div class="notification-spotlight-grid">
+              <div class="notification-spotlight-stat">
+                <span>Channel</span>
+                <strong>{{ getLabel(log.channelType) }}</strong>
+              </div>
+              <div class="notification-spotlight-stat">
+                <span>Provider Note</span>
+                <strong>{{ log.providerResponse || 'No provider note' }}</strong>
+              </div>
+            </div>
+
+            <div class="notification-spotlight-badges">
+              <div *ngFor="let badge of selectedLogBadges" class="notification-spotlight-pill">
+                <span>{{ badge.label }}</span>
+                <strong>{{ badge.value }}</strong>
+              </div>
+            </div>
+          </div>
+          <ng-template #noSpotlight>
+            <div class="empty-mini">No recent delivery record available for spotlight.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Channel Status Matrix</h4>
+              <p class="dashboard-subtitle">See how sent, failed and retry-queued traffic is distributed across the available notification channels.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+          </div>
+
+          <div *ngIf="matrixRows.length && matrixColumns.length; else noMatrix" class="notification-matrix">
+            <div class="notification-matrix-header">
+              <div class="notification-matrix-corner">Channel</div>
+              <div *ngFor="let column of matrixColumns" class="notification-matrix-col">{{ column.label }}</div>
+            </div>
+            <div *ngFor="let row of matrixRows" class="notification-matrix-row">
+              <div class="notification-matrix-label" [title]="row.label">{{ row.shortLabel }}</div>
+              <div *ngFor="let value of row.values" class="notification-matrix-cell" [class.is-active]="value > 0">{{ value }}</div>
+            </div>
+          </div>
+          <ng-template #noMatrix>
+            <div class="empty-mini">No channel status matrix available.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <div class="details-grid">
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-random"></i>
+            <div>
+              <h4>Channel Wise Summary</h4>
+              <p>Track which channel is sending, failing and entering retry queue most often.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Channel</th>
+                  <th>Sent</th>
+                  <th>Failed</th>
+                  <th>Retry Queue</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.channelWiseSummary">
+                  <td>{{ getLabel(item.channelType) }}</td>
+                  <td>{{ item.sentCount }}</td>
+                  <td>{{ item.failedCount }}</td>
+                  <td>{{ item.retryQueuedCount }}</td>
+                </tr>
+                <tr *ngIf="data.channelWiseSummary.length === 0">
+                  <td colspan="4" class="text-center">No channel activity found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-clock-o"></i>
+            <div>
+              <h4>Recent Delivery Activity</h4>
+              <p>Latest message attempts with template, event and provider outcome snapshot.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Recipient</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentLogs | slice:0:8">
+                  <td>
+                    <strong>{{ item.eventCode }}</strong><br>
+                    <span>{{ item.templateCode }}</span>
+                  </td>
+                  <td>{{ item.recipientTo }}</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="action-btn preview" type="button" title="Focus record" (click)="focusLog(item)">
+                        <i class="fa fa-bullseye"></i>
+                      </button>
+                      <app-status-badge [status]="item.deliveryStatus"></app-status-badge>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="data.recentLogs.length === 0">
+                  <td colspan="3" class="text-center">No delivery log found yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

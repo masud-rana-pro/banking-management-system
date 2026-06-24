@@ -1,0 +1,38 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container notification-module">
+  <app-page-header title="Notification & Alerts" homeLabel="Home" homeRoute="/notifications/dashboard" currentLabel="Retry Queue"></app-page-header>
+
+  <app-page-title title="Retry Queue" subtitle="Prioritize failed or queued deliveries that still need operator attention">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="btn btn-outline-primary" routerLink="/notifications/logs"><i class="fa fa-list-alt"></i> All Logs</button>
+  </app-page-title>
+
+  <app-data-table [loading]="loading" [empty]="!loading && items.length === 0" emptyTitle="Retry queue is clear" emptyMessage="No failed or retry-queued notifications found right now.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Event / Template</th>
+        <th>Recipient</th>
+        <th>Status</th>
+        <th>Retry Count</th>
+        <th class="text-center" style="width: 120px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.eventCode }}</strong><span>{{ item.templateCode }} | {{ item.templateName }}</span></div></td>
+        <td>{{ item.recipientTo }}</td>
+        <td><app-status-badge [status]="item.deliveryStatus"></app-status-badge></td>
+        <td>{{ item.retryCount }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="openView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('NOTIFICATION_RETRY')" class="action-btn retry" type="button" title="Retry" (click)="retry(item)"><i class="fa fa-refresh"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

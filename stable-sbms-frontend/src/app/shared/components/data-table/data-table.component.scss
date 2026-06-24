@@ -1,0 +1,74 @@
+.sbms-table-wrapper {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+/* Table base */
+.sbms-table {
+  width: 100%;
+  margin: 0;
+  font-size: 0.93rem;
+  border-collapse: collapse;
+}
+
+/* Header */
+.sbms-table thead th {
+  background: var(--surface-2) !important;
+  font-weight: 700;
+  font-size: var(--text-xs);
+  font-family: var(--heading-font);
+  text-transform: uppercase;
+  letter-spacing: 0.085em;
+  color: var(--text-muted);
+  border-bottom: 1.5px solid var(--border) !important;
+  padding: 12px 14px;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Body cells */
+.sbms-table tbody td {
+  padding: 12px 14px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text);
+  line-height: 1.48;
+}
+
+/* Row hover */
+.sbms-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.sbms-table tbody tr:hover td {
+  background: rgba(var(--primary-rgb), 0.025) !important;
+}
+
+/* Last row */
+.sbms-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Loading overlay */
+.sbms-table-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  backdrop-filter: blur(2px);
+}
+
+/* Empty state */
+.sbms-table-empty {
+  padding: 20px 14px;
+}

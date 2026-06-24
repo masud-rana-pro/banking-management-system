@@ -1,0 +1,116 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/list"
+    currentLabel="Account Status Action">
+  </app-page-header>
+
+  <app-page-title
+    title="Account Status Action"
+    subtitle="Activate, block, freeze or close account while keeping remarks and navigation close by">
+
+    <button class="btn btn-outline-secondary" routerLink="/accounts/list">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openView()" [disabled]="!item">
+      <i class="fa fa-eye"></i> View Account
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!item">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button *ngIf="item?.openingRequestId" class="btn btn-outline-primary" type="button" (click)="openRequest()">
+      <i class="fa fa-file-text-o"></i> Opening Request
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading account status action page...
+  </div>
+
+  <div *ngIf="!loading && item" class="manage-shell">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="entity-inline-profile">
+          <div class="entity-avatar">
+            <img *ngIf="customerProfileImageName; else accountStatusAvatarFallback" [src]="getCustomerImageUrl()" alt="Customer image">
+            <ng-template #accountStatusAvatarFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder"></ng-template>
+          </div>
+          <div><div class="summary-label">Account</div><div class="summary-value small">{{ item.accountNumber }}</div><div class="summary-hint">{{ item.customerName }}</div></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-check-square-o"></i></div>
+        <div><div class="summary-label">Current Status</div><div class="summary-value small">{{ getLabel(item.accountStatus) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Available Balance</div><div class="summary-value small">{{ item.availableBalance | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-building"></i></div>
+        <div><div class="summary-label">Branch</div><div class="summary-value small">{{ getBranchName(item.branchId) }}</div></div>
+      </div>
+    </div>
+
+    <div class="manage-grid">
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Remarks</h4>
+            <p>Save operational note before changing account state.</p>
+          </div>
+        </div>
+        <label class="form-label">Action Remarks</label>
+        <textarea class="form-control" rows="5" [(ngModel)]="remarks" placeholder="Enter branch approval note, customer instruction or control reason"></textarea>
+      </div>
+
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-sliders"></i>
+          <div>
+            <h4>Status Workflow</h4>
+            <p>Use the proper operational action based on account lifecycle state.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="state-card">
+            <h5>Activate</h5>
+            <p>Turn approved or blocked account into active operational state.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-success" type="button" [disabled]="saving" (click)="runAction('activate')">Activate</button>
+            </div>
+          </div>
+
+          <div class="state-card">
+            <h5>Block / Freeze</h5>
+            <p>Temporarily restrict transactions or hold account access.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-outline-danger" type="button" [disabled]="saving" (click)="runAction('block')">Block</button>
+              <button class="btn btn-outline-warning" type="button" [disabled]="saving" (click)="runAction('freeze')">Freeze</button>
+            </div>
+          </div>
+
+          <div class="state-card">
+            <h5>Close</h5>
+            <p>Finalize account closure with closing remarks.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-outline-danger" type="button" [disabled]="saving" (click)="runAction('close')">Close Account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

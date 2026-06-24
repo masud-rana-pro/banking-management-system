@@ -1,0 +1,134 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 statement-module">
+  <app-page-header title="Statement Management" homeLabel="Home" homeRoute="/statement/dashboard" currentLabel="Customer Statement Request"></app-page-header>
+
+  <app-page-title title="Customer Statement Request" subtitle="Select customer, account and date range to generate printable/downloadable account statement">
+    <button class="btn btn-outline-secondary" routerLink="/statement/customer/list"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-primary" routerLink="/statement/dashboard"><i class="fa fa-dashboard"></i> Dashboard</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading customer statement request form...</div>
+
+  <div *ngIf="!loading" class="statement-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-file-text-o"></i>
+        </div>
+        <div>
+          <h3>Customer Statement Request</h3>
+          <p>Choose the correct customer, linked account and date range before generating downloadable statement output.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        READY
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section" *ngIf="selectedCustomer">
+        <div class="section-heading">
+          <img *ngIf="customerImageUrl; else statementRequestFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="selectedCustomer.fullName">
+          <ng-template #statementRequestFallback>
+            <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <div>
+            <h4>Selected Customer</h4>
+            <p>Statement request will use this customer profile and linked account context.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Customer</span><strong>{{ selectedCustomer.fullName }}</strong></div>
+          <div class="info-row"><span>Customer Code</span><strong>{{ selectedCustomer.customerCode }}</strong></div>
+          <div class="info-row"><span>Profile</span><strong>{{ selectedCustomer.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ selectedCustomer.status }}</strong></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-users"></i>
+          <div>
+            <h4>Customer & Account Selection</h4>
+            <p>Customer ownership and linked account relationship will be validated before generation starts.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Customer</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <select class="form-select" [(ngModel)]="model.customerId" (change)="onCustomerChange()">
+                <option [ngValue]="null">Select customer</option>
+                <option *ngFor="let item of customers" [ngValue]="item.id">{{ item.customerCode }} - {{ item.fullName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-bank"></i>
+              <select class="form-select" [(ngModel)]="model.accountId">
+                <option [ngValue]="null">Select account</option>
+                <option *ngFor="let item of filteredAccounts" [ngValue]="item.id">{{ item.accountNumber }} - {{ item.customerName }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-calendar"></i>
+          <div>
+            <h4>Request Period</h4>
+            <p>Select a clean date window and identify the requesting actor for tracking and export history.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Date From</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar-check-o"></i>
+              <input class="form-control" type="date" [(ngModel)]="model.dateFrom">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Date To</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar-o"></i>
+              <input class="form-control" type="date" [(ngModel)]="model.dateTo">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Requested By</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user-secret"></i>
+              <input class="form-control" [(ngModel)]="model.requestedBy" placeholder="SYSTEM" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" routerLink="/statement/customer/list">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="submit()" [disabled]="saving">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-file-text-o'"></i>
+        Generate Statement
+      </button>
+    </div>
+  </div>
+</div>
+</div>

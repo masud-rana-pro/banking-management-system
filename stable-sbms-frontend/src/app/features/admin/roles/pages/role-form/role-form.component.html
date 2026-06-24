@@ -1,0 +1,121 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 role-module">
+  <app-page-header title="Role Management" homeLabel="Home" homeRoute="/admin/dashboard" [currentLabel]="isEdit ? 'Edit Role' : 'Create Role'"></app-page-header>
+
+  <app-page-title [title]="isEdit ? 'Edit Role' : 'Create Role'" subtitle="Define role code, name, description and activation state for access control">
+    <button class="btn btn-outline-secondary" type="button" (click)="onCancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading role form...
+  </div>
+
+  <div class="role-form-shell" *ngIf="!loading">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-shield"></i>
+        </div>
+        <div>
+          <h3>{{ isEdit ? 'Update Role Profile' : 'New Role Setup' }}</h3>
+          <p>Define access role identity, governance note and activation state before permission mapping.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.get('status')?.value || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-body">
+        <div class="form-section">
+          <div class="section-heading">
+            <i class="fa fa-id-badge"></i>
+            <div>
+              <h4>Role Identity</h4>
+              <p>Keep code unique and use a name that users can understand quickly.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label class="form-label">Role Code</label>
+              <div class="input-with-icon">
+                <i class="fa fa-barcode"></i>
+                <input class="form-control" formControlName="code" placeholder="e.g. OPERATIONS_OFFICER">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Role Name</label>
+              <div class="input-with-icon">
+                <i class="fa fa-user-secret"></i>
+                <input class="form-control" formControlName="name" placeholder="e.g. Operations Officer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-heading">
+            <i class="fa fa-info-circle"></i>
+            <div>
+              <h4>Role Description</h4>
+              <p>Explain what this role can access, approve and monitor in the system.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="full-span">
+              <label class="form-label">Description</label>
+              <div class="input-with-icon textarea-wrap">
+                <i class="fa fa-file-text-o"></i>
+                <textarea class="form-control" formControlName="description" placeholder="Explain what this role can access and perform"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section last">
+          <div class="section-heading">
+            <i class="fa fa-toggle-on"></i>
+            <div>
+              <h4>Operational Status</h4>
+              <p>`SYSTEM_ADMIN` should stay controlled carefully, and inactive roles should not be used for new assignment.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label class="form-label">Status</label>
+              <div class="input-with-icon">
+                <i class="fa fa-check-circle"></i>
+                <select class="form-select" formControlName="status">
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline-secondary" type="button" (click)="onCancel()">
+          <i class="fa fa-times"></i> Cancel
+        </button>
+
+        <button class="btn btn-primary" type="submit" [disabled]="saving">
+          <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+          {{ isEdit ? 'Update Role' : 'Save Role' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>

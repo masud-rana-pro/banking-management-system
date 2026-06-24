@@ -1,0 +1,303 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/terminals"
+    currentLabel="Terminal Profile">
+  </app-page-header>
+
+  <app-page-title
+    title="Terminal Profile"
+    subtitle="View terminal profile, branch mapping, cash bin, replenishment, reconciliation and device journal summary">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button *ngIf="terminal" class="btn btn-outline-secondary" type="button" (click)="previewProfile()">
+      <i class="fa fa-eye"></i> Preview Profile
+    </button>
+
+    <button *ngIf="terminal" class="btn btn-outline-primary" type="button" (click)="downloadProfile()">
+      <i class="fa fa-download"></i> Download PDF
+    </button>
+
+    <button *ngIf="terminal" class="btn btn-outline-success" type="button" (click)="printProfile()">
+      <i class="fa fa-print"></i> Print Profile
+    </button>
+
+    <button *ngIf="can('ATM_TERMINAL_EDIT')" class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!terminal">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button *ngIf="terminal?.status !== 'ARCHIVED' && can('ATM_TERMINAL_EDIT')" class="btn btn-outline-danger" type="button" (click)="archive()" [disabled]="!terminal">
+      <i class="fa fa-archive"></i> Archive
+    </button>
+
+    <button *ngIf="terminal?.status === 'ARCHIVED' && can('ATM_TERMINAL_EDIT')" class="btn btn-outline-success" type="button" (click)="restore()" [disabled]="!terminal">
+      <i class="fa fa-undo"></i> Restore
+    </button>
+
+    <button *ngIf="can('ATM_CASH_BIN_CREATE')" class="btn btn-success" type="button" (click)="onAddCashBin()" [disabled]="!terminal">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Add Cash Bin
+    </button>
+
+    <button *ngIf="can('ATM_REPLENISHMENT_CREATE')" class="btn btn-warning" type="button" (click)="onReplenish()" [disabled]="!terminal">
+      <i class="fa fa-plus-circle"></i> Replenish
+    </button>
+
+    <button *ngIf="can('ATM_RECONCILIATION_CREATE')" class="btn btn-info" type="button" (click)="onReconcile()" [disabled]="!terminal">
+      <i class="fa fa-balance-scale"></i> Reconcile
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading terminal profile...
+  </div>
+
+  <div *ngIf="!loading && terminal as t" class="terminal-view-shell">
+
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-credit-card"></i>
+        </div>
+
+        <div>
+          <h3>{{ t.terminalName }}</h3>
+          <p>
+            {{ t.terminalCode }}
+            <span>&bull;</span>
+            {{ t.terminalType }}
+            <span>&bull;</span>
+            Branch ID: {{ t.branchId }}
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <app-status-badge [status]="t.status"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+
+      <div class="summary-card">
+        <div class="summary-icon primary">
+          <i class="fa fa-desktop"></i>
+        </div>
+        <div>
+          <div class="summary-label">Terminal Type</div>
+          <div class="summary-value small">{{ t.terminalType }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon success">
+          <i class="fa fa-bank"></i>
+        </div>
+        <div>
+          <div class="summary-label">Branch Mapping</div>
+          <div class="summary-value small">BR-{{ t.branchId }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon warning">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+        </div>
+        <div>
+          <div class="summary-label">Cash Bins</div>
+          <div class="summary-value small">{{ cashBins.length }}</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon danger">
+          <i class="fa fa-calculator"></i>
+        </div>
+        <div>
+          <div class="summary-label">Total Cash</div>
+          <div class="summary-value small">{{ totalCashAmount }}</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="details-grid">
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Terminal Profile</h4>
+            <p>Core terminal identity and branch mapping.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Terminal Code</span><strong>{{ t.terminalCode }}</strong></div>
+          <div class="info-row"><span>Terminal Name</span><strong>{{ t.terminalName }}</strong></div>
+          <div class="info-row"><span>Terminal Type</span><strong>{{ t.terminalType }}</strong></div>
+          <div class="info-row"><span>Branch ID</span><strong>BR-{{ t.branchId }}</strong></div>
+          <div class="info-row"><span>Location Note</span><strong>{{ t.locationNote || '-' }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ t.status }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-cogs"></i>
+          <div>
+            <h4>Device Information</h4>
+            <p>Technical and vendor information.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>IP Address</span><strong>{{ t.ipAddress || '-' }}</strong></div>
+          <div class="info-row"><span>Serial No</span><strong>{{ t.serialNo || '-' }}</strong></div>
+          <div class="info-row"><span>Vendor Name</span><strong>{{ t.vendorName || '-' }}</strong></div>
+          <div class="info-row"><span>Install Date</span><strong>{{ t.installDate || '-' }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ t.createdAt || '-' }}</strong></div>
+          <div class="info-row"><span>Updated At</span><strong>{{ t.updatedAt || '-' }}</strong></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="workflow-grid">
+
+      <div class="workflow-card">
+        <div class="workflow-heading">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+          <div>
+            <h4>Cash Bin Summary</h4>
+            <p>Configured bin, denomination, count and current cash level.</p>
+          </div>
+        </div>
+
+        <div *ngIf="cashBins.length; else noCashBins" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Bin</th>
+                <th>Denomination</th>
+                <th>Count</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of cashBins | slice:0:4">
+                <td>{{ item.binNo }}</td>
+                <td>{{ item.denomination }}</td>
+                <td>{{ item.currentCount }}</td>
+                <td>{{ item.currentAmount }}</td>
+                <td>{{ item.status }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noCashBins>
+          <div class="empty-mini">
+            <i class="fa fa-info-circle"></i>
+            No cash bin configured yet.
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="workflow-card">
+        <div class="workflow-heading">
+          <i class="fa fa-plus-circle"></i>
+          <div>
+            <h4>Latest Replenishment</h4>
+            <p>Latest cash loading activity summary.</p>
+          </div>
+        </div>
+
+        <div *ngIf="latestReplenishment as item; else noReplenishment" class="info-list">
+          <div class="info-row"><span>Replenishment Date</span><strong>{{ item.replenishmentDate }}</strong></div>
+          <div class="info-row"><span>Bin No</span><strong>{{ item.binNo }}</strong></div>
+          <div class="info-row"><span>Amount Added</span><strong>{{ item.amountAdded }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ item.status }}</strong></div>
+        </div>
+        <ng-template #noReplenishment>
+          <div class="empty-mini">
+            <i class="fa fa-info-circle"></i>
+            No replenishment history available.
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="workflow-card">
+        <div class="workflow-heading">
+          <i class="fa fa-balance-scale"></i>
+          <div>
+            <h4>Reconciliation Summary</h4>
+            <p>System amount vs physical amount variance tracking.</p>
+          </div>
+        </div>
+
+        <div *ngIf="latestReconciliation as item; else noReconciliation" class="info-list">
+          <div class="info-row"><span>Recon Date</span><strong>{{ item.reconDate }}</strong></div>
+          <div class="info-row"><span>System Amount</span><strong>{{ item.systemAmount }}</strong></div>
+          <div class="info-row"><span>Physical Amount</span><strong>{{ item.physicalAmount }}</strong></div>
+          <div class="info-row"><span>Variance Amount</span><strong>{{ item.varianceAmount }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ item.status }}</strong></div>
+        </div>
+        <ng-template #noReconciliation>
+          <div class="empty-mini">
+            <i class="fa fa-info-circle"></i>
+            No reconciliation history available.
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="workflow-card">
+        <div class="workflow-heading">
+          <i class="fa fa-list-alt"></i>
+          <div>
+            <h4>Device Journal Summary</h4>
+            <p>ATM/CDM transaction and terminal journal overview.</p>
+          </div>
+        </div>
+
+        <div *ngIf="journal.length; else noJournal" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Reference</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of journal">
+                <td>{{ item.eventType }}</td>
+                <td>{{ item.referenceNo }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.eventDate || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noJournal>
+          <div class="empty-mini">
+            <i class="fa fa-info-circle"></i>
+            No device journal activity found.
+          </div>
+        </ng-template>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>

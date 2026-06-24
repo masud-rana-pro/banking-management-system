@@ -1,0 +1,101 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/dashboard"
+    currentLabel="Account Type List">
+  </app-page-header>
+
+  <app-page-title
+    title="Account Type List"
+    subtitle="Manage Islamic account product setup, contract type, minimum opening balance and archive or restore state">
+
+    <button class="btn btn-outline-primary" routerLink="/accounts/opening-requests">
+      <i class="fa fa-file-text-o"></i> Opening Requests
+    </button>
+
+    <button class="btn btn-primary" routerLink="/accounts/account-types/new">
+      <i class="fa fa-plus"></i> New Account Type
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-tags"></i></div>
+      <div><div class="summary-label">Total Types</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-line-chart"></i></div>
+      <div><div class="summary-label">Profit Applicable</div><div class="summary-value">{{ profitApplicableCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-archive"></i></div>
+      <div><div class="summary-label">Archived</div><div class="summary-value">{{ archivedCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search type code / name / contract / currency" [(ngModel)]="search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="PENDING">PENDING</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No account type found" emptyMessage="Try adjusting filters or create a new account type.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Type</th>
+        <th>Contract</th>
+        <th>Currency</th>
+        <th>Minimum Balance</th>
+        <th>Profit</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 170px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.typeName }}</strong>
+            <span>{{ item.typeCode }}</span>
+          </div>
+        </td>
+        <td><span class="contract-pill">{{ getLabel(item.shariahContractType) }}</span></td>
+        <td><span class="currency-pill">{{ item.currencyCode }}</span></td>
+        <td>{{ item.minimumOpeningBalance | number:'1.2-2' }}</td>
+        <td>{{ item.profitApplicable ? 'YES' : 'NO' }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button *ngIf="item.status !== 'ARCHIVED'" class="action-btn archive" type="button" title="Archive" (click)="onArchive(item)"><i class="fa fa-archive"></i></button>
+            <button *ngIf="item.status === 'ARCHIVED'" class="action-btn restore" type="button" title="Restore" (click)="onRestore(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

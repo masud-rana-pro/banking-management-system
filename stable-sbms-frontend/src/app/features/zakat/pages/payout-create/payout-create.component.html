@@ -1,0 +1,106 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/payouts" currentLabel="Payout Form"></app-page-header>
+
+  <app-page-title title="New Charity Payout" subtitle="Create beneficiary payout and debit the charity fund with approval traceability">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <div class="zakat-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+        </div>
+        <div>
+          <h3>New Charity Payout</h3>
+          <p>Prepare a controlled payout record with beneficiary, amount and approval details before the fund is released.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        FUND READY
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="fund-summary-card summary-card">
+        <div class="summary-icon primary"><i class="fa fa-bank"></i></div>
+        <div>
+          <div class="summary-label">Current Charity Fund</div>
+          <div class="summary-value small">{{ currentBalance | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedBeneficiary" class="fund-summary-card summary-card">
+        <div class="summary-icon info"><i class="fa fa-user-circle-o"></i></div>
+        <div>
+          <div class="summary-label">Beneficiary Proof</div>
+          <div class="summary-value small">{{ selectedBeneficiary.proofDocumentName ? 'Available' : 'No proof' }}</div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-credit-card-alt"></i>
+          <div>
+            <h4>Payout Details</h4>
+            <p>Choose the beneficiary, set the amount and approval reference, then record remarks so the payout trail stays audit-ready.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Beneficiary</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user-circle-o"></i>
+              <select class="form-select" [(ngModel)]="form.beneficiaryId" (ngModelChange)="syncSelectedBeneficiary()">
+                <option [ngValue]="null">Select beneficiary</option>
+                <option *ngFor="let item of beneficiaries" [ngValue]="item.id">{{ item.beneficiaryCode }} - {{ item.beneficiaryName }}</option>
+              </select>
+            </div>
+            <small class="text-muted d-block mt-2" *ngIf="selectedBeneficiary">
+              Proof: {{ selectedBeneficiary.proofDocumentName ? (selectedBeneficiary.proofDocumentName | displayFileName) : 'No proof attached' }}
+              <button *ngIf="selectedBeneficiary.proofDocumentName" class="btn btn-link btn-sm p-0 ms-2" type="button" (click)="previewBeneficiaryProof()">Preview</button>
+            </small>
+          </div>
+          <div>
+            <label class="form-label">Payout Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.payoutDate">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Amount</label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.amount">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Approved By</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <input class="form-control" [(ngModel)]="form.approvedBy">
+            </div>
+          </div>
+          <div class="full-span">
+            <label class="form-label">Remarks</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-commenting-o"></i>
+              <textarea class="form-control" [(ngModel)]="form.remarks"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="submit()" [disabled]="loading"><i class="fa fa-save"></i> Save Payout</button>
+    </div>
+  </div>
+</div>
+</div>

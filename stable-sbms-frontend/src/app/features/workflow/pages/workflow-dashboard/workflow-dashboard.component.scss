@@ -1,0 +1,337 @@
+@import '../../styles/workflow-common';
+
+.workflow-dashboard-shell {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.workflow-dashboard-shell .form-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+  margin: 0 0 20px !important;
+  overflow: hidden;
+}
+
+.workflow-dashboard-shell .form-card::after {
+  display: none;
+}
+
+.workflow-dashboard-shell .form-card .card-heading > i {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  margin-top: 0;
+  box-shadow: 0 12px 26px rgba(var(--primary-rgb), 0.24);
+  flex-shrink: 0;
+}
+
+.workflow-actor-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.workflow-actor-input {
+  max-width: 320px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.card-panel {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 252, 0.97));
+  border: 1px solid rgba(226, 232, 240, 0.94);
+  border-radius: 24px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.07);
+  padding: 22px 24px;
+}
+
+.card-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--primary);
+}
+
+.card-panel::after {
+  content: '';
+  position: absolute;
+  right: -30px;
+  top: -30px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(var(--primary-rgb), 0.08);
+  pointer-events: none;
+}
+
+.card-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-heading > i {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-top: 2px;
+}
+
+.panel-heading h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.02rem;
+  font-weight: 800;
+}
+
+.panel-heading p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.mini-table-wrap {
+  overflow-x: auto;
+}
+
+.mini-table {
+  width: 100%;
+  min-width: 560px;
+}
+
+.workflow-column-chart-row {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  min-height: 304px;
+  scrollbar-width: thin;
+}
+
+.workflow-chart-column {
+  min-width: 92px;
+  flex: 0 0 92px;
+}
+
+.workflow-line-chart-shell {
+  width: 100%;
+  min-height: 240px;
+}
+
+.workflow-line-chart {
+  width: 100%;
+  height: 240px;
+  display: block;
+}
+
+.workflow-line-axis {
+  stroke: rgba(148, 163, 184, 0.45);
+  stroke-width: 1;
+}
+
+.workflow-line-path {
+  fill: none;
+  stroke: #0ea5e9;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.workflow-line-area {
+  fill: url(#workflowTrendFill);
+}
+
+.workflow-line-point {
+  fill: #ffffff;
+  stroke: #0ea5e9;
+  stroke-width: 3;
+}
+
+.workflow-line-value,
+.workflow-line-label {
+  fill: #5f7392;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.workflow-spotlight-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  background: linear-gradient(135deg, #f8feff 0%, #ffffff 62%, #edf9f8 100%);
+  border: 1px solid rgba(20, 184, 166, 0.18);
+  border-radius: 22px;
+  padding: 1.1rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.workflow-spotlight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+}
+
+.workflow-spotlight-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 76px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  box-shadow: 0 16px 30px rgba(20, 184, 166, 0.24);
+}
+
+.workflow-spotlight-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.workflow-spotlight-title {
+  color: #0f172a;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.workflow-spotlight-subtitle,
+.workflow-spotlight-meta {
+  color: #5f7392;
+  margin-top: 0.2rem;
+}
+
+.workflow-spotlight-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.workflow-spotlight-stats span {
+  display: block;
+  color: #6b7d95;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.workflow-spotlight-stats strong {
+  display: block;
+  margin-top: 0.22rem;
+  color: #0f172a;
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.workflow-heatmap {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.workflow-heatmap-head,
+.workflow-heatmap-row {
+  display: grid;
+  grid-template-columns: 1.3fr repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.workflow-heatmap-head {
+  color: #6b7d95;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.workflow-heatmap-label {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.workflow-heatmap-cell {
+  border: 0;
+  border-radius: 14px;
+  min-height: 46px;
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.link-btn {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.workflow-line-chart-shell,
+.workflow-heatmap,
+.workflow-spotlight-card,
+.dashboard-column-chart.workflow-column-chart-row {
+  margin-top: 2px;
+}
+
+@media (max-width: 767.98px) {
+  .workflow-dashboard-shell {
+    padding-inline: 0;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-actor-input {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .workflow-spotlight-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .workflow-spotlight-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-heatmap-head,
+  .workflow-heatmap-row {
+    grid-template-columns: 1fr repeat(4, minmax(0, 72px));
+    overflow-x: auto;
+  }
+}

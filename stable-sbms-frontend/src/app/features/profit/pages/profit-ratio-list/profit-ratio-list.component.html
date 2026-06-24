@@ -1,0 +1,139 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container profit-module">
+
+  <app-page-header
+    title="Profit Management"
+    homeLabel="Home"
+    homeRoute="/profit/dashboard"
+    currentLabel="Profit Ratio List">
+  </app-page-header>
+
+  <app-page-title
+    title="Profit Ratio List"
+    subtitle="Manage PSR setup by account type, effective date window and current profit-sharing coverage">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" routerLink="/profit/schedules">
+      <i class="fa fa-calendar"></i> Schedule List
+    </button>
+    <button *ngIf="can('PROFIT_POSTING_RUN')" class="btn btn-outline-success" routerLink="/profit/postings/run">
+      <i class="fa fa-play"></i> Run Posting
+    </button>
+    <button *ngIf="can('PROFIT_RATIO_CREATE')" class="btn btn-primary" routerLink="/profit/ratios/new">
+      <i class="fa fa-plus"></i> New Ratio
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-percent"></i></div>
+      <div><div class="summary-label">Total Ratios</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active Now</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-tags"></i></div>
+      <div><div class="summary-label">Type Coverage</div><div class="summary-value">{{ accountTypeCoverage }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-archive"></i></div>
+      <div><div class="summary-label">Archived</div><div class="summary-value">{{ archivedCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search ratio / account type" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="tags">
+      <select class="form-select" [(ngModel)]="filters.accountTypeId">
+        <option value="">All Account Types</option>
+        <option *ngFor="let item of accountTypes" [value]="item.id">{{ item.typeCode }} - {{ item.typeName }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="PENDING">PENDING</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="bolt">
+      <select class="form-select" [(ngModel)]="filters.activity">
+        <option value="">All Activity</option>
+        <option value="ACTIVE_NOW">ACTIVE NOW</option>
+        <option value="INACTIVE">INACTIVE</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No profit ratio found" emptyMessage="Configured profit-sharing ratios will appear here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Ratio</th>
+        <th>Account Type</th>
+        <th>Effective Window</th>
+        <th>Rate</th>
+        <th>Status</th>
+        <th class="text-center print-hide" style="width: 180px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.ratioCode }}</strong>
+            <span>{{ item.activeNow ? 'ACTIVE NOW' : 'INACTIVE WINDOW' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.accountTypeName }}</strong>
+            <span>{{ item.accountTypeCode }}</span>
+          </div>
+        </td>
+        <td>{{ item.effectiveFrom }} to {{ item.effectiveTo || 'Open Ended' }}</td>
+        <td><span class="balance-chip">{{ item.ratioPercent | number:'1.2-4' }}%</span></td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('PROFIT_RATIO_EDIT')" class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button *ngIf="can('PROFIT_SCHEDULE_CREATE')" class="action-btn schedule" type="button" title="Create Schedule" (click)="onCreateSchedule(item)"><i class="fa fa-calendar-plus-o"></i></button>
+            <button *ngIf="can('PROFIT_POSTING_RUN')" class="action-btn run" type="button" title="Run Posting" (click)="onRunPosting(item)"><i class="fa fa-play"></i></button>
+            <button class="action-btn" [ngClass]="item.status === 'ARCHIVED' ? 'restore' : 'archive'" type="button" [title]="item.status === 'ARCHIVED' ? 'Restore' : 'Archive'" (click)="toggleArchive(item)">
+              <i class="fa" [ngClass]="item.status === 'ARCHIVED' ? 'fa-undo' : 'fa-archive'"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

@@ -1,0 +1,79 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 profit-module">
+  <app-page-header title="Profit Management" homeLabel="Home" homeRoute="/profit/dashboard" currentLabel="Create Profit Schedule"></app-page-header>
+
+  <app-page-title title="Create Profit Schedule" subtitle="Map an eligible active account with posting frequency and next execution date for periodic profit run">
+    <button class="btn btn-outline-secondary" routerLink="/profit/schedules"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading" class="profit-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-calendar-check-o"></i>
+        </div>
+        <div>
+          <h3>New Profit Schedule</h3>
+          <p>Connect a valid account with the right posting frequency so automated profit execution can run on time.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        SCHEDULED
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-clock-o"></i>
+          <div>
+            <h4>Posting Plan</h4>
+            <p>Select the account, recurring cycle and next posting date so profit processing remains traceable and aligned with the agreed schedule.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-university"></i>
+              <select class="form-select" [(ngModel)]="form.accountId">
+                <option [ngValue]="null">Select account</option>
+                <option *ngFor="let item of filteredAccounts" [ngValue]="item.id">{{ getAccountLabel(item) }}</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Profit Frequency</label>
+            <div class="input-with-icon">
+              <i class="fa fa-refresh"></i>
+              <select class="form-select" [(ngModel)]="form.profitFrequency">
+                <option *ngFor="let item of frequencies" [ngValue]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Next Posting Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.nextPostingDate">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" routerLink="/profit/schedules" type="button"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        Create Schedule
+      </button>
+    </div>
+  </div>
+</div>
+</div>

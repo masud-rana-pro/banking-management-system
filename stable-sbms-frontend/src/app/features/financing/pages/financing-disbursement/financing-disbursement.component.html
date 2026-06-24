@@ -1,0 +1,93 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/applications"
+    currentLabel="Disbursement">
+  </app-page-header>
+
+  <app-page-title
+    title="Financing Disbursement"
+    subtitle="Disburse approved financing to the customer's account and generate installment schedule">
+
+    <button class="btn btn-outline-secondary" [routerLink]="['/financing/applications', id]">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving || loading || !canDisburse" [title]="getActionTitle('Disburse Now')">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Disburse Now
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading disbursement form...
+  </div>
+
+  <div *ngIf="!loading && item as application" class="details-grid">
+    <div class="detail-card">
+      <div class="info-list">
+        <div class="entity-inline-profile mb-3">
+          <img *ngIf="customerImageUrl; else financingDisbursementFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="application.customerName">
+          <ng-template #financingDisbursementFallback>
+            <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <div>
+            <strong>{{ application.customerName }}</strong><br>
+            <span>{{ application.customerCode }}</span>
+          </div>
+        </div>
+        <div class="info-row"><span>Application No</span><strong>{{ application.applicationNo }}</strong></div>
+        <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="info-row"><span>Customer</span><strong>{{ application.customerName }}</strong></div>
+        <div class="info-row"><span>Product</span><strong>{{ application.productName }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ getLabel(application.applicationStatus) }}</strong></div>
+        <div class="info-row"><span>Requested Amount</span><strong>{{ application.requestedAmount | number:'1.2-2' }}</strong></div>
+        <div class="info-row">
+          <span>Supporting File</span>
+          <strong>
+              <ng-container *ngIf="application.supportingDocumentName; else noDisbursementDocument">
+                <button class="btn btn-sm btn-outline-primary" type="button" (click)="previewSupportingDocument()">
+                  <i class="fa fa-eye"></i> {{ application.supportingDocumentName | displayFileName }}
+                </button>
+              </ng-container>
+            <ng-template #noDisbursementDocument>-</ng-template>
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-grid single">
+        <div>
+          <label class="form-label">Disbursement Date</label>
+          <input class="form-control" type="date" [(ngModel)]="form.disbursementDate" [readonly]="!canDisburse">
+        </div>
+        <div>
+          <label class="form-label">Disbursed Amount</label>
+          <input class="form-control" type="number" [(ngModel)]="form.disbursedAmount" min="0" step="0.01" [readonly]="!canDisburse">
+        </div>
+        <div>
+          <label class="form-label">Credited Account</label>
+          <select class="form-select" [(ngModel)]="form.creditedAccountId" [disabled]="!canDisburse">
+            <option [ngValue]="null">Select account</option>
+            <option *ngFor="let account of accounts" [ngValue]="account.id">{{ account.accountNumber }} - {{ account.accountTypeName }} - {{ account.availableBalance | number:'1.2-2' }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Disbursed By</label>
+          <input class="form-control" [(ngModel)]="form.disbursedBy" [readonly]="!canDisburse">
+        </div>
+        <div>
+          <label class="form-label">Remarks</label>
+          <textarea class="form-control" [(ngModel)]="form.remarks" [readonly]="!canDisburse"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

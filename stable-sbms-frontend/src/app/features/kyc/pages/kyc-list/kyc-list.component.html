@@ -1,0 +1,139 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="KYC Management"
+    homeLabel="Home"
+    homeRoute="/kyc/dashboard"
+    currentLabel="KYC Profile List">
+  </app-page-header>
+
+  <app-page-title
+    title="KYC Profile List"
+    subtitle="Manage KYC profile, workflow decision, risk flags and document readiness from one place">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button *ngIf="canAny(['KYC_VERIFY', 'KYC_APPROVE', 'KYC_REJECT', 'KYC_RETURN'])" class="btn btn-outline-primary" routerLink="/kyc/approval-queue">
+      <i class="fa fa-tasks"></i> Approval Queue
+    </button>
+
+    <button *ngIf="can('KYC_CREATE')" class="btn btn-primary" routerLink="/kyc/new">
+      <i class="fa fa-plus"></i> New KYC Profile
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-folder-open"></i></div>
+      <div><div class="summary-label">Total Profiles</div><div class="summary-value">{{ totalAll }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+      <div><div class="summary-label">Pending</div><div class="summary-value">{{ pendingCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Verified</div><div class="summary-value">{{ verifiedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div>
+      <div><div class="summary-label">High Risk</div><div class="summary-value">{{ highRiskCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search customer code / name / reviewer" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.reviewStatus">
+        <option *ngFor="let item of reviewStatusOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="shield">
+      <select class="form-select" [(ngModel)]="filters.riskLevel">
+        <option *ngFor="let item of riskLevelOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId" [disabled]="isBranchSelectionLocked">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No KYC profile found" emptyMessage="Try adjusting filters or create a new KYC profile.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Customer</th>
+        <th>Risk</th>
+        <th>Review Status</th>
+        <th>Branch</th>
+        <th style="width: 90px;">Docs</th>
+        <th style="width: 120px;">Reviewer</th>
+        <th class="text-center" style="width: 340px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of profiles; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="entity-inline-profile">
+            <div class="entity-avatar">
+              <img *ngIf="hasCustomerImage(item.customerId); else kycCustomerFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+              <ng-template #kycCustomerFallback><i class="fa fa-user"></i></ng-template>
+            </div>
+            <div class="item-name">
+              <strong>{{ item.customerName }}</strong>
+              <span>{{ item.customerCode }}</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="risk-pill" [ngClass]="getRiskClass(item.riskLevel)">{{ getStatusLabel(item.riskLevel) }}</span></td>
+        <td><app-status-badge [status]="item.reviewStatus"></app-status-badge></td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td>{{ item.documentCount || 0 }}</td>
+        <td>{{ item.reviewedBy || '-' }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('KYC_EDIT')" class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button *ngIf="canAny(['KYC_VERIFY', 'KYC_APPROVE', 'KYC_REJECT', 'KYC_RETURN'])" class="action-btn manage" type="button" title="Review" (click)="onReview(item)"><i class="fa fa-search-plus"></i></button>
+            <button *ngIf="can('KYC_DOCUMENT_UPLOAD')" class="action-btn upload" type="button" title="Upload Document" (click)="onUpload(item)"><i class="fa fa-upload"></i></button>
+            <button class="action-btn history" type="button" title="History" (click)="onHistory(item)"><i class="fa fa-history"></i></button>
+            <button class="action-btn search" type="button" title="View Customer" (click)="onOpenCustomer(item)"><i class="fa fa-user"></i></button>
+            <button *ngIf="(item.reviewStatus === 'DRAFT' || item.reviewStatus === 'SENT_BACK') && can('KYC_CREATE')" class="action-btn submit" type="button" title="Submit" (click)="onSubmitProfile(item)"><i class="fa fa-paper-plane"></i></button>
+            <button *ngIf="(item.reviewStatus === 'SUBMITTED' || item.reviewStatus === 'UNDER_REVIEW') && can('KYC_VERIFY')" class="action-btn verify" type="button" title="Verify" (click)="onVerify(item)"><i class="fa fa-check-square"></i></button>
+            <button *ngIf="item.reviewStatus === 'VERIFIED' && can('KYC_APPROVE')" class="action-btn approve" type="button" title="Approve" (click)="onApprove(item)"><i class="fa fa-thumbs-up"></i></button>
+            <button *ngIf="item.reviewStatus !== 'APPROVED' && item.reviewStatus !== 'REJECTED' && can('KYC_REJECT')" class="action-btn reject" type="button" title="Reject" (click)="onReject(item)"><i class="fa fa-ban"></i></button>
+            <button *ngIf="(item.reviewStatus === 'SUBMITTED' || item.reviewStatus === 'UNDER_REVIEW' || item.reviewStatus === 'VERIFIED') && can('KYC_RETURN')" class="action-btn return" type="button" title="Return" (click)="onReturn(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

@@ -1,0 +1,34 @@
+<div class="sbms-modal-backdrop">
+  <div class="sbms-modal" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="sbms-modal-header" [ngClass]="danger ? 'header-danger' : 'header-default'">
+      <div class="modal-icon-wrap" [ngClass]="danger ? 'icon-danger' : 'icon-info'">
+        <i class="bi" [ngClass]="danger ? 'bi-exclamation-triangle-fill' : 'bi-question-circle-fill'"></i>
+      </div>
+      <h5 class="modal-title">{{ title }}</h5>
+    </div>
+
+    <!-- Body -->
+    <div class="sbms-modal-body">
+      {{ message }}
+    </div>
+
+    <!-- Footer -->
+    <div class="sbms-modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="cancel.emit()">
+        <i class="bi bi-x-lg"></i>
+        {{ cancelText }}
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [ngClass]="danger ? 'btn-danger' : 'btn-primary'"
+        (click)="confirm.emit()">
+        <i class="bi" [ngClass]="danger ? 'bi-trash3' : 'bi-check-lg'"></i>
+        {{ confirmText }}
+      </button>
+    </div>
+
+  </div>
+</div>

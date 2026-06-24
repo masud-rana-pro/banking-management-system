@@ -1,0 +1,54 @@
+@import '../../styles/zakat-common';
+
+:host {
+  display: block;
+}
+
+.zakat-calc-shell,
+.loading-box {
+  max-width: 1180px;
+}
+
+.zakat-calc-shell,
+.detail-card {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.zakat-module .form-card,
+.zakat-module .detail-card {
+  width: 100% !important;
+  max-width: 1180px !important;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.zakat-module .form-card::after,
+.zakat-module .detail-card::after {
+  display: none;
+}
+
+.zakat-module .detail-card .card-heading > i {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  margin-top: 0;
+  box-shadow: 0 12px 26px rgba(var(--primary-rgb), 0.24);
+  flex-shrink: 0;
+}
+
+.loading-box {
+  margin: 20px auto;
+}
+
+.form-actions {
+  margin-top: 16px;
+  justify-content: flex-end;
+  gap: 12px;
+}

@@ -1,0 +1,308 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container report-module">
+  <app-page-header title="Reporting & Regulatory" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Report Dashboard" subtitle="Monitor generated reports, usage demand, export status and regulatory pressure from one executive reporting surface">
+    <button class="btn btn-outline-primary" type="button" (click)="openHistory()" title="Open export history"><i class="fa fa-history"></i> Export History</button>
+    <button class="btn btn-primary" type="button" (click)="openRoute('/reports/operational')" title="Open reports"><i class="fa fa-file-text-o"></i> Open Reports</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading report dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow"><i class="fa fa-file-text-o"></i> Regulatory Desk</span>
+          </div>
+          <h3 class="dashboard-title">Report generation, export usage and backlog pressure in one executive view</h3>
+          <p class="dashboard-subtitle">
+            Keep report production healthy while monitoring which exports are most used and where regulatory pressure is accumulating.
+          </p>
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Generated Today</span>
+              <div class="dashboard-hero-metric-value">{{ data.generatedToday }}</div>
+              <div class="dashboard-hero-metric-note">reports generated today</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Regulatory Pending</span>
+              <div class="dashboard-hero-metric-value">{{ data.regulatoryPending }}</div>
+              <div class="dashboard-hero-metric-note">regulatory outputs waiting to complete</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Recent Exports</span>
+              <div class="dashboard-hero-metric-value">{{ data.recentExports.length }}</div>
+              <div class="dashboard-hero-metric-note">latest export activity shown below</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Usage View</span>
+              <h3 class="dashboard-title">Most used exports and status spread</h3>
+              <p class="dashboard-subtitle">See which report families are being pulled most often and what status dominates recent export history.</p>
+            </div>
+          </div>
+          <div class="dashboard-focus-value">{{ data.mostUsedReports.length }}</div>
+          <div class="dashboard-focus-note">top report families currently contributing to usage demand in the dashboard sample</div>
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Branch Summary</span>
+              <strong class="dashboard-mini-value">{{ data.branchPerformanceSummary | number:'1.0-2' }}</strong>
+              <span class="dashboard-mini-note">branch reporting metric signal</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Financing Summary</span>
+              <strong class="dashboard-mini-value">{{ data.financingSummary | number:'1.0-2' }}</strong>
+              <span class="dashboard-mini-note">financing reporting metric signal</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Profit Summary</span>
+              <strong class="dashboard-mini-value">{{ data.profitSummary | number:'1.0-2' }}</strong>
+              <span class="dashboard-mini-note">profit distribution reporting signal</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Exports</span>
+              <strong class="dashboard-mini-value">{{ data.recentExports.length }}</strong>
+              <span class="dashboard-mini-note">tracked export history rows</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-file-text-o"></i></div><div><div class="summary-label">Generated Today</div><div class="summary-value">{{ data.generatedToday }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-balance-scale"></i></div><div><div class="summary-label">Regulatory Pending</div><div class="summary-value">{{ data.regulatoryPending }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><i class="fa fa-building"></i></div><div><div class="summary-label">Branch Performance</div><div class="summary-value small">{{ data.branchPerformanceSummary | number:'1.0-2' }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-bank"></i></div><div><div class="summary-label">Financing Summary</div><div class="summary-value small">{{ data.financingSummary | number:'1.0-2' }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-line-chart"></i></div><div><div class="summary-label">Profit Summary</div><div class="summary-value small">{{ data.profitSummary | number:'1.0-2' }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Reporting Operations Distribution</h4>
+              <p class="dashboard-subtitle">See how generated reports, regulatory pending load and summary signals are shaping the current reporting desk.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="reportGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.generatedToday }}</div>
+                    <div class="dashboard-donut-label">reports generated in the current operating day</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-legend">
+              <div *ngFor="let item of usageLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Most Used Reports Distribution</h4>
+              <p class="dashboard-subtitle">Each bar shows how often a report family is being used. Taller bars indicate stronger current report demand.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+          <div *ngIf="usageColumns.length; else noUsageColumns" class="dashboard-column-chart report-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of usageAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of usageColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noUsageColumns><div class="empty-mini">No report usage has been logged yet.</div></ng-template>
+          <div class="dashboard-chart-note">Use this chart to see which report families should get the most operational attention and performance tuning.</div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Export Status Distribution</h4>
+              <p class="dashboard-subtitle">Track where recent report requests currently sit across requested, generated, exported and failed operational states.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+          <div *ngIf="exportStatusColumns.length; else noExportColumns" class="report-status-layout">
+            <div class="dashboard-column-chart report-chart-row report-status-chart" [class.is-single-status]="exportStatusColumns.length === 1">
+              <div class="dashboard-y-axis">
+                <span *ngFor="let tick of exportAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+              </div>
+              <div *ngFor="let item of exportStatusColumns" class="dashboard-column report-status-column">
+                <div class="dashboard-column-plot">
+                  <span class="dashboard-column-value">{{ item.value }}</span>
+                  <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+                </div>
+                <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+              </div>
+            </div>
+            <div class="report-status-legend">
+              <div *ngFor="let item of exportStatusColumns" class="report-status-pill" [ngClass]="'tone-' + item.tone">
+                <span>{{ item.label }}</span>
+                <strong>{{ item.value }}</strong>
+              </div>
+            </div>
+          </div>
+          <ng-template #noExportColumns><div class="empty-mini">No export history found.</div></ng-template>
+          <div class="dashboard-chart-note">Use this view to immediately see whether export traffic is completing cleanly or stacking up in earlier request states.</div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Export Activity Trend</h4>
+              <p class="dashboard-subtitle">Daily export request movement across the latest 7-day operating window from visible export history.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-area-chart"></i></span>
+          </div>
+          <div *ngIf="exportTrend.length; else noExportTrend" class="dashboard-trend-shell">
+            <div class="dashboard-trend-axis">
+              <span *ngFor="let tick of exportTrendTicks" class="dashboard-trend-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div class="report-trend-content">
+              <div class="report-line-card">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="report-line-svg">
+                  <defs>
+                    <linearGradient id="reportTrendFill" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="rgba(20,184,166,0.28)"></stop>
+                      <stop offset="100%" stop-color="rgba(20,184,166,0.03)"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path [attr.d]="exportTrendAreaPath" fill="url(#reportTrendFill)"></path>
+                  <path [attr.d]="exportTrendPath" class="report-line-path"></path>
+                  <g *ngFor="let point of exportTrend">
+                    <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" class="dashboard-trend-point"></circle>
+                    <text [attr.x]="point.x" [attr.y]="point.y - 5" text-anchor="middle" class="report-line-value">{{ point.value }}</text>
+                  </g>
+                </svg>
+                <div class="report-line-labels">
+                  <span *ngFor="let point of exportTrend">{{ point.shortLabel }}</span>
+                </div>
+              </div>
+              <div class="report-trend-meta">
+                <div *ngFor="let item of exportTrendMeta" class="report-trend-meta-card">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.value }}</strong>
+                  <small>{{ item.note }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noExportTrend><div class="empty-mini">No export activity trend available.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Export Spotlight</h4>
+              <p class="dashboard-subtitle">Highlight the most relevant recent export request with report type, requester and status posture in one compact view.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-crosshairs"></i></span>
+          </div>
+          <div *ngIf="selectedExport as item; else noExportSpotlight" class="report-spotlight">
+            <div class="report-spotlight-hero">
+              <div class="report-spotlight-badge">{{ selectedExportBadgeText }}</div>
+              <div class="report-spotlight-copy">
+                <span class="report-spotlight-code">{{ item.reportCode }}</span>
+                <h5>{{ item.reportName }}</h5>
+                <p>{{ item.requestedBy || 'SYSTEM' }}</p>
+                <span class="report-spotlight-module">{{ getLabel(item.reportType) }} | {{ getLabel(item.requestStatus) }}</span>
+              </div>
+            </div>
+
+            <div class="report-spotlight-grid">
+              <div class="report-spotlight-stat">
+                <span>Date Range</span>
+                <strong>{{ item.dateFrom || '-' }} - {{ item.dateTo || '-' }}</strong>
+              </div>
+              <div class="report-spotlight-stat">
+                <span>Export File</span>
+                <strong>{{ item.generatedFile?.originalFileName || 'View / pending artifact' }}</strong>
+              </div>
+            </div>
+
+            <div class="report-spotlight-badges">
+              <div *ngFor="let badge of selectedExportBadges" class="report-spotlight-pill">
+                <span>{{ badge.label }}</span>
+                <strong>{{ badge.value }}</strong>
+              </div>
+            </div>
+          </div>
+          <ng-template #noExportSpotlight><div class="empty-mini">No recent export available for spotlight.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Report Type Status Matrix</h4>
+              <p class="dashboard-subtitle">See how recent export requests are distributed across report types and operational request states.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+          </div>
+          <div *ngIf="matrixRows.length && matrixColumns.length; else noMatrix" class="report-matrix">
+            <div class="report-matrix-header">
+              <div class="report-matrix-corner">Report Type</div>
+              <div *ngFor="let column of matrixColumns" class="report-matrix-col">{{ column.label }}</div>
+            </div>
+            <div *ngFor="let row of matrixRows" class="report-matrix-row">
+              <div class="report-matrix-label" [title]="row.label">{{ row.shortLabel }}</div>
+              <div *ngFor="let value of row.values" class="report-matrix-cell" [class.is-active]="value > 0">{{ value }}</div>
+            </div>
+          </div>
+          <ng-template #noMatrix><div class="empty-mini">No report type status matrix available.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel dashboard-grid-span-2 report-quick-access-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Report Quick Access</h4>
+              <p class="dashboard-subtitle">Jump straight to report execution pages without leaving the dashboard.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-compass"></i></span>
+          </div>
+          <div class="report-quick-access-grid">
+            <div class="report-quick-access-card" *ngFor="let item of quickLinks">
+              <div class="report-quick-access-copy">
+                <span class="report-quick-access-icon"><i [class]="item.icon"></i></span>
+                <span class="report-quick-access-label">{{ item.label }}</span>
+              </div>
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="openRoute(item.route)">
+                <i class="fa fa-external-link"></i> Open
+              </button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+  </ng-container>
+</div>
+</div>

@@ -1,0 +1,243 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.sbms-filter-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 18px;
+  padding: 30px 18px 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border: 1px solid #dbe5ef;
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+.sbms-filter-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #0d9488 0%, #0f8f83 58%, #f59e0b 100%);
+}
+
+.sbms-filter-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #dbe5ef;
+}
+
+.sbms-filter-icon {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 17px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  box-shadow: 0 12px 26px rgba(13, 148, 136, 0.24);
+  font-size: 1rem;
+}
+
+.sbms-filter-copy {
+  min-width: 0;
+}
+
+.sbms-filter-copy h4 {
+  margin: 0 0 4px;
+  color: #071632;
+  font-size: 0.96rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.sbms-filter-copy p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.sbms-filter-body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.sbms-filter-controls {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  min-width: 0;
+}
+
+.sbms-filter-controls ::ng-deep app-form-field {
+  display: block;
+  flex: 1 1 220px;
+  min-width: 190px;
+  max-width: 100%;
+}
+
+.sbms-filter-controls ::ng-deep app-form-field:first-child {
+  flex: 1.35 1 300px;
+}
+
+.sbms-filter-controls ::ng-deep app-form-field .sbms-form-field,
+.sbms-filter-controls ::ng-deep app-form-field .form-field,
+.sbms-filter-controls ::ng-deep app-form-field .input-shell {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.sbms-filter-controls ::ng-deep app-form-field .sbms-form-field {
+  height: 48px;
+  overflow: hidden;
+  border: 1.5px solid #cbd8e6;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.03);
+}
+
+.sbms-filter-controls ::ng-deep app-form-field .sbms-form-field:focus-within {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12), 0 10px 22px rgba(15, 23, 42, 0.05);
+}
+
+.sbms-filter-controls ::ng-deep app-form-field .field-icon {
+  width: 42px;
+  height: 100%;
+  color: #0d9488;
+  background: linear-gradient(180deg, #f8fafc, #eef4f8);
+  border-right: 1px solid #dbe5ef;
+  border-radius: 14px 0 0 14px;
+}
+
+.sbms-filter-controls ::ng-deep app-form-field .field-control input,
+.sbms-filter-controls ::ng-deep app-form-field .field-control select {
+  height: 100%;
+  padding: 0 14px;
+  color: #071632;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: transparent;
+}
+
+.sbms-filter-controls ::ng-deep app-form-field .field-control input::placeholder {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sbms-filter-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.sbms-filter-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.sbms-filter-actions .btn-primary {
+  border-color: #0d9488;
+  background: #0d9488;
+  color: #ffffff;
+}
+
+.sbms-filter-actions .btn-primary:hover,
+.sbms-filter-actions .btn-primary:focus {
+  border-color: #0f766e;
+  background: #0f766e;
+}
+
+.sbms-filter-actions .btn-outline-secondary {
+  border-color: #d5e0ea;
+  background: #ffffff;
+  color: #64748b;
+}
+
+.sbms-filter-actions .btn-outline-secondary:hover,
+.sbms-filter-actions .btn-outline-secondary:focus {
+  border-color: #0d9488;
+  background: rgba(13, 148, 136, 0.06);
+  color: #0d9488;
+}
+
+@media (max-width: 991px) {
+  .sbms-filter-body {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sbms-filter-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .sbms-filter-bar {
+    padding: 24px 14px 14px;
+    border-radius: 16px;
+  }
+
+  .sbms-filter-heading {
+    align-items: flex-start;
+    padding-bottom: 14px;
+  }
+
+  .sbms-filter-icon {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+    border-radius: 15px;
+  }
+
+  .sbms-filter-body {
+    padding: 12px;
+  }
+
+  .sbms-filter-controls ::ng-deep app-form-field,
+  .sbms-filter-controls ::ng-deep app-form-field:first-child {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  .sbms-filter-actions .btn {
+    flex: 1 1 150px;
+  }
+}

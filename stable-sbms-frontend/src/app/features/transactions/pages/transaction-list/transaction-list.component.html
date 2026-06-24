@@ -1,0 +1,138 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container transaction-module">
+
+  <app-page-header
+    title="Transactions"
+    homeLabel="Home"
+    homeRoute="/transactions/dashboard"
+    currentLabel="Transaction List">
+  </app-page-header>
+
+  <app-page-title
+    title="Transaction Journal"
+    subtitle="Review journal postings, reversal status, account movement and branch transaction activity">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-success" routerLink="/transactions/deposit" [disabled]="!can('TRANSACTION_DEPOSIT')" [title]="getActionTitle('Deposit', 'TRANSACTION_DEPOSIT')"><i class="fa fa-plus-circle"></i> Deposit</button>
+    <button class="btn btn-outline-warning" routerLink="/transactions/withdraw" [disabled]="!can('TRANSACTION_WITHDRAW')" [title]="getActionTitle('Withdraw', 'TRANSACTION_WITHDRAW')"><i class="fa fa-minus-circle"></i> Withdraw</button>
+    <button class="btn btn-primary" routerLink="/transactions/transfer" [disabled]="!can('TRANSACTION_TRANSFER')" [title]="getActionTitle('Transfer', 'TRANSACTION_TRANSFER')"><i class="fa fa-exchange"></i> Transfer</button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-list-ul"></i></div>
+      <div><div class="summary-label">Total Journal</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-arrow-down"></i></div>
+      <div><div class="summary-label">Deposits</div><div class="summary-value">{{ depositCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-arrow-up"></i></div>
+      <div><div class="summary-label">Withdrawals</div><div class="summary-value">{{ withdrawalCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-exchange"></i></div>
+      <div><div class="summary-label">Transfers</div><div class="summary-value">{{ transferCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search ref / account / customer / narration" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="exchange">
+      <select class="form-select" [(ngModel)]="filters.transactionType">
+        <option value="">All Types</option>
+        <option value="DEPOSIT">DEPOSIT</option>
+        <option value="WITHDRAWAL">WITHDRAWAL</option>
+        <option value="TRANSFER">TRANSFER</option>
+        <option value="CHEQUE_CLEARING">CHEQUE CLEARING</option>
+        <option value="REVERSAL">REVERSAL</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.transactionStatus">
+        <option value="">All Status</option>
+        <option value="POSTED">POSTED</option>
+        <option value="PENDING_REVIEW">PENDING REVIEW</option>
+        <option value="REVERSED">REVERSED</option>
+        <option value="FAILED">FAILED</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No transaction found" emptyMessage="Posted deposit, withdrawal, transfer and reversal entries will appear here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Reference</th>
+        <th>Type</th>
+        <th>Counterparty</th>
+        <th>Amount</th>
+        <th>Branch</th>
+        <th>Status</th>
+        <th class="text-center print-hide" style="width: 180px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.transactionRef }}</strong>
+            <span>{{ item.transactionDate | date:'medium' }}</span>
+          </div>
+        </td>
+        <td>{{ getLabel(item.transactionType) }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ getCounterparty(item) }}</strong>
+            <span>{{ getCustomer(item) }}</span>
+          </div>
+        </td>
+        <td><span class="balance-chip">{{ item.amount | number:'1.2-2' }}</span></td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td><app-status-badge [status]="item.transactionStatus || item.status"></app-status-badge></td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn voucher" type="button" title="Preview Voucher" (click)="previewVoucher(item)"><i class="fa fa-file-pdf-o"></i></button>
+            <button class="action-btn download" type="button" title="Download Voucher" (click)="downloadVoucher(item)"><i class="fa fa-download"></i></button>
+            <button *ngIf="!item.reversalFlag && item.transactionType !== 'REVERSAL'" class="action-btn reverse" type="button" [disabled]="!can('TRANSACTION_REVERSE')" [title]="getActionTitle('Reverse', 'TRANSACTION_REVERSE')" (click)="onReverse(item)"><i class="fa fa-undo"></i></button>
+            <button *ngIf="item.debitAccountId" class="action-btn account" type="button" title="Debit Account" (click)="openAccount(item.debitAccountId)"><i class="fa fa-sign-out"></i></button>
+            <button *ngIf="item.creditAccountId" class="action-btn deposit" type="button" title="Credit Account" (click)="openAccount(item.creditAccountId)"><i class="fa fa-sign-in"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

@@ -1,0 +1,38 @@
+<main class="embedded-content-area" *ngIf="embeddedMode; else standardShell">
+  <router-outlet></router-outlet>
+</main>
+
+<ng-template #standardShell>
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <app-sidebar
+    class="sidebar-host"
+    [class.collapsed-host]="sidebarCollapsed && !mobileSidebarOpen"
+    [class.mobile-open-host]="mobileSidebarOpen"
+    [collapsed]="sidebarCollapsed"
+    [mobileOpen]="mobileSidebarOpen"
+    (menuClick)="onSidebarMenuClick()">
+  </app-sidebar>
+
+  <!-- MOBILE OVERLAY -->
+  <div
+    class="shell-overlay"
+    *ngIf="mobileSidebarOpen"
+    (click)="closeMobileSidebar()">
+  </div>
+
+  <!-- MAIN RIGHT PANEL -->
+  <div class="shell-right">
+    <app-header (toggleSidebar)="onToggleSidebar()"></app-header>
+
+    <main class="content-area">
+      <router-outlet></router-outlet>
+    </main>
+
+    <app-footer></app-footer>
+  </div>
+
+</div>
+<app-route-form-modal></app-route-form-modal>
+</ng-template>

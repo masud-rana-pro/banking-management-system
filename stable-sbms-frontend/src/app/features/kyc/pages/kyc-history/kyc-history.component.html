@@ -1,0 +1,120 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="KYC Management"
+    homeLabel="Home"
+    homeRoute="/kyc/list"
+    currentLabel="KYC History">
+  </app-page-header>
+
+  <app-page-title
+    title="KYC Decision History"
+    subtitle="Track submit, verify, approve, reject and return actions with remarks and timestamps">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openView()" [disabled]="!profile">
+      <i class="fa fa-eye"></i> View KYC
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!profile">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openUpload()" [disabled]="!profile">
+      <i class="fa fa-upload"></i> Upload Document
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openReview()" [disabled]="!profile">
+      <i class="fa fa-search-plus"></i> Review
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/kyc/list">
+      <i class="fa fa-list"></i> KYC List
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading KYC history...
+  </div>
+
+  <div *ngIf="!loading && profile as item" class="view-shell">
+    <div class="entity-inline-profile mb-3">
+      <img *ngIf="customerImageUrl; else kycHistoryAvatarFallback" class="entity-avatar-lg" [src]="customerImageUrl" [alt]="item.customerName">
+      <ng-template #kycHistoryAvatarFallback>
+        <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+      </ng-template>
+      <div class="item-name">
+        <strong>{{ item.customerCode }} - {{ item.customerName }}</strong>
+        <span>KYC history workspace</span>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-user"></i></div>
+        <div><div class="summary-label">Customer</div><div class="summary-value small">{{ item.customerCode }}</div><div class="summary-hint">{{ item.customerName }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-shield"></i></div>
+        <div><div class="summary-label">KYC Status</div><div class="summary-value small">{{ getLabel(item.reviewStatus) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-history"></i></div>
+        <div><div class="summary-label">History Records</div><div class="summary-value">{{ history.length }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>KYC Summary</h4>
+            <p>Current customer and KYC snapshot for this history timeline.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Customer</span><strong>{{ item.customerName }}</strong></div>
+          <div class="info-row"><span>Customer Code</span><strong>{{ item.customerCode }}</strong></div>
+          <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+          <div class="info-row"><span>Risk Level</span><strong>{{ getLabel(item.riskLevel) }}</strong></div>
+          <div class="info-row"><span>Review Status</span><strong>{{ getLabel(item.reviewStatus) }}</strong></div>
+          <div class="info-row"><span>Reviewer</span><strong>{{ item.reviewedBy || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Timeline</h4>
+            <p>Decision-by-decision trail stored by the module.</p>
+          </div>
+        </div>
+
+        <div *ngIf="history.length; else noHistory" class="timeline-list">
+          <div class="timeline-item" *ngFor="let entry of history">
+            <div class="timeline-icon"><i class="fa fa-clock-o"></i></div>
+            <div class="timeline-content">
+              <strong>{{ getLabel(entry.decision) }}</strong>
+              <p>{{ entry.remarks || 'No remarks provided' }}</p>
+              <span>{{ entry.decisionBy }} | {{ entry.decisionAt | date:'yyyy-MM-dd HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noHistory>
+          <div class="empty-mini">No decision history found.</div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

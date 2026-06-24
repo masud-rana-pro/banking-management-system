@@ -1,0 +1,120 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 lookup-module">
+  <app-page-header title="Lookup / Config" homeLabel="Home" homeRoute="/lookups/dashboard" [currentLabel]="editId ? 'Edit Lookup Type' : 'New Lookup Type'"></app-page-header>
+
+  <app-page-title [title]="editId ? 'Edit Lookup Type' : 'Create Lookup Type'" subtitle="Define reusable lookup categories, labels and active status for downstream module dropdowns">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading lookup type form...
+  </div>
+
+  <div class="lookup-form-shell" *ngIf="!loading">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-folder-open"></i>
+        </div>
+        <div>
+          <h3>{{ editId ? 'Update Lookup Type' : 'New Lookup Type' }}</h3>
+          <p>Define reusable configuration category, purpose note and activation state for dependent dropdowns.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.status || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-code-fork"></i>
+          <div>
+            <h4>Type Identity</h4>
+            <p>Use a stable code and a human-readable name for downstream module configuration.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Type Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.typeCode" placeholder="e.g. BRANCH_TYPE">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Type Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tag"></i>
+              <input class="form-control" [(ngModel)]="form.typeName" placeholder="e.g. Branch Type">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Usage Note</h4>
+            <p>Document where this lookup type is consumed, so later modules can trace it easily.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Description</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-file-text-o"></i>
+              <textarea class="form-control" [(ngModel)]="form.description" placeholder="Short note about where this lookup type is used"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-toggle-on"></i>
+          <div>
+            <h4>Availability Status</h4>
+            <p>Control whether this type is ready for active dropdown use, pending setup, or archived.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="form.status">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="PENDING">PENDING</option>
+                <option value="ARCHIVED">ARCHIVED</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ editId ? 'Update Type' : 'Save Type' }}
+      </button>
+    </div>
+  </div>
+</div>
+</div>

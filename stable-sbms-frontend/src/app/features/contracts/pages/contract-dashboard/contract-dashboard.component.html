@@ -1,0 +1,307 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Contract Dashboard" subtitle="Track generation flow, signature backlog, template usage and legal-book readiness from one executive dashboard">
+    <button *ngIf="can('CONTRACTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openTemplates()" title="Open contract template list"><i class="fa fa-file-text-o"></i> Template List</button>
+    <button *ngIf="can('CONTRACTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openContracts()" title="Open contract list"><i class="fa fa-folder-open"></i> Contract List</button>
+    <button *ngIf="can('CONTRACT_GENERATE')" class="btn btn-primary" type="button" (click)="openGenerate()" title="Generate new contract"><i class="fa fa-plus"></i> Generate Contract</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading contract dashboard...</div>
+
+  <div *ngIf="!loading && summary as item" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow">
+            <i class="fa fa-files-o"></i>
+            Legal Book
+          </span>
+        </div>
+
+        <h3 class="dashboard-title">Keep contract generation and signature flow moving without legal backlog</h3>
+        <p class="dashboard-subtitle">
+          Balance draft creation, pending signatures, locked agreements and template usage so downstream business flow does not stall.
+        </p>
+
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Total Contracts</span>
+            <div class="dashboard-hero-metric-value">{{ item.totalContracts }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.activeLockedContracts }} already locked into active operation</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Pending Signatures</span>
+            <div class="dashboard-hero-metric-value">{{ item.pendingSignatures }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.recentContracts.length }} recent contracts visible below</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Version Trail</span>
+            <div class="dashboard-hero-metric-value">{{ item.contractVersions }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.recentTemplates.length }} active template references in view</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Execution Posture</span>
+            <h3 class="dashboard-title">How much of the legal book is still waiting for completion</h3>
+            <p class="dashboard-subtitle">A fast checkpoint for signature pressure versus active contract readiness.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-focus-value">{{ item.activeLockedContracts }}</div>
+        <div class="dashboard-focus-note">contracts are already active or locked and ready to support downstream business operations</div>
+
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Draft</span>
+            <strong class="dashboard-mini-value">{{ item.draftContracts }}</strong>
+            <span class="dashboard-mini-note">still under preparation</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Pending Sign</span>
+            <strong class="dashboard-mini-value">{{ item.pendingSignatures }}</strong>
+            <span class="dashboard-mini-note">awaiting signatures</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Templates</span>
+            <strong class="dashboard-mini-value">{{ item.recentTemplates.length }}</strong>
+            <span class="dashboard-mini-note">active template shortlist</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Versions</span>
+            <strong class="dashboard-mini-value">{{ item.contractVersions }}</strong>
+            <span class="dashboard-mini-note">full revision trail</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-chip-row">
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Draft Backlog</span>
+        <strong class="dashboard-chip-value">{{ item.draftContracts }}</strong>
+        <span class="dashboard-chip-note">contracts still not finalized</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Signature Queue</span>
+        <strong class="dashboard-chip-value">{{ item.pendingSignatures }}</strong>
+        <span class="dashboard-chip-note">documents waiting for sign-off</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Locked Book</span>
+        <strong class="dashboard-chip-value">{{ item.activeLockedContracts }}</strong>
+        <span class="dashboard-chip-note">finalized agreements in the book</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Template Usage</span>
+        <strong class="dashboard-chip-value">{{ item.recentTemplates.length }}</strong>
+        <span class="dashboard-chip-note">template references actively generating contracts</span>
+      </div>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-files-o"></i></div><div><div class="summary-label">Total Contracts</div><div class="summary-value">{{ item.totalContracts || 0 }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-pencil-square-o"></i></div><div><div class="summary-label">Pending Signatures</div><div class="summary-value">{{ item.pendingSignatures || 0 }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><i class="fa fa-lock"></i></div><div><div class="summary-label">Active / Locked</div><div class="summary-value">{{ item.activeLockedContracts || 0 }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon info"><i class="fa fa-history"></i></div><div><div class="summary-label">Contract Versions</div><div class="summary-value">{{ item.contractVersions || 0 }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-file-o"></i></div><div><div class="summary-label">Draft Contracts</div><div class="summary-value">{{ item.draftContracts || 0 }}</div></div></div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Contract Lifecycle Bands</h4>
+            <p class="dashboard-subtitle">See where the legal pipeline is healthy and where it is starting to accumulate friction.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+        </div>
+
+        <div class="dashboard-stack">
+          <div *ngFor="let band of contractBands" class="dashboard-summary-band">
+            <div class="dashboard-summary-band-head">
+              <span class="dashboard-summary-band-title">{{ band.label }}</span>
+              <span class="dashboard-summary-band-value">{{ band.value }}</span>
+            </div>
+            <div class="dashboard-band-track">
+              <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+            </div>
+            <small>{{ band.note }}</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Contract Book Donut</h4>
+            <p class="dashboard-subtitle">A pie-style view of draft, pending sign, active and revision intensity across the legal book.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="contractGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ item.totalContracts }}</div>
+                  <div class="dashboard-donut-label">contracts currently tracked in the operating legal book</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-legend">
+            <div *ngFor="let legend of contractLegend" class="dashboard-legend-item">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ legend.label }}</span>
+                  <span class="dashboard-legend-note">{{ legend.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ legend.value }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Contract Type Bar Chart</h4>
+            <p class="dashboard-subtitle">A statistical bar chart comparing recent contract mix across product and legal categories.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+
+        <div *ngIf="typeColumns.length; else noTypeBars" class="dashboard-column-chart">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of typeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of typeColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noTypeBars>
+          <div class="empty-mini">No recent contract type mix available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Template Demand Bar Chart</h4>
+            <p class="dashboard-subtitle">See which templates are being used most to generate legal documents.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-file-text-o"></i></span>
+        </div>
+
+        <div *ngIf="templateColumns.length; else noTemplateBars" class="dashboard-column-chart">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of templateAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of templateColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noTemplateBars>
+          <div class="empty-mini">No recent template usage distribution available.</div>
+        </ng-template>
+      </article>
+    </section>
+
+    <div class="details-grid">
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-folder-open-o"></i>
+          <div>
+            <h4>Recent Contracts</h4>
+            <p>Latest generated contracts and current sign or lock posture.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Contract</th>
+                <th>Customer</th>
+                <th>Template</th>
+                <th>Status</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let contract of item.recentContracts">
+                <td><strong>{{ contract.contractNo }}</strong><br><span>{{ getLabel(contract.contractType) }}</span></td>
+                <td>
+                  <div class="entity-inline-profile">
+                    <img *ngIf="getCustomerImageUrl(contract.customerId); else contractDashboardFallback" class="entity-avatar" [src]="getCustomerImageUrl(contract.customerId)" [alt]="contract.customerName">
+                    <ng-template #contractDashboardFallback>
+                      <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div><strong>{{ contract.customerName }}</strong><br><span>{{ contract.customerCode }}</span></div>
+                  </div>
+                </td>
+                <td><strong>{{ contract.templateName }}</strong><br><span>v{{ contract.templateVersionNo }}</span></td>
+                <td><app-status-badge [status]="contract.contractStatus"></app-status-badge></td>
+                <td class="text-center"><button class="action-btn view" type="button" (click)="viewContract(contract.id)" title="Open contract details"><i class="fa fa-eye"></i></button></td>
+              </tr>
+              <tr *ngIf="!item.recentContracts.length"><td colspan="5" class="text-center">No contract found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-file-text-o"></i>
+          <div>
+            <h4>Recent Templates</h4>
+            <p>Template library activity and generated contract footprint.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Template</th>
+                <th>Type</th>
+                <th>Version</th>
+                <th>Generated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let template of item.recentTemplates">
+                <td><strong>{{ template.templateCode }}</strong><br><span>{{ template.templateName }}</span></td>
+                <td>{{ getLabel(template.contractType) }}</td>
+                <td>v{{ template.versionNo }}</td>
+                <td>{{ template.generatedContractCount }}</td>
+              </tr>
+              <tr *ngIf="!item.recentTemplates.length"><td colspan="4" class="text-center">No template found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

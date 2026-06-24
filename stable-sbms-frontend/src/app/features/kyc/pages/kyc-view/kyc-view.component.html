@@ -1,0 +1,236 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="KYC Management"
+    homeLabel="Home"
+    homeRoute="/kyc/list"
+    currentLabel="KYC Profile View">
+  </app-page-header>
+
+  <app-page-title
+    title="KYC Profile View"
+    subtitle="Review customer KYC profile, documents, decision history, reviewer data and workflow readiness">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" [disabled]="!profile">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!profile">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openAccountRequest()" [disabled]="!profile">
+      <i class="fa fa-bank"></i> New Account Request
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openHistory()" [disabled]="!profile">
+      <i class="fa fa-history"></i> History
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="upload()" [disabled]="!profile">
+      <i class="fa fa-upload"></i> Upload Document
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!profile">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="review()" [disabled]="!profile">
+      <i class="fa fa-search-plus"></i> Review
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading KYC profile...
+  </div>
+
+  <div *ngIf="!loading && profile as item" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="entity-avatar entity-avatar-lg">
+          <img *ngIf="customerProfileImageName; else kycViewAvatarFallback" [src]="getCustomerImageUrl()" alt="Customer image">
+          <ng-template #kycViewAvatarFallback><i class="fa fa-user"></i></ng-template>
+        </div>
+        <div>
+          <h3>{{ item.customerName }}</h3>
+          <p>{{ item.customerCode }} | {{ getBranchName(item.branchId) }} | {{ getLabel(item.customerStatus) }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="item.reviewStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-shield"></i></div>
+        <div><div class="summary-label">Risk Level</div><div class="summary-value small">{{ getLabel(item.riskLevel) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-file-text-o"></i></div>
+        <div><div class="summary-label">Documents</div><div class="summary-value">{{ documents.length || item.documentCount || 0 }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-history"></i></div>
+        <div><div class="summary-label">Decision History</div><div class="summary-value">{{ history.length || item.decisionCount || 0 }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-user-secret"></i></div>
+        <div><div class="summary-label">Reviewer</div><div class="summary-value small">{{ item.reviewedBy || '-' }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Customer + KYC Profile</h4>
+            <p>Customer identity and linked KYC profile core data.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Customer Code</span><strong>{{ item.customerCode }}</strong></div>
+          <div class="info-row"><span>Customer Name</span><strong>{{ item.customerName }}</strong></div>
+          <div class="info-row"><span>Branch</span><strong>{{ getBranchName(item.branchId) }}</strong></div>
+          <div class="info-row"><span>Customer Status</span><strong>{{ getLabel(item.customerStatus) }}</strong></div>
+          <div class="info-row"><span>Review Status</span><strong>{{ getLabel(item.reviewStatus) }}</strong></div>
+          <div class="info-row"><span>Risk Level</span><strong>{{ getLabel(item.riskLevel) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-exclamation-circle"></i>
+          <div>
+            <h4>Risk Flags</h4>
+            <p>PEP, sanction and AML indicators captured during review.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>PEP Flag</span><strong>{{ item.pepFlag ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Sanction Flag</span><strong>{{ item.sanctionFlag ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>AML Flag</span><strong>{{ item.amlFlag ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Source Of Funds</span><strong>{{ item.sourceOfFundsNote || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-file-text-o"></i>
+          <div>
+            <h4>Documents</h4>
+            <p>Uploaded KYC documents and verification state.</p>
+          </div>
+        </div>
+
+        <div *ngIf="documents.length; else noDocuments" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>No</th>
+                <th>Reference</th>
+                <th>Verified</th>
+                <th style="width: 110px;">Preview</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let doc of documents">
+                <td>{{ getLabel(doc.documentType) }}</td>
+                <td>{{ doc.documentNo || '-' }}</td>
+                <td>
+                  <div class="entity-inline-profile">
+                    <div class="entity-thumb">
+                      <img *ngIf="doc.fileReferenceId && isImageFile(doc.fileReferenceId); else kycDocFallback" [src]="getDocumentImageUrl(doc.fileReferenceId)" alt="KYC document image">
+                      <ng-template #kycDocFallback>
+                        <span class="entity-thumb-empty">{{ isPdfFile(doc.fileReferenceId) ? 'PDF' : 'FILE' }}</span>
+                      </ng-template>
+                    </div>
+                    <span>{{ doc.fileReferenceId | displayFileName }}</span>
+                  </div>
+                </td>
+                <td>{{ doc.verifiedFlag ? 'YES' : 'NO' }}</td>
+                <td>
+                  <button *ngIf="doc.fileReferenceId" class="btn btn-sm btn-outline-primary" type="button" (click)="openDocument(doc.fileReferenceId)">
+                    <i class="fa fa-eye"></i> Preview
+                  </button>
+                  <span *ngIf="!doc.fileReferenceId" class="entity-thumb-empty">No file</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noDocuments>
+          <div class="empty-mini">No KYC document found.</div>
+        </ng-template>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-calendar-check-o"></i>
+          <div>
+            <h4>Reviewer Summary</h4>
+            <p>Reviewer identity and timestamps stored in the workflow.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Reviewed By</span><strong>{{ item.reviewedBy || '-' }}</strong></div>
+          <div class="info-row"><span>Reviewed At</span><strong>{{ item.reviewedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ item.createdAt || '-' }}</strong></div>
+          <div class="info-row"><span>Updated At</span><strong>{{ item.updatedAt || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Remarks</h4>
+            <p>Review notes and correction remarks from current profile.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Current Remarks</span><strong>{{ item.remarks || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Decision History</h4>
+            <p>Submit, verify, approve, reject and return actions.</p>
+          </div>
+        </div>
+
+        <div *ngIf="history.length; else noHistory" class="timeline-list">
+          <div class="timeline-item" *ngFor="let entry of history">
+            <div class="timeline-icon"><i class="fa fa-clock-o"></i></div>
+            <div class="timeline-content">
+              <strong>{{ getLabel(entry.decision) }}</strong>
+              <p>{{ entry.remarks || 'No remarks provided' }}</p>
+              <span>{{ entry.decisionBy }} | {{ entry.decisionAt | date:'yyyy-MM-dd HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noHistory>
+          <div class="empty-mini">No decision history found.</div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

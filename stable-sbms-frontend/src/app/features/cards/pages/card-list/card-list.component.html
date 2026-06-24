@@ -1,0 +1,263 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container card-module">
+
+  <app-page-header
+    title="Card Management"
+    homeLabel="Home"
+    homeRoute="/cards/dashboard"
+    currentLabel="Card List">
+  </app-page-header>
+
+  <app-page-title
+    title="Card List"
+    subtitle="Manage issued cards, activation queue, status action, replacement, renewal and PIN event navigation">
+
+    <div class="view-toggle-group">
+      <button class="btn" type="button" [ngClass]="viewMode === 'list' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('list')">
+        <i class="fa fa-list"></i> List View
+      </button>
+      <button class="btn" type="button" [ngClass]="viewMode === 'grid' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('grid')">
+        <i class="fa fa-th-large"></i> Grid View
+      </button>
+    </div>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" routerLink="/cards/atm-cdm-transactions/list">
+      <i class="fa fa-exchange"></i> ATM/CDM Usage
+    </button>
+
+    <button *ngIf="can('CARD_CREATE')" class="btn btn-primary" routerLink="/cards/new">
+      <i class="fa fa-plus"></i> Issue Card
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-credit-card"></i></div>
+      <div><div class="summary-label">Total Cards</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-hourglass-half"></i></div>
+      <div><div class="summary-label">Pending</div><div class="summary-value">{{ pendingCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-ban"></i></div>
+      <div><div class="summary-label">Blocked</div><div class="summary-value">{{ blockedCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search card / customer / account" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="user">
+      <select class="form-select" [(ngModel)]="filters.customerId" (change)="onCustomerChange()">
+        <option value="">All Customers</option>
+        <option *ngFor="let item of customers" [value]="item.id">{{ item.customerCode }} - {{ item.fullName }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="bank">
+      <select class="form-select" [(ngModel)]="filters.accountId">
+        <option value="">All Accounts</option>
+        <option *ngFor="let item of filteredAccounts" [value]="item.id">{{ item.accountNumber }} - {{ item.customerName }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="tags">
+      <select class="form-select" [(ngModel)]="filters.cardType">
+        <option value="">All Card Types</option>
+        <option value="DEBIT_CARD">DEBIT CARD</option>
+        <option value="ATM_CARD">ATM CARD</option>
+        <option value="PREPAID_CARD">PREPAID CARD</option>
+        <option value="VIRTUAL_CARD">VIRTUAL CARD</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.cardStatus">
+        <option value="">All Card Status</option>
+        <option value="PENDING_ACTIVATION">PENDING ACTIVATION</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="BLOCKED">BLOCKED</option>
+        <option value="EXPIRED">EXPIRED</option>
+        <option value="REPLACED">REPLACED</option>
+        <option value="RENEWED">RENEWED</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="archive">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Record Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <ng-container *ngIf="viewMode === 'list'; else cardGridView">
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No card found" emptyMessage="Issued cards will appear here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Card</th>
+        <th>Customer</th>
+        <th>Account</th>
+        <th>Type</th>
+        <th>Expiry</th>
+        <th>Status</th>
+        <th class="text-center print-hide" style="width: 250px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.cardRefNo }}</strong>
+            <span>{{ item.maskedCardNo }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="entity-inline-profile">
+            <div class="entity-avatar">
+              <img *ngIf="hasCustomerImage(item.customerId); else cardCustomerFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+              <ng-template #cardCustomerFallback><i class="fa fa-user"></i></ng-template>
+            </div>
+            <div class="item-name">
+              <strong>{{ item.customerName }}</strong>
+              <span>{{ item.customerCode }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.accountNumber }}</strong>
+            <span>{{ item.accountTypeCode }}</span>
+          </div>
+        </td>
+        <td>{{ getLabel(item.cardType) }}</td>
+        <td>
+          <span class="balance-chip">{{ item.expiryDate }}</span>
+        </td>
+        <td><app-status-badge [status]="item.cardStatus"></app-status-badge></td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('CARD_EDIT')" class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button *ngIf="can('CARD_ACTIVATE')" class="action-btn activate" type="button" title="Activate" (click)="onActivation(item)"><i class="fa fa-play"></i></button>
+            <button *ngIf="canAny(['CARD_BLOCK', 'CARD_UNBLOCK'])" class="action-btn block" type="button" title="Block / Unblock" (click)="onBlockUnblock(item)"><i class="fa fa-ban"></i></button>
+            <button *ngIf="can('CARD_REPLACE')" class="action-btn replace" type="button" title="Replace" (click)="onReplace(item)"><i class="fa fa-retweet"></i></button>
+            <button *ngIf="can('CARD_RENEW')" class="action-btn renew" type="button" title="Renew" (click)="onRenew(item)"><i class="fa fa-refresh"></i></button>
+            <button *ngIf="can('CARD_PIN_EVENT')" class="action-btn pin" type="button" title="PIN Events" (click)="onPinEvents(item)"><i class="fa fa-key"></i></button>
+            <button class="action-btn" [ngClass]="item.status === 'ARCHIVED' ? 'restore' : 'archive'" type="button" [title]="item.status === 'ARCHIVED' ? 'Restore' : 'Archive'" (click)="onArchiveToggle(item)">
+              <i class="fa" [ngClass]="item.status === 'ARCHIVED' ? 'fa-undo' : 'fa-archive'"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+  </ng-container>
+
+  <ng-template #cardGridView>
+    <div class="grid-state" *ngIf="loading">
+      <i class="fa fa-spinner fa-spin"></i> Loading cards...
+    </div>
+    <div class="grid-state" *ngIf="!loading && total === 0">
+      <i class="fa fa-inbox"></i> No card found for the current filter.
+    </div>
+    <div class="card-grid" *ngIf="!loading && total > 0">
+      <article class="bank-card-shell" *ngFor="let item of items">
+        <div class="bank-card-face" [ngClass]="getCardTheme(item)">
+          <span class="card-status-badge" [ngClass]="getStatusTone(item)">{{ getLabel(item.cardStatus) }}</span>
+          <div class="bank-card-brand">
+            <span>Al-Barakah Shariah Bank PLC</span>
+            <small>{{ getLabel(item.cardType) }}</small>
+          </div>
+
+          <div class="bank-card-chip-row">
+            <div class="chip-visual">
+              <span></span>
+              <span></span>
+            </div>
+            <div class="contactless-wave">
+              <i class="fa fa-wifi"></i>
+            </div>
+          </div>
+
+          <div class="bank-card-number">{{ item.maskedCardNo }}</div>
+
+          <div class="bank-card-footer">
+            <div>
+              <span>CARD HOLDER</span>
+              <strong>{{ item.customerName }}</strong>
+            </div>
+            <div>
+              <span>EXPIRES</span>
+              <strong>{{ item.expiryDate }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-grid-body">
+          <div class="card-grid-profile">
+            <div class="entity-card-avatar">
+              <img *ngIf="hasCustomerImage(item.customerId); else cardGridFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+              <ng-template #cardGridFallback>
+                <span>{{ getCardInitial(item) }}</span>
+              </ng-template>
+            </div>
+            <div>
+              <h3>{{ item.customerName }}</h3>
+              <p>{{ item.customerCode }} · {{ item.accountNumber }}</p>
+            </div>
+          </div>
+
+          <div class="card-grid-pills">
+            <span class="meta-pill">{{ item.cardRefNo }}</span>
+            <span class="meta-pill soft">{{ item.accountTypeCode }}</span>
+          </div>
+
+          <div class="entity-card-meta">
+            <div><span>Branch</span><strong>{{ item.branchId ? ('Branch #' + item.branchId) : '-' }}</strong></div>
+            <div><span>Balance</span><strong>{{ item.currentBalance | number:'1.2-2' }}</strong></div>
+            <div><span>PIN Events</span><strong>{{ item.pinEventCount }}</strong></div>
+            <div><span>Usage Alerts</span><strong>{{ item.usageAlertCount }}</strong></div>
+          </div>
+
+          <div class="entity-card-actions">
+            <button class="btn btn-sm btn-outline-primary" type="button" (click)="onView(item)">Details</button>
+            <button *ngIf="can('CARD_ACTIVATE')" class="btn btn-sm btn-outline-success" type="button" (click)="onActivation(item)">Activate</button>
+            <button *ngIf="canAny(['CARD_BLOCK', 'CARD_UNBLOCK'])" class="btn btn-sm btn-outline-warning" type="button" (click)="onBlockUnblock(item)">Status</button>
+            <button *ngIf="can('CARD_PIN_EVENT')" class="btn btn-sm btn-outline-info" type="button" (click)="onPinEvents(item)">PIN Events</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </ng-template>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

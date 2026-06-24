@@ -1,0 +1,219 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/list"
+    currentLabel="Account View">
+  </app-page-header>
+
+  <app-page-title
+    title="Account View"
+    subtitle="Review account balances, opening request linkage, customer, account type and account control status">
+
+    <button class="btn btn-outline-secondary" routerLink="/accounts/list">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!item">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button *ngIf="item?.openingRequestId" class="btn btn-outline-primary" type="button" (click)="openRequest()">
+      <i class="fa fa-file-text-o"></i> Opening Request
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openType()" [disabled]="!item">
+      <i class="fa fa-tags"></i> View Type
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openDeposit()" [disabled]="!item">
+      <i class="fa fa-plus-circle"></i> Deposit
+    </button>
+
+    <button class="btn btn-outline-warning" type="button" (click)="openWithdraw()" [disabled]="!item">
+      <i class="fa fa-minus-circle"></i> Withdraw
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openTransfer()" [disabled]="!item">
+      <i class="fa fa-exchange"></i> Transfer
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCardList()" [disabled]="!item">
+      <i class="fa fa-credit-card"></i> Card List
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="issueCard()" [disabled]="!item">
+      <i class="fa fa-plus-square"></i> Issue Card
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openStatementList()" [disabled]="!item">
+      <i class="fa fa-file-text-o"></i> Statements
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openCustomerStatement()" [disabled]="!item">
+      <i class="fa fa-print"></i> New Statement
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openDepositSchemeList()" [disabled]="!item">
+      <i class="fa fa-pie-chart"></i> Deposit Schemes
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openDepositSchemeEnrollment()" [disabled]="!item">
+      <i class="fa fa-user-plus"></i> Enroll Scheme
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openFinancingList()" [disabled]="!item">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Financing Apps
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openFinancingApplication()" [disabled]="!item">
+      <i class="fa fa-plus-circle"></i> New Financing
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openZakatProfiles()" [disabled]="!item">
+      <i class="fa fa-calculator"></i> Zakat Profiles
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="runZakat()" [disabled]="!item">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Run Zakat
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openContracts()" [disabled]="!item">
+      <i class="fa fa-file-text"></i> Contracts
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="generateContract()" [disabled]="!item">
+      <i class="fa fa-pencil-square-o"></i> Generate Contract
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openProfitSchedule()" [disabled]="!item">
+      <i class="fa fa-calendar"></i> Profit Schedule
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openProfitPostings()" [disabled]="!item">
+      <i class="fa fa-line-chart"></i> Profit Postings
+    </button>
+
+    <button *ngIf="item?.profitRatioId" class="btn btn-outline-primary" type="button" (click)="openProfitRatio()">
+      <i class="fa fa-percent"></i> Profit Ratio
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="openStatus()" [disabled]="!item">
+      <i class="fa fa-sliders"></i> Status Action
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading account view...
+  </div>
+
+  <div *ngIf="!loading && item" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="entity-avatar entity-avatar-lg">
+          <img *ngIf="customerProfileImageName; else accountViewAvatarFallback" [src]="getCustomerImageUrl()" alt="Customer image">
+          <ng-template #accountViewAvatarFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder"></ng-template>
+        </div>
+        <div>
+          <h3>{{ item.accountNumber }}</h3>
+          <p>{{ item.customerCode }} | {{ item.customerName }} | {{ item.accountTypeCode }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="item.accountStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Current Balance</div><div class="summary-value small">{{ item.currentBalance | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-wallet"></i></div>
+        <div><div class="summary-label">Available Balance</div><div class="summary-value small">{{ item.availableBalance | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-check-square-o"></i></div>
+        <div><div class="summary-label">Request No</div><div class="summary-value small">{{ item.requestNo || '-' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-percent"></i></div>
+        <div><div class="summary-label">Profit Ratio Link</div><div class="summary-value small">{{ item.profitRatioId || '-' }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Account Snapshot</h4>
+            <p>Core account record saved by the module.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Account Number</span><strong>{{ item.accountNumber }}</strong></div>
+          <div class="info-row"><span>Account Status</span><strong>{{ getLabel(item.accountStatus) }}</strong></div>
+          <div class="info-row"><span>Opened Date</span><strong>{{ item.openedDate || '-' }}</strong></div>
+          <div class="info-row"><span>Closed Date</span><strong>{{ item.closedDate || '-' }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ item.status }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-user"></i>
+          <div>
+            <h4>Customer & Product</h4>
+            <p>Customer linkage and Islamic product classification.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Customer</span><strong>{{ item.customerName }}</strong></div>
+          <div class="info-row"><span>Customer Code</span><strong>{{ item.customerCode }}</strong></div>
+          <div class="info-row"><span>Account Type</span><strong>{{ item.accountTypeName }}</strong></div>
+          <div class="info-row"><span>Type Code</span><strong>{{ item.accountTypeCode }}</strong></div>
+          <div class="info-row"><span>Branch</span><strong>{{ getBranchName(item.branchId) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+          <div>
+            <h4>Balance & Linkage</h4>
+            <p>Balance, request and profit linkage summary.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Current Balance</span><strong>{{ item.currentBalance | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Available Balance</span><strong>{{ item.availableBalance | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Opening Request</span><strong>{{ item.requestNo || '-' }}</strong></div>
+          <div class="info-row"><span>Profit Ratio Id</span><strong>{{ item.profitRatioId || '-' }}</strong></div>
+          <div class="info-row"><span>Updated At</span><strong>{{ item.updatedAt || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Remarks</h4>
+            <p>Latest status remarks saved for the account.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Remarks</span><strong>{{ item.remarks || '-' }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ item.createdAt || '-' }}</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

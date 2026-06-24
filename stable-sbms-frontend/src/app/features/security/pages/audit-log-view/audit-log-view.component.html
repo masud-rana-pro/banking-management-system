@@ -1,0 +1,58 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Audit Log View"></app-page-header>
+
+  <app-page-title title="Audit Log View" subtitle="Inspect action diff, actor identity and the exact module reference affected">
+    <button class="btn btn-primary" type="button" (click)="openList()"><i class="fa fa-list"></i> Audit Logs</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading audit log detail...
+  </div>
+
+  <div *ngIf="!loading && item as data" class="details-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-history"></i>
+        <div>
+          <h4>Audit Summary</h4>
+          <p>Action name, actor and target module reference for this audit entry.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="entity-inline-profile mb-3">
+          <img *ngIf="getUserImageUrl(data.performedBy); else auditViewUserFallback" class="entity-avatar-lg" [src]="getUserImageUrl(data.performedBy)" [alt]="data.performedBy">
+          <ng-template #auditViewUserFallback>
+            <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+          </ng-template>
+          <div class="item-name">
+            <strong>{{ data.performedBy }}</strong>
+            <span>Audit actor</span>
+          </div>
+        </div>
+        <div class="info-row"><span>Module</span><strong>{{ data.moduleName }}</strong></div>
+        <div class="info-row"><span>Reference ID</span><strong>{{ data.referenceId || '-' }}</strong></div>
+        <div class="info-row"><span>Action</span><strong>{{ data.actionName }}</strong></div>
+        <div class="info-row"><span>Performed By</span><strong>{{ data.performedBy }}</strong></div>
+        <div class="info-row"><span>Performed At</span><strong>{{ data.performedAt || '-' }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ data.status }}</strong></div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-code"></i>
+        <div>
+          <h4>Payload Diff</h4>
+          <p>Old and new JSON snapshot captured for audit trace and investigation follow-up.</p>
+        </div>
+      </div>
+      <strong>Old Value</strong>
+      <div class="json-box">{{ data.oldValueJson || '-' }}</div>
+      <div style="height: 12px;"></div>
+      <strong>New Value</strong>
+      <div class="json-box">{{ data.newValueJson || '-' }}</div>
+    </div>
+  </div>
+</div>
+</div>

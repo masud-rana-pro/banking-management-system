@@ -1,0 +1,371 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container branch-dashboard-page">
+  <app-page-header title="Branch Management" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Branch Dashboard" subtitle="Track branch footprint, vault cash exposure, teller alert pressure and operational ownership from one executive control board">
+    <button *ngIf="can('REPORTING_REGULATORY_ACCESS')" class="btn btn-outline-primary" routerLink="/reports/branch" title="Open branch report"><i class="fa fa-bar-chart"></i> Branch Report</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openList()" title="Open branch list"><i class="fa fa-list"></i> Branch List</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openLedger()" title="Open cash ledger"><i class="fa fa-book"></i> Cash Ledger</button>
+    <button *ngIf="can('BRANCH_CREATE')" class="btn btn-primary" routerLink="/branches/new" title="Create branch"><i class="fa fa-plus"></i> Create Branch</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading && summary as data" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow"><i class="fa fa-bank"></i> Branch Network</span>
+        </div>
+
+        <h3 class="dashboard-title">Physical footprint, cash presence and branch operations in one view</h3>
+        <p class="dashboard-subtitle">
+          Keep the branch estate balanced between active service coverage, vault control and ownership assignment follow-up.
+        </p>
+
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Total Branches</span>
+            <div class="dashboard-hero-metric-value">{{ data.totalBranches }}</div>
+            <div class="dashboard-hero-metric-note">{{ data.activeBranches }} active branches in service</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Cash Position</span>
+            <div class="dashboard-hero-metric-value">{{ data.branchCashPosition | number:'1.2-2' }}</div>
+            <div class="dashboard-hero-metric-note">aggregate branch vault exposure</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Alert Load</span>
+            <div class="dashboard-hero-metric-value">{{ data.tellerLimitAlerts + data.todayVaultPendingClose }}</div>
+            <div class="dashboard-hero-metric-note">combined teller and vault control pressure</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Operations Mix</span>
+            <h3 class="dashboard-title">Assignment and control load</h3>
+            <p class="dashboard-subtitle">Watch which branch operations still need ownership, limit review or vault closure attention.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-focus-value">{{ data.pendingAssignments }}</div>
+        <div class="dashboard-focus-note">assignment rows are still pending active ownership or branch-level operational setup</div>
+
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Teller Alerts</span>
+            <strong class="dashboard-mini-value">{{ data.tellerLimitAlerts }}</strong>
+            <span class="dashboard-mini-note">limit review rows requiring operations focus</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Open Vaults</span>
+            <strong class="dashboard-mini-value">{{ openVaultRows.length }}</strong>
+            <span class="dashboard-mini-note">vault rows still open for the day</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Vault Opened</span>
+            <strong class="dashboard-mini-value">{{ data.todayVaultOpened }}</strong>
+            <span class="dashboard-mini-note">vault sessions started today</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Vault Closed</span>
+            <strong class="dashboard-mini-value">{{ data.todayVaultClosed }}</strong>
+            <span class="dashboard-mini-note">vault sessions closed today</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="branch-summary-row">
+      <div class="branch-summary-card"><div class="summary-icon primary"><i class="fa fa-bank"></i></div><div><div class="summary-label">Total Branches</div><div class="summary-value">{{ data.totalBranches }}</div></div></div>
+      <div class="branch-summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Active Branches</div><div class="summary-value">{{ data.activeBranches }}</div></div></div>
+      <div class="branch-summary-card"><div class="summary-icon warning"><span class="taka-icon" aria-hidden="true">&#2547;</span></div><div><div class="summary-label">Cash Position</div><div class="summary-value small">{{ data.branchCashPosition | number:'1.2-2' }}</div></div></div>
+      <div class="branch-summary-card"><div class="summary-icon info"><i class="fa fa-users"></i></div><div><div class="summary-label">Pending Assignments</div><div class="summary-value">{{ data.pendingAssignments }}</div></div></div>
+      <div class="branch-summary-card"><div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div><div><div class="summary-label">Teller Alerts</div><div class="summary-value">{{ data.tellerLimitAlerts }}</div></div></div>
+      <div class="branch-summary-card"><div class="summary-icon success"><i class="fa fa-unlock-alt"></i></div><div><div class="summary-label">Vault Opened Today</div><div class="summary-value">{{ data.todayVaultOpened }}</div></div></div>
+    </div>
+
+    <section class="dashboard-analytics-grid branch-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Operations Distribution</h4>
+            <p class="dashboard-subtitle">Compare active coverage, assignment backlog, teller alert pressure and pending vault closure from one allocation view.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="branchOpsGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ activeLegendItem?.value || 0 }}</div>
+                  <div class="dashboard-donut-label">{{ activeLegendItem?.note || 'branch operations view' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-legend">
+            <button
+              *ngFor="let item of operationsLegend"
+              class="dashboard-legend-item branch-legend-button"
+              type="button"
+              [class.is-active]="activeLegendItem?.label === item.label"
+              [title]="item.note"
+              (click)="selectLegend(item)">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ item.label }}</span>
+                  <span class="dashboard-legend-note">{{ item.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ item.value }}</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Type Distribution</h4>
+            <p class="dashboard-subtitle">See which branch categories currently shape the network footprint and service mix.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+
+          <div *ngIf="branchTypeColumns.length; else noTypeColumns" class="dashboard-column-chart branch-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of branchTypeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <button
+              *ngFor="let item of branchTypeColumns"
+              class="dashboard-column branch-column-button"
+              type="button"
+              [class.is-active]="activeBranchTypeItem?.label === item.label"
+              [title]="item.label"
+              (click)="selectBranchType(item)">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </button>
+          </div>
+          <div *ngIf="activeBranchTypeItem" class="dashboard-chart-note branch-chart-note">
+            <strong>{{ activeBranchTypeItem.label }}</strong> currently accounts for
+            <strong>{{ activeBranchTypeItem.value }}</strong> branches within the active network profile.
+          </div>
+        <ng-template #noTypeColumns><div class="empty-mini">No branch type distribution found.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Vault Balance Exposure</h4>
+            <p class="dashboard-subtitle">Review branch-wise vault balance concentration to identify locations carrying the heaviest cash posture.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+        </div>
+
+        <div *ngIf="vaultExposureColumns.length; else noVaultColumns" class="dashboard-column-chart branch-column-chart">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of vaultAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <button
+            *ngFor="let item of vaultExposureColumns"
+            class="dashboard-column branch-column-button"
+            type="button"
+            [class.is-active]="activeVaultExposureItem?.branchId === item.branchId"
+            [title]="item.label"
+            (click)="selectVaultExposure(item)">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ item.value | number:'1.0-0' }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+          </button>
+        </div>
+        <div *ngIf="activeVaultExposureItem" class="dashboard-chart-note branch-chart-note">
+          <strong>{{ activeVaultExposureItem.label }}</strong> is currently carrying
+          <strong>{{ activeVaultExposureItem.value | number:'1.0-0' }}</strong> in tracked vault balance exposure.
+        </div>
+        <ng-template #noVaultColumns><div class="empty-mini">No vault exposure found.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Spotlight</h4>
+            <p class="dashboard-subtitle">Review the current branch owner, operational load and cash exposure for the branch selected from the charts below.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-crosshairs"></i></span>
+        </div>
+
+        <div *ngIf="selectedBranchCard as branch" class="branch-spotlight-card">
+          <div class="branch-spotlight-head">
+            <div>
+              <span class="branch-spotlight-code">{{ branch.branchCode }}</span>
+              <h5>{{ branch.branchName }}</h5>
+              <p>{{ branch.branchType }} branch with routing {{ branch.routingNo }}</p>
+            </div>
+            <app-status-badge [status]="branch.status"></app-status-badge>
+          </div>
+
+          <div class="branch-spotlight-manager">
+            <img *ngIf="getBranchManagerImage(branch); else branchSpotlightManagerFallback" class="entity-avatar-lg" [src]="getBranchManagerImage(branch)" [alt]="getBranchManagerDisplay(branch)">
+            <ng-template #branchSpotlightManagerFallback>
+              <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div>
+              <strong>{{ getBranchManagerDisplay(branch) }}</strong>
+              <small>branch manager or assigned owner for this location</small>
+            </div>
+          </div>
+
+          <div class="branch-spotlight-grid">
+            <div class="branch-spotlight-metric">
+              <span>Cash Exposure</span>
+              <strong>{{ getBranchCashExposure(branch.id) | number:'1.0-0' }}</strong>
+            </div>
+            <div class="branch-spotlight-metric">
+              <span>Assignments</span>
+              <strong>{{ getBranchAssignmentCount(branch.id) }}</strong>
+            </div>
+            <div class="branch-spotlight-metric">
+              <span>Teller Alerts</span>
+              <strong>{{ getBranchAlertCount(branch.id) }}</strong>
+            </div>
+            <div class="branch-spotlight-metric">
+              <span>Open Vaults</span>
+              <strong>{{ getBranchOpenVaultCount(branch.id) }}</strong>
+            </div>
+          </div>
+
+          <div class="branch-spotlight-footer">
+            Select a branch card, type column or vault balance column to refresh this spotlight.
+          </div>
+        </div>
+        <div *ngIf="!selectedBranchCard" class="empty-mini">
+          No branch spotlight data available.
+        </div>
+      </article>
+    </section>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <div class="card-head">
+          <h5>Recent Branches</h5>
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="openList()">View All</button>
+        </div>
+        <div class="branch-card-grid" *ngIf="recentBranches.length; else emptyBranches">
+          <button
+            class="branch-mini-card"
+            *ngFor="let branch of recentBranches"
+            type="button"
+            [class.is-active]="selectedBranchCard?.id === branch.id"
+            (click)="selectBranchCard(branch)">
+            <div class="branch-mini-card-head">
+              <div>
+                <strong>{{ branch.branchCode }}</strong>
+                <small>{{ branch.branchType }}</small>
+              </div>
+              <app-status-badge [status]="branch.status"></app-status-badge>
+            </div>
+            <h6>{{ branch.branchName }}</h6>
+            <p>{{ branch.routingNo }}{{ branch.email ? ' | ' + branch.email : '' }}</p>
+            <div class="branch-mini-card-owner">
+              <img *ngIf="getBranchManagerImage(branch); else recentBranchManagerFallback" class="entity-avatar-sm" [src]="getBranchManagerImage(branch)" [alt]="getBranchManagerDisplay(branch)">
+              <ng-template #recentBranchManagerFallback>
+                <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+              </ng-template>
+              <span>{{ getBranchManagerDisplay(branch) }}</span>
+            </div>
+          </button>
+        </div>
+        <ng-template #emptyBranches><div class="empty-note">No branch records found.</div></ng-template>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-head">
+          <h5>Pending Assignment Signals</h5>
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="openAssignments()">Assignments</button>
+        </div>
+        <div class="mini-list" *ngIf="pendingAssignments.length; else emptyAssignments">
+          <div class="mini-row" *ngFor="let item of pendingAssignments">
+            <div>
+              <strong>{{ getBranchCode(item.branchId) }} - {{ getBranchName(item.branchId) }}</strong>
+              <div class="entity-inline-profile entity-inline-profile--compact mt-1">
+                <img *ngIf="getUserImageUrl(item.userId); else pendingAssignmentUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.userId)" [alt]="getUserDisplay(item.userId)">
+                <ng-template #pendingAssignmentUserFallback>
+                  <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                </ng-template>
+                <div>
+                  <small>{{ getUserDisplay(item.userId) }} | {{ item.assignmentRole }}</small>
+                </div>
+              </div>
+            </div>
+            <app-status-badge [status]="item.status"></app-status-badge>
+          </div>
+        </div>
+        <ng-template #emptyAssignments><div class="empty-note">No pending assignment signals right now.</div></ng-template>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-head">
+          <h5>Teller Limit Alerts</h5>
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="openTellerLimits()">Teller Limits</button>
+        </div>
+        <div class="mini-list" *ngIf="tellerAlerts.length; else emptyLimits">
+          <div class="mini-row" *ngFor="let item of tellerAlerts">
+            <div>
+              <strong>{{ getBranchCode(item.branchId) }} - {{ getBranchName(item.branchId) }}</strong>
+              <div class="entity-inline-profile entity-inline-profile--compact mt-1">
+                <img *ngIf="getUserImageUrl(item.userId); else tellerAlertUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.userId)" [alt]="getUserDisplay(item.userId)">
+                <ng-template #tellerAlertUserFallback>
+                  <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                </ng-template>
+                <div>
+                  <small>{{ getUserDisplay(item.userId) }} | {{ item.limitDate }}</small>
+                </div>
+              </div>
+            </div>
+            <span class="chip">{{ item.singleTxnLimit | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        <ng-template #emptyLimits><div class="empty-note">No teller limit alerts found.</div></ng-template>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-head">
+          <h5>Open Vault Status</h5>
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="goVaults()">Vault List</button>
+        </div>
+        <div class="mini-list" *ngIf="openVaultRows.length; else emptyVaults">
+          <div class="mini-row" *ngFor="let item of openVaultRows">
+            <div>
+              <strong>{{ getBranchCode(item.branchId) }} - {{ getBranchName(item.branchId) }}</strong>
+              <small>{{ item.balanceDate }} | Opening {{ item.openingBalance | number:'1.2-2' }}</small>
+            </div>
+            <span class="chip warning">OPEN</span>
+          </div>
+        </div>
+        <ng-template #emptyVaults><div class="empty-note">No open vault remained.</div></ng-template>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button *ngIf="can('BRANCH_ASSIGN_USER')" class="btn btn-outline-primary" type="button" (click)="openAssignments()"><i class="fa fa-user-plus"></i> Assign User</button>
+      <button *ngIf="can('BRANCH_VAULT_MANAGE')" class="btn btn-outline-success" routerLink="/branches/vault/open"><i class="fa fa-unlock-alt"></i> Open Vault</button>
+      <button class="btn btn-outline-primary" type="button" (click)="openLedger()"><i class="fa fa-book"></i> View Ledger</button>
+      <button class="btn btn-outline-warning" type="button" (click)="openEodSummary()"><i class="fa fa-calendar-check-o"></i> Start EOD</button>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,159 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 deposit-scheme-module">
+
+  <app-page-header
+    title="Deposit Scheme Management"
+    homeLabel="Home"
+    homeRoute="/deposit-schemes/enrollments/list"
+    currentLabel="Create Enrollment">
+  </app-page-header>
+
+  <app-page-title
+    title="Create Enrollment"
+    subtitle="Enroll a customer into a scheme, validate minimum installment and generate schedule plus profit rows">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading enrollment setup...
+  </div>
+
+  <div *ngIf="!loading" class="scheme-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-user-plus"></i>
+        </div>
+
+        <div>
+          <h3>New Scheme Enrollment</h3>
+          <p>Link customer, account and scheme correctly so the system can generate schedule and profit rows safely.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        ACTIVE
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-users"></i>
+          <div>
+            <h4>Scheme & Customer Mapping</h4>
+            <p>Scheme, customer and linked account must belong together so enrollment remains valid.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Scheme</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tags"></i>
+              <select class="form-select" [(ngModel)]="form.schemeId">
+                <option [ngValue]="null">Select scheme</option>
+                <option *ngFor="let item of schemes" [ngValue]="item.id">
+                  {{ item.schemeCode }} | {{ item.schemeName }} | {{ getLabel(item.schemeType) }} |
+                  {{ item.tenureMonths }} months | {{ item.profitRatio | number:'1.2-4' }}% {{ getLabel(item.profitFrequency) }} |
+                  {{ item.status }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Customer</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <select class="form-select" [(ngModel)]="form.customerId" (ngModelChange)="onCustomerChange()">
+                <option [ngValue]="null">Select customer</option>
+                <option *ngFor="let item of customers" [ngValue]="item.id">{{ getCustomerDisplay(item) }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Linked Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-bank"></i>
+              <select class="form-select" [(ngModel)]="form.linkedAccountId">
+                <option [ngValue]="null">Select account</option>
+                <option *ngFor="let item of filteredAccounts" [ngValue]="item.id">
+                  {{ item.accountNumber }} | {{ item.accountTypeCode }} | {{ item.availableBalance | number:'1.2-2' }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-calendar"></i>
+          <div>
+            <h4>Installment Setup</h4>
+            <p>Start date and installment amount must respect the selected scheme rules and installment floor.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Start Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar-check-o"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.startDate">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Installment Amount</label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.installmentAmount" placeholder="1000">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Enrollment Note</h4>
+            <p>Add any optional instruction or branch note that may help later customer service or operations follow-up.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Remarks</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-commenting-o"></i>
+              <textarea class="form-control" rows="3" [(ngModel)]="form.remarks" placeholder="Optional notes"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="submit()" [disabled]="saving || loading">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        Save Enrollment
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

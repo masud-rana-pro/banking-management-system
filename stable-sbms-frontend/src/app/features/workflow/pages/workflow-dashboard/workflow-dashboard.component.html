@@ -1,0 +1,345 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container workflow-module workflow-dashboard-shell">
+  <app-page-header title="Workflow Support" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Workflow Dashboard" subtitle="Monitor pending approvals, actor workload, completed flow, module bottlenecks and history movement from one workflow console">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" title="Print workflow dashboard"><i class="fa fa-print"></i> Print</button>
+    <button class="btn btn-outline-primary" type="button" (click)="open('/workflow/history')" title="Open history"><i class="fa fa-history"></i> History</button>
+    <button class="btn btn-outline-primary" type="button" (click)="open('/workflow/pending')" title="Open pending queue"><i class="fa fa-clock-o"></i> Pending Queue</button>
+    <button class="btn btn-primary" type="button" (click)="open('/workflow/my-submissions')" title="Open my submissions"><i class="fa fa-user"></i> My Submissions</button>
+  </app-page-title>
+
+  <div class="form-card">
+    <div class="card-heading">
+      <i class="fa fa-id-card"></i>
+      <div>
+        <h4>Actor Scope</h4>
+        <p>Set the workflow actor name to review the dashboard against your own submissions.</p>
+      </div>
+    </div>
+    <div class="workflow-actor-controls">
+      <input class="form-control workflow-actor-input" [(ngModel)]="actor" placeholder="SYSTEM">
+      <button class="btn btn-primary" type="button" (click)="load()"><i class="fa fa-search"></i> Refresh</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading workflow dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow"><i class="fa fa-random"></i> Workflow Rail</span>
+          </div>
+          <h3 class="dashboard-title">Approvals, actor workload and workflow pressure in one orchestration view</h3>
+          <p class="dashboard-subtitle">
+            Keep queue health visible while comparing module-level workflow traffic and recent transition movement.
+          </p>
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Pending Approvals</span>
+              <div class="dashboard-hero-metric-value">{{ data.pendingApprovals }}</div>
+              <div class="dashboard-hero-metric-note">queue items currently waiting</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">My Pending Tasks</span>
+              <div class="dashboard-hero-metric-value">{{ data.myPendingTasks }}</div>
+              <div class="dashboard-hero-metric-note">tasks scoped to actor {{ actor }}</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Recent Completed</span>
+              <div class="dashboard-hero-metric-value">{{ data.recentCompletedTasks }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.workflowBottlenecks }} bottleneck signals active</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Actor Load</span>
+              <h3 class="dashboard-title">Queue and bottleneck balance</h3>
+              <p class="dashboard-subtitle">Check whether approvals, personal tasks or bottlenecks are dominating the current flow.</p>
+            </div>
+          </div>
+          <div class="dashboard-focus-value">{{ data.pendingQueue.length }}</div>
+          <div class="dashboard-focus-note">pending queue rows currently visible in the dashboard snapshot</div>
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent History</span>
+              <strong class="dashboard-mini-value">{{ data.recentHistory.length }}</strong>
+              <span class="dashboard-mini-note">latest transition rows on record</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Bottlenecks</span>
+              <strong class="dashboard-mini-value">{{ data.workflowBottlenecks }}</strong>
+              <span class="dashboard-mini-note">signals slowing module flow</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Pending Queue</span>
+              <strong class="dashboard-mini-value">{{ data.pendingQueue.length }}</strong>
+              <span class="dashboard-mini-note">actionable queue snapshot rows</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Actor</span>
+              <strong class="dashboard-mini-value">{{ actor }}</strong>
+              <span class="dashboard-mini-note">current scope used for this dashboard</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-hourglass-half"></i></div><div><div class="summary-label">Pending Approvals</div><div class="summary-value">{{ data.pendingApprovals }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><i class="fa fa-user-clock-o"></i></div><div><div class="summary-label">My Pending Tasks</div><div class="summary-value">{{ data.myPendingTasks }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Recent Completed</div><div class="summary-value">{{ data.recentCompletedTasks }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div><div><div class="summary-label">Bottlenecks</div><div class="summary-value">{{ data.workflowBottlenecks }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Workflow Distribution</h4>
+              <p class="dashboard-subtitle">A portfolio split across pending approvals, actor workload, completed flow and bottleneck pressure.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="workflowGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.pendingApprovals }}</div>
+                    <div class="dashboard-donut-label">pending approvals currently waiting in workflow</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-legend">
+              <div *ngFor="let item of workflowLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Module Approval Pressure</h4>
+              <p class="dashboard-subtitle">Compare which modules are carrying the highest workflow traffic across queue and recent transition activity.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+          <div *ngIf="moduleColumns.length; else noModuleColumns" class="dashboard-column-chart workflow-column-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of moduleAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of moduleColumns" class="dashboard-column workflow-chart-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noModuleColumns><div class="empty-mini">No workflow module traffic found.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Action Mix Distribution</h4>
+              <p class="dashboard-subtitle">See which workflow actions are appearing most often in recent transition movement.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-signal"></i></span>
+          </div>
+          <div *ngIf="actionColumns.length; else noActionColumns" class="dashboard-column-chart workflow-column-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of actionAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of actionColumns" class="dashboard-column workflow-chart-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noActionColumns><div class="empty-mini">No workflow action mix available.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Workflow Throughput Trend</h4>
+              <p class="dashboard-subtitle">A rolling daily view of recent workflow transition activity across the latest operating window.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+          <div *ngIf="throughputPoints.length; else noWorkflowTrend" class="workflow-line-chart-shell">
+            <svg class="workflow-line-chart" viewBox="0 0 620 220" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="workflowTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#0ea5e9"></stop>
+                  <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <line x1="28" y1="188" x2="592" y2="188" class="workflow-line-axis"></line>
+              <line x1="28" y1="40" x2="28" y2="188" class="workflow-line-axis"></line>
+              <path *ngIf="throughputAreaPath" [attr.d]="throughputAreaPath" class="workflow-line-area"></path>
+              <path *ngIf="throughputPath" [attr.d]="throughputPath" class="workflow-line-path"></path>
+              <g *ngFor="let point of throughputPoints">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5.5" class="workflow-line-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 12" text-anchor="middle" class="workflow-line-value">{{ point.value }}</text>
+                <text [attr.x]="point.x" y="208" text-anchor="middle" class="workflow-line-label">{{ point.label }}</text>
+              </g>
+            </svg>
+          </div>
+          <ng-template #noWorkflowTrend><div class="empty-mini">No workflow throughput trend available.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Workflow Spotlight</h4>
+              <p class="dashboard-subtitle">Highlight the most immediate workflow item with module, actor and current decision posture.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-crosshairs"></i></span>
+          </div>
+
+          <button *ngIf="spotlightItem as item; else noWorkflowSpotlight" class="workflow-spotlight-card" type="button" (click)="openHistory(item)">
+            <div class="workflow-spotlight-avatar">
+              <span>{{ toChartLabel(getLabel(item.moduleName), 2) }}</span>
+            </div>
+            <div class="workflow-spotlight-body">
+              <div class="workflow-spotlight-title">{{ getLabel(item.moduleName) }}</div>
+              <div class="workflow-spotlight-subtitle">{{ item.referenceId }} | {{ getLabel(item.actionName) }}</div>
+              <div class="workflow-spotlight-meta">{{ item.actionBy || actor }} | {{ getLabel(item.toStatus) || 'Pending' }}</div>
+              <div class="workflow-spotlight-stats">
+                <div>
+                  <span>From Status</span>
+                  <strong>{{ getLabel(item.fromStatus) || 'Entry' }}</strong>
+                </div>
+                <div>
+                  <span>To Status</span>
+                  <strong>{{ getLabel(item.toStatus) || 'Pending' }}</strong>
+                </div>
+                <div>
+                  <span>Action</span>
+                  <strong>{{ getLabel(item.actionName) }}</strong>
+                </div>
+              </div>
+            </div>
+          </button>
+          <ng-template #noWorkflowSpotlight>
+            <div class="empty-mini">No workflow spotlight available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Control Matrix</h4>
+              <p class="dashboard-subtitle">See how the busiest modules are distributed across the strongest workflow end-state clusters.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th"></i></span>
+          </div>
+
+          <div class="workflow-heatmap" *ngIf="workflowHeatRows.length; else noWorkflowHeatmap">
+            <div class="workflow-heatmap-head">
+              <span>Module</span>
+              <span *ngFor="let status of workflowStatusHeaders">{{ getLabel(status) }}</span>
+            </div>
+            <div class="workflow-heatmap-row" *ngFor="let row of workflowHeatRows">
+              <span class="workflow-heatmap-label">{{ row.label }}</span>
+              <button
+                *ngFor="let cell of row.cells"
+                type="button"
+                class="workflow-heatmap-cell"
+                [style.opacity]="cell.intensity"
+                [title]="cell.label">
+                {{ cell.value }}
+              </button>
+            </div>
+          </div>
+          <ng-template #noWorkflowHeatmap><div class="empty-mini">No workflow control matrix available.</div></ng-template>
+        </article>
+      </section>
+
+      <div class="dashboard-grid">
+        <div class="card-panel">
+          <div class="panel-heading">
+            <i class="fa fa-history"></i>
+            <div>
+              <h4>Recent Workflow History</h4>
+              <p>Latest module transitions with actor and status movement visibility.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Action</th>
+                  <th>To Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentHistory | slice:0:8">
+                  <td>{{ getLabel(item.moduleName) }} / {{ item.referenceId }}</td>
+                  <td>{{ getLabel(item.actionName) }}</td>
+                  <td><app-status-badge [status]="item.toStatus || 'N/A'"></app-status-badge></td>
+                  <td><button class="link-btn" type="button" (click)="openHistory(item)">Open</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="panel-heading">
+            <i class="fa fa-list-ul"></i>
+            <div>
+              <h4>Pending Queue Snapshot</h4>
+              <p>Current actionable transitions waiting for approval, verification or review.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Actor</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.pendingQueue | slice:0:8">
+                  <td>{{ getLabel(item.moduleName) }} / {{ item.referenceId }}</td>
+                  <td>{{ item.actionBy }}</td>
+                  <td><app-status-badge [status]="item.toStatus || 'N/A'"></app-status-badge></td>
+                  <td><button class="link-btn" type="button" (click)="openSource(item)">Source</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

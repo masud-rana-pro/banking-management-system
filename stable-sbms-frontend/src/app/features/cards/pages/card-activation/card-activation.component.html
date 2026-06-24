@@ -1,0 +1,89 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 card-module">
+
+  <app-page-header
+    title="Card Management"
+    homeLabel="Home"
+    homeRoute="/cards/list"
+    currentLabel="Card Activation">
+  </app-page-header>
+
+  <app-page-title
+    title="Card Activation"
+    subtitle="Activate issued card and optionally record PIN generation event as part of onboarding workflow">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="openView()">
+      <i class="fa fa-arrow-left"></i> Card View
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openPinEvents()" [disabled]="!item">
+      <i class="fa fa-key"></i> PIN Events
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading activation workflow...
+  </div>
+
+  <div *ngIf="!loading && item" class="meta-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <img *ngIf="customerImageUrl; else cardActivationFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="item.customerName">
+        <ng-template #cardActivationFallback>
+          <i class="fa fa-credit-card"></i>
+        </ng-template>
+        <div>
+          <h4>Activation Queue Item</h4>
+          <p>Confirm issued card and customer-account linkage before activation.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Card Ref No</span><strong>{{ item.cardRefNo }}</strong></div>
+        <div class="info-row"><span>Masked Card No</span><strong>{{ item.maskedCardNo }}</strong></div>
+        <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="info-row"><span>Customer</span><strong>{{ item.customerCode }} - {{ item.customerName }}</strong></div>
+        <div class="info-row"><span>Account</span><strong>{{ item.accountNumber }}</strong></div>
+        <div class="info-row"><span>Current Status</span><strong>{{ getLabel(item.cardStatus) }}</strong></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-play-circle"></i>
+        <div>
+          <h4>Activation Form</h4>
+          <p>Save activation remarks and optionally record initial PIN generation event.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label class="form-label">Performed By</label>
+          <input class="form-control" [(ngModel)]="model.performedBy" placeholder="SYSTEM">
+        </div>
+
+        <div class="full-span">
+          <label class="form-label">Remarks</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="model.remarks" placeholder="Activation note"></textarea>
+        </div>
+
+        <div class="full-span">
+          <label class="form-check-label">
+            <input class="form-check-input me-2" type="checkbox" [(ngModel)]="recordPinEvent">
+            Record initial PIN generated event after activation
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="button" (click)="activate()" [disabled]="!item">
+          <i class="fa fa-play"></i> Activate Card
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

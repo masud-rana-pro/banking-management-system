@@ -1,0 +1,71 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Security Events"></app-page-header>
+
+  <app-page-title title="Security Event List" subtitle="Inspect login failures, critical system events, AML hooks and event severity trace">
+    <button class="btn btn-primary" type="button" (click)="openSuspicious()"><i class="fa fa-exclamation-triangle"></i> Suspicious Activity</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search event / user / module" [(ngModel)]="filters.keyword" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="warning">
+      <select class="form-select" [(ngModel)]="filters.severityLevel">
+        <option value="">All Severity</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+        <option value="CRITICAL">Critical</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No security event found" emptyMessage="Try adjusting filters or seed sample data.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Event</th>
+        <th>User</th>
+        <th>Module</th>
+        <th>Severity</th>
+        <th>Time</th>
+        <th class="text-center" style="width: 90px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.eventName }}</strong>
+            <span>{{ item.eventCode }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getUserImageUrl(item.username); else securityEventUserFallback" class="entity-avatar" [src]="getUserImageUrl(item.username)" [alt]="item.fullName || item.username || 'System'">
+            <ng-template #securityEventUserFallback>
+              <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ item.fullName || item.username || 'System' }}</strong>
+              <span>{{ item.username || 'System Actor' }}</span>
+            </div>
+          </div>
+        </td>
+        <td>{{ item.referenceModule || '-' }}{{ item.referenceId ? (' / ' + item.referenceId) : '' }}</td>
+        <td><app-status-badge [status]="item.severityLevel"></app-status-badge></td>
+        <td>{{ item.eventTime || '-' }}</td>
+        <td class="text-center">
+          <button class="action-btn view" type="button" (click)="openView(item)">
+            <i class="fa fa-eye"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

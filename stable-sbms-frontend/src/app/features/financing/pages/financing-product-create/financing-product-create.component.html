@@ -1,0 +1,155 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/products"
+    currentLabel="New Product">
+  </app-page-header>
+
+  <app-page-title
+    title="New Financing Product"
+    subtitle="Define financing range, tenure and profit rule before taking customer applications">
+
+    <button class="btn btn-outline-secondary" routerLink="/financing/products">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="financing-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-tags"></i>
+        </div>
+
+        <div>
+          <h3>New Financing Product Setup</h3>
+          <p>Configure financing identity, amount range, tenure and profit rule before customer onboarding starts.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        ACTIVE
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-id-badge"></i>
+          <div>
+            <h4>Product Identity</h4>
+            <p>Keep code readable, type accurate and name understandable for both branch and financing teams.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Product Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.productCode" placeholder="Auto if blank">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Product Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tag"></i>
+              <input class="form-control" [(ngModel)]="form.productName" placeholder="Murabaha Asset Financing">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Financing Type</label>
+            <div class="input-with-icon">
+              <i class="fa fa-sitemap"></i>
+              <select class="form-select" [(ngModel)]="form.financingType">
+                <option value="">Select financing type</option>
+                <option *ngFor="let option of financingTypes" [value]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-balance-scale"></i>
+          <div>
+            <h4>Range & Tenure</h4>
+            <p>Set a realistic minimum, maximum and tenure to match the approved playbook product structure.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Tenure Months</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.tenureMonths" min="1">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Minimum Amount</label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.minimumAmount" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Maximum Amount</label>
+            <div class="input-with-icon">
+              <i class="fa fa-line-chart"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.maximumAmount" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-percent"></i>
+          <div>
+            <h4>Profit Rule</h4>
+            <p>The first numeric value from this note is reused for schedule estimation during downstream disbursement flow.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Profit Rule</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-file-text-o"></i>
+              <textarea class="form-control" [(ngModel)]="form.profitRule" placeholder="Flat 12% Murabaha markup with equal monthly installments"></textarea>
+            </div>
+            <div class="form-text">First numeric value will be used by backend schedule estimation during disbursement.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" routerLink="/financing/products">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-outline-primary" type="button" (click)="save(true)" [disabled]="saving">
+        <i class="fa fa-plus-circle"></i> Save & New Application
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        Save Product
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

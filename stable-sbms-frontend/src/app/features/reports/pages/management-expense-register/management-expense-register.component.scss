@@ -1,0 +1,132 @@
+.management-expense-module {
+  .entry-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 18px;
+    margin-top: 18px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .entry-grid > * {
+    min-width: 0;
+  }
+
+  .form-card,
+  .table-card {
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  .card-heading {
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .card-heading i {
+    flex: 0 0 42px;
+  }
+
+  app-form-field {
+    width: 100%;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  ::ng-deep app-form-field .sbms-form-field,
+  ::ng-deep app-form-field .field-control,
+  ::ng-deep app-form-field .input-shell,
+  ::ng-deep app-form-field .form-field {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  ::ng-deep app-form-field .sbms-form-field {
+    height: 48px;
+    overflow: hidden;
+  }
+
+  ::ng-deep app-form-field .field-control ::ng-deep input,
+  ::ng-deep app-form-field .field-control ::ng-deep select {
+    min-width: 0;
+    padding: 0 12px;
+    font-size: 0.95rem;
+  }
+
+  .entry-remarks {
+    grid-column: 1 / -1;
+  }
+
+  .multiline-field {
+    ::ng-deep app-form-field .sbms-form-field {
+      align-items: stretch;
+      height: auto;
+      min-height: 118px;
+    }
+
+    ::ng-deep app-form-field .field-control {
+      height: auto;
+      min-height: 118px;
+    }
+
+    ::ng-deep app-form-field .field-control ::ng-deep textarea {
+      width: 100%;
+      min-height: 116px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      padding: 14px 12px;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: transparent;
+      line-height: 1.5;
+      box-sizing: border-box;
+    }
+
+    ::ng-deep app-form-field .field-control ::ng-deep textarea::placeholder {
+      color: var(--text-subtle);
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .table-card {
+    margin-top: 18px;
+  }
+
+  .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 18px;
+  }
+
+  @media (max-width: 1100px) {
+    .filter-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .entry-grid,
+    .filter-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .card-heading {
+      gap: 12px;
+    }
+
+    .form-actions {
+      justify-content: flex-start;
+    }
+  }
+}

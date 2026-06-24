@@ -1,0 +1,51 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/dashboard" currentLabel="Payout List"></app-page-header>
+
+  <app-page-title title="Payout List" subtitle="Track approved charity payouts and their beneficiary distribution trail">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button class="btn btn-primary" type="button" (click)="openCreate()"><span class="taka-icon" aria-hidden="true">&#2547;</span> New Payout</button>
+  </app-page-title>
+
+  <app-data-table [loading]="loading" [empty]="!loading && items.length === 0" emptyTitle="No payout found" emptyMessage="Create a payout to record charity distribution from the fund ledger.">
+    <thead>
+      <tr>
+        <th>Beneficiary</th>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Approved By</th>
+        <th>Remarks</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items">
+        <td>{{ item.beneficiaryCode }} - {{ item.beneficiaryName }}</td>
+        <td>{{ item.payoutDate }}</td>
+        <td>{{ item.amount | number:'1.2-2' }}</td>
+        <td>{{ item.approvedBy }}</td>
+        <td>{{ item.remarks || '-' }}</td>
+        <td class="table-actions">
+          <button class="btn btn-sm btn-outline-secondary" type="button" (click)="previewReceipt(item)">
+            <i class="fa fa-eye"></i> Preview
+          </button>
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="printReceipt(item)">
+            <i class="fa fa-print"></i> Print
+          </button>
+          <button class="btn btn-sm btn-primary" type="button" (click)="downloadReceipt(item)">
+            <i class="fa fa-download"></i> PDF
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

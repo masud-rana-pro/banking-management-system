@@ -1,0 +1,202 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container deposit-scheme-module">
+  <app-page-header
+    title="Deposit Scheme Management"
+    homeLabel="Home"
+    homeRoute="/deposit-schemes/enrollments/list"
+    currentLabel="Enrollment View">
+  </app-page-header>
+
+  <app-page-title
+    title="Enrollment View"
+    subtitle="Review enrollment detail, schedule progress, maturity amount and profit distribution footprint">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="previewCertificate()" [disabled]="!item">
+      <i class="fa fa-eye"></i> Preview Certificate
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="printCertificate()" [disabled]="!item">
+      <i class="fa fa-print"></i> Print Certificate
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="downloadCertificate()" [disabled]="!item">
+      <i class="fa fa-download"></i> Download PDF
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openSchedule()" [disabled]="!item">
+      <i class="fa fa-calendar"></i> View Schedule
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openProfit()" [disabled]="!item">
+      <i class="fa fa-line-chart"></i> View Profit
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openScheme()" [disabled]="!item">
+      <i class="fa fa-tags"></i> Scheme
+    </button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading enrollment view...
+  </div>
+
+  <div *ngIf="!loading && item as enrollment">
+    <div class="hero-strip">
+      <div class="entity-inline-profile">
+        <img *ngIf="customerImageUrl; else enrollmentHeroFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="enrollment.customerName">
+        <ng-template #enrollmentHeroFallback>
+          <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+        </ng-template>
+        <div>
+          <h3>{{ enrollment.enrollmentNo }} | {{ enrollment.schemeCode }} | {{ enrollment.schemeName }}</h3>
+          <p>{{ enrollment.customerCode }} - {{ enrollment.customerName }} | {{ enrollment.linkedAccountNumber }}</p>
+        </div>
+      </div>
+      <app-status-badge [status]="enrollment.enrollmentStatus"></app-status-badge>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Installment</div><div class="summary-value small">{{ enrollment.installmentAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Paid Installments</div><div class="summary-value">{{ enrollment.paidInstallments }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Remaining</div><div class="summary-value">{{ enrollment.remainingInstallments }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-flag-checkered"></i></div>
+        <div><div class="summary-label">Maturity Amount</div><div class="summary-value small">{{ enrollment.maturityAmount | number:'1.2-2' }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Enrollment Detail</h4>
+            <p>Core scheme and customer linkage used for maturity and recurring deposit schedule generation.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Scheme Type</span><strong>{{ getLabel(enrollment.schemeType) }}</strong></div>
+          <div class="info-row"><span>Start Date</span><strong>{{ enrollment.startDate }}</strong></div>
+          <div class="info-row"><span>Maturity Date</span><strong>{{ enrollment.maturityDate }}</strong></div>
+          <div class="info-row"><span>Tenure</span><strong>{{ enrollment.tenureMonths }} Months</strong></div>
+          <div class="info-row"><span>Profit Frequency</span><strong>{{ getLabel(enrollment.schemeProfitFrequency) }}</strong></div>
+          <div class="info-row"><span>Profit Ratio</span><strong>{{ enrollment.schemeProfitRatio | number:'1.2-4' }}%</strong></div>
+          <div class="info-row"><span>Early Withdrawal</span><strong>{{ enrollment.earlyWithdrawalRequested ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ getLabel(enrollment.enrollmentStatus) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-link"></i>
+          <div>
+            <h4>Linked Parties</h4>
+            <p>Customer and account references that drive collection and statement flow.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+          <div class="info-row"><span>Customer</span><strong><a (click)="openCustomer()">{{ enrollment.customerCode }} - {{ enrollment.customerName }}</a></strong></div>
+          <div class="info-row"><span>Linked Account</span><strong><a (click)="openAccount()">{{ enrollment.linkedAccountNumber }}</a></strong></div>
+          <div class="info-row"><span>Branch</span><strong>{{ enrollment.branchId || '-' }}</strong></div>
+          <div class="info-row"><span>Total Scheduled</span><strong>{{ enrollment.totalScheduledInstallments }}</strong></div>
+          <div class="info-row"><span>Paid Schedules</span><strong>{{ paidScheduleCount }}</strong></div>
+          <div class="info-row"><span>Remarks</span><strong>{{ enrollment.remarks || '-' }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-calendar"></i>
+        <div>
+          <h4>Schedule Snapshot</h4>
+          <p>Latest deposit schedule view from this enrollment.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Installment</th>
+              <th>Due Date</th>
+              <th>Installment</th>
+              <th>Profit</th>
+              <th>Total Due</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let schedule of schedules | slice:0:6">
+              <td>{{ schedule.installmentNo }}</td>
+              <td>{{ schedule.dueDate }}</td>
+              <td>{{ schedule.installmentAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.profitAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.totalDueAmount | number:'1.2-2' }}</td>
+              <td><app-status-badge [status]="schedule.paymentStatus"></app-status-badge></td>
+            </tr>
+            <tr *ngIf="schedules.length === 0">
+              <td colspan="6" class="text-center">No schedule rows found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-line-chart"></i>
+        <div>
+          <h4>Profit Distribution Snapshot</h4>
+          <p>Recent profit distributions credited from this scheme enrollment.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Period</th>
+              <th>Date</th>
+              <th>Profit</th>
+              <th>Account</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let profit of profitDistributions | slice:0:6">
+              <td>{{ profit.distributionNo }}</td>
+              <td>{{ profit.periodFrom }} - {{ profit.periodTo }}</td>
+              <td>{{ profit.distributionDate }}</td>
+              <td>{{ profit.profitAmount | number:'1.2-2' }}</td>
+              <td>{{ profit.creditedAccountNumber || '-' }}</td>
+              <td><app-status-badge [status]="profit.distributionStatus"></app-status-badge></td>
+            </tr>
+            <tr *ngIf="profitDistributions.length === 0">
+              <td colspan="6" class="text-center">No profit distribution rows found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

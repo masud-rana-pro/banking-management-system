@@ -1,0 +1,108 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container profit-module">
+  <app-page-header title="Profit Management" homeLabel="Home" homeRoute="/profit/dashboard" currentLabel="Profit Schedule List"></app-page-header>
+
+  <app-page-title title="Profit Schedule List" subtitle="Track eligible accounts, posting frequency, next profit cycle and navigation to ratio or posting run">
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button class="btn btn-outline-primary" routerLink="/calculations/simulator"><i class="fa fa-calculator"></i> Calculation Simulator</button>
+    <button class="btn btn-outline-primary" routerLink="/profit/ratios"><i class="fa fa-percent"></i> Ratio List</button>
+    <button *ngIf="can('PROFIT_POSTING_RUN')" class="btn btn-outline-success" routerLink="/profit/postings/run"><i class="fa fa-play"></i> Run Posting</button>
+    <button *ngIf="can('PROFIT_SCHEDULE_CREATE')" class="btn btn-primary" routerLink="/profit/schedules/new"><i class="fa fa-plus"></i> New Schedule</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-calendar"></i></div>
+      <div><div class="summary-label">Total Schedules</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+      <div><div class="summary-label">Due Today</div><div class="summary-value">{{ dueTodayCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-users"></i></div>
+      <div><div class="summary-label">Customers Covered</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search account / customer / type" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="tags"><input class="form-control" placeholder="Account type id" [(ngModel)]="filters.accountTypeId" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="refresh">
+      <select class="form-select" [(ngModel)]="filters.frequency">
+        <option value="">All Frequency</option>
+        <option value="MONTHLY">MONTHLY</option>
+        <option value="QUARTERLY">QUARTERLY</option>
+        <option value="HALF_YEARLY">HALF YEARLY</option>
+        <option value="YEARLY">YEARLY</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No profit schedule found" emptyMessage="Eligible profit schedules will appear here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Account</th>
+        <th>Customer</th>
+        <th>Type</th>
+        <th>Frequency</th>
+        <th>Next Posting</th>
+        <th>Status</th>
+        <th class="text-center print-hide" style="width: 220px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.accountNumber }}</strong><span>{{ getBranchName(item.branchId) }}</span></div></td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getCustomerImageUrl(item.customerCode); else profitScheduleListFallback" class="entity-avatar" [src]="getCustomerImageUrl(item.customerCode)" [alt]="item.customerName">
+            <ng-template #profitScheduleListFallback>
+              <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div class="item-name"><strong>{{ item.customerName }}</strong><span>{{ item.customerCode }}</span></div>
+          </div>
+        </td>
+        <td><div class="item-name"><strong>{{ item.accountTypeName }}</strong><span>{{ item.accountTypeCode }}</span></div></td>
+        <td>{{ getLabel(item.profitFrequency) }}</td>
+        <td>{{ item.nextPostingDate }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn account" type="button" title="Account" (click)="onOpenAccount(item)"><i class="fa fa-bank"></i></button>
+            <button class="action-btn ratio" type="button" title="Ratio" (click)="onOpenRatio(item)"><i class="fa fa-percent"></i></button>
+            <button *ngIf="can('CALCULATION_ENGINE_ACCESS')" class="action-btn edit" type="button" title="Calculate" (click)="onCalculate(item)"><i class="fa fa-calculator"></i></button>
+            <button *ngIf="can('PROFIT_POSTING_RUN')" class="action-btn run" type="button" title="Run Posting" (click)="onRunPosting(item)"><i class="fa fa-play"></i></button>
+            <button class="action-btn" [ngClass]="item.status === 'ARCHIVED' ? 'restore' : 'archive'" type="button" [title]="item.status === 'ARCHIVED' ? 'Restore' : 'Archive'" (click)="toggleArchive(item)">
+              <i class="fa" [ngClass]="item.status === 'ARCHIVED' ? 'fa-undo' : 'fa-archive'"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

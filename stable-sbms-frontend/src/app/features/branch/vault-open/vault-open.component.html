@@ -1,0 +1,111 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 branch-form-page">
+
+  <app-page-header
+    title="Vault Balance"
+    homeLabel="Home"
+    homeRoute="/admin/dashboard"
+    currentLabel="Open Vault">
+  </app-page-header>
+
+  <app-page-title
+    title="Open Branch Vault"
+    subtitle="Create daily vault opening balance for a selected branch">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="vault-open-card">
+
+    <div class="form-section-title">
+      <div class="section-icon">
+        <i class="fa fa-university"></i>
+      </div>
+      <div>
+        <h4>Vault Opening Form</h4>
+        <p>Fields are aligned with SBMS Module 4 vault opening handbook.</p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+
+      <div class="col-md-4">
+        <label class="form-label">Branch <span class="text-danger">*</span></label>
+
+        <div class="smart-lookup-field">
+          <i class="fa fa-bank"></i>
+
+          <input
+            class="form-control"
+            list="branchOptions"
+            placeholder="Type branch code or name"
+            [(ngModel)]="branchSearch"
+            (change)="onBranchPicked()" />
+
+          <datalist id="branchOptions">
+            <option
+              *ngFor="let b of branches"
+              [value]="b.branchCode + ' - ' + b.branchName">
+            </option>
+          </datalist>
+        </div>
+
+        <small class="field-hint">Source: branch table â†’ save to vault_balance.branch_id</small>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Balance Date <span class="text-danger">*</span></label>
+        <input
+          class="form-control"
+          type="date"
+          [(ngModel)]="form.balanceDate" />
+        <small class="field-hint">Save to vault_balance.balance_date</small>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Opening Balance <span class="text-danger">*</span></label>
+        <input
+          class="form-control"
+          type="number"
+          min="0"
+          placeholder="Example: 500000"
+          [(ngModel)]="form.openingBalance" />
+        <small class="field-hint">Save to vault_balance.opening_balance</small>
+      </div>
+
+      <div class="col-md-12">
+        <label class="form-label">Remarks</label>
+        <textarea
+          class="form-control"
+          rows="3"
+          placeholder="Opening balance remarks"
+          [(ngModel)]="form.remarks">
+        </textarea>
+        <small class="field-hint">Save to vault_balance.remarks</small>
+      </div>
+
+    </div>
+
+    <div class="rule-note">
+      <i class="fa fa-info-circle"></i>
+      Rule: one branch can open only one vault balance for one balance date.
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="resetForm()">
+        <i class="fa fa-refresh"></i> Reset
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        Open Vault
+      </button>
+    </div>
+
+  </div>
+
+</div>
+</div>

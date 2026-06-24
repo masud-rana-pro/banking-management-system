@@ -1,0 +1,40 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container shariah-module">
+  <app-page-header title="Shariah Review" homeLabel="Home" homeRoute="/shariah/dashboard" currentLabel="Fatwa Certificates"></app-page-header>
+
+  <app-page-title title="Fatwa Certificate List" subtitle="Approved cases ready for certificate print, audit reference and annual report usage">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <button class="btn btn-outline-primary" routerLink="/shariah/cases"><i class="fa fa-list"></i> Case List</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card"><div class="summary-icon success"><i class="fa fa-certificate"></i></div><div><div class="summary-label">Approved Certificates</div><div class="summary-value">{{ items.length }}</div></div></div>
+  </div>
+
+  <app-data-table [loading]="loading" [empty]="!loading && items.length === 0" emptyTitle="No approved case found" emptyMessage="Approved cases will appear here for certificate printing.">
+    <thead>
+      <tr>
+        <th>Case</th>
+        <th>Reference</th>
+        <th>Submitted</th>
+        <th>Approved Trail</th>
+        <th class="text-center" style="width: 140px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items">
+        <td>{{ item.caseNo }}</td>
+        <td>{{ getLabel(item.referenceModule) }} / {{ item.referenceId }}</td>
+        <td>{{ item.submittedBy }}</td>
+        <td>{{ item.history[0]?.decisionBy || '-' }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="openView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn certificate" type="button" (click)="printCertificate(item)"><i class="fa fa-certificate"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

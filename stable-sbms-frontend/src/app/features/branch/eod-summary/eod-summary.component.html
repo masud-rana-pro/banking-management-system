@@ -1,0 +1,70 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container branch-eod-page">
+  <app-page-header title="Branch Management" homeLabel="Home" homeRoute="/branches/dashboard" currentLabel="EOD Summary"></app-page-header>
+
+  <app-page-title title="EOD Summary" subtitle="Review daily vault opening, cash in/out, closing balance and ledger activity branch-wise">
+    <button class="btn btn-outline-primary" routerLink="/branches/dashboard"><i class="fa fa-th-large"></i> Dashboard</button>
+    <button class="btn btn-outline-primary" routerLink="/branches/cash-ledger"><i class="fa fa-book"></i> Ledger</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-label">Total Opening</div>
+      <div class="summary-value">{{ totalOpeningBalance | number:'1.2-2' }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Total Cash In</div>
+      <div class="summary-value">{{ totalCashIn | number:'1.2-2' }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Total Cash Out</div>
+      <div class="summary-value">{{ totalCashOut | number:'1.2-2' }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Total Closing</div>
+      <div class="summary-value">{{ totalClosingBalance | number:'1.2-2' }}</div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="calendar">
+      <input class="form-control" type="date" [(ngModel)]="filters.date">
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && rows.length === 0" emptyTitle="No EOD data found" emptyMessage="No vault or ledger activity found for the selected date.">
+    <thead>
+      <tr>
+        <th>Branch</th>
+        <th>Opening</th>
+        <th>Cash In</th>
+        <th>Cash Out</th>
+        <th>Closing</th>
+        <th>Ledger Entries</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows">
+        <td>
+          <strong>{{ row.branchCode }}</strong><br>
+          <small>{{ row.branchName }}</small>
+        </td>
+        <td>{{ row.openingBalance | number:'1.2-2' }}</td>
+        <td>{{ row.totalCashIn | number:'1.2-2' }}</td>
+        <td>{{ row.totalCashOut | number:'1.2-2' }}</td>
+        <td>{{ row.closingBalance | number:'1.2-2' }}</td>
+        <td>{{ row.ledgerEntries }}</td>
+        <td><app-status-badge [status]="row.vaultClosed ? 'CLOSED' : 'PENDING'"></app-status-badge></td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

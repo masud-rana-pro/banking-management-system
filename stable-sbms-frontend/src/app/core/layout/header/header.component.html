@@ -1,0 +1,212 @@
+<header class="topbar">
+  <!-- LEFT -->
+  <div class="left-box">
+    <button class="topbar-btn" type="button" (click)="toggleSidebar.emit()" title="Toggle Sidebar">
+      <i class="bi bi-layout-sidebar"></i>
+    </button>
+
+    <div class="topbar-search position-relative" (click)="stopEvent($event)">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        [placeholder]="'Search pages, modules, actions...' | sbmsTranslate"
+        [ngModel]="searchQuery"
+        (ngModelChange)="onSearchInput($event)"
+        (focus)="onSearchFocus()"
+        (keydown)="onSearchKeydown($event)" />
+      <button *ngIf="searchQuery" class="search-clear-btn" type="button" (click)="clearSearch()" title="Clear search">
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="search-results-panel" *ngIf="showSearchResults">
+        <div class="panel-header">
+          <i class="bi bi-search"></i>
+          <strong>{{ 'Global Search' | sbmsTranslate }}</strong>
+        </div>
+
+        <ng-container *ngIf="filteredSearchResults.length; else noSearchResults">
+          <button
+            type="button"
+            class="search-result-item"
+            *ngFor="let item of filteredSearchResults"
+            (click)="openSearchResult(item, $event)">
+            <span class="search-result-icon"><i [class]="item.icon"></i></span>
+            <span class="search-result-copy">
+              <strong>{{ item.label | sbmsTranslate }}</strong>
+              <small>{{ item.route }}</small>
+            </span>
+          </button>
+        </ng-container>
+
+        <ng-template #noSearchResults>
+          <div class="panel-item panel-item-empty">
+            <i class="bi bi-search"></i>
+            <small>{{ 'No matching page found' | sbmsTranslate }}</small>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-box">
+
+    <!-- Language -->
+    <div class="position-relative" (click)="stopEvent($event)">
+      <button class="topbar-btn" type="button" (click)="toggleLanguageMenu($event)" [title]="'Language' | sbmsTranslate">
+        <i class="bi bi-translate"></i>
+      </button>
+
+      <div class="dropdown-panel" *ngIf="showLangMenu">
+        <div class="panel-header">
+          <i class="bi bi-translate"></i>
+          <strong>{{ 'Language' | sbmsTranslate }}</strong>
+        </div>
+        <button
+          type="button"
+          class="dropdown-action"
+          *ngFor="let lang of languages"
+          (click)="changeLanguage(lang.code, $event)"
+        >
+          <i class="bi bi-globe"></i>
+          <span>{{ lang.nativeLabel | sbmsTranslate }}</span>
+          <i *ngIf="selectedLanguage === lang.code" class="bi bi-check2 action-check"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="position-relative" (click)="stopEvent($event)">
+      <button class="topbar-btn position-relative" type="button" (click)="toggleMessages($event)" [title]="'Messages' | sbmsTranslate">
+        <i class="bi bi-chat-dots"></i>
+        <span class="notify-badge notify-badge--message" *ngIf="unreadMessageCount"></span>
+      </button>
+
+      <div class="dropdown-panel panel-wide" *ngIf="showMessagesPanel">
+        <div class="panel-header">
+          <i class="bi bi-chat-dots"></i>
+          <strong>{{ 'Messages' | sbmsTranslate }}</strong>
+        </div>
+
+        <ng-container *ngIf="messages.length; else noMessages">
+          <div class="panel-item panel-item-action" *ngFor="let msg of messages" (click)="openMessage(msg, $event)">
+            <div class="panel-item-icon-box">
+              <i [class]="msg.icon"></i>
+            </div>
+            <div class="panel-item-content">
+              <strong>{{ msg.title }}</strong>
+              <small>{{ msg.text }}</small>
+              <small *ngIf="msg.route">{{ 'Open related page' | sbmsTranslate }}</small>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noMessages>
+          <div class="panel-item panel-item-empty">
+            <i class="bi bi-inbox"></i>
+            <small>{{ 'No live messages yet' | sbmsTranslate }}</small>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="position-relative" (click)="stopEvent($event)">
+      <button class="topbar-btn position-relative" type="button" (click)="toggleNotifications($event)" [title]="'Notifications' | sbmsTranslate">
+        <i class="bi bi-bell"></i>
+        <span class="notify-badge" *ngIf="unreadNotificationCount"></span>
+      </button>
+
+      <div class="dropdown-panel panel-wide" *ngIf="showNotificationPanel">
+        <div class="panel-header">
+          <i class="bi bi-bell"></i>
+          <strong>{{ 'Notifications' | sbmsTranslate }}</strong>
+        </div>
+
+        <ng-container *ngIf="notifications.length; else noAlerts">
+          <div class="panel-item panel-item-action" *ngFor="let item of notifications" (click)="openNotification(item, $event)">
+            <div class="panel-item-icon-box">
+              <i [class]="item.icon"></i>
+            </div>
+            <div class="panel-item-content">
+              <strong>{{ item.title }}</strong>
+              <small>{{ item.text }}</small>
+              <small *ngIf="item.route">{{ 'Open related page' | sbmsTranslate }}</small>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noAlerts>
+          <div class="panel-item panel-item-empty">
+            <i class="bi bi-bell-slash"></i>
+            <small>{{ 'No new alerts' | sbmsTranslate }}</small>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Live Clock -->
+    <div class="header-watch" [title]="'Current time' | sbmsTranslate">
+      <div class="header-watch-icon">
+        <i class="bi bi-clock-history"></i>
+      </div>
+      <div class="header-watch-copy">
+        <strong>{{ currentTimeLabel }}</strong>
+        <small>{{ currentDateLabel }}</small>
+      </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="topbar-btn" type="button" (click)="toggleTheme($event)" [title]="themeToggleTitle">
+      <i class="bi" [ngClass]="themeIconClass"></i>
+    </button>
+
+    <!-- Profile -->
+    <div class="position-relative user-box" (click)="toggleProfileMenu($event)">
+      <div class="avatar avatar-photo" *ngIf="user.avatarUrl; else headerAvatarFallback">
+        <img [src]="user.avatarUrl" [alt]="user.name" (error)="onAvatarError()">
+      </div>
+      <ng-template #headerAvatarFallback>
+        <div class="avatar">{{ getUserInitials() }}</div>
+      </ng-template>
+      <div>
+        <div class="user-name">{{ user.name }}</div>
+        <div class="user-role">{{ user.role }}</div>
+      </div>
+      <i class="bi bi-chevron-down" style="font-size:0.7rem; color: var(--text-subtle); margin-left:2px;"></i>
+
+      <div class="dropdown-panel" *ngIf="showProfileMenu" (click)="stopEvent($event)">
+        <div class="profile-summary">
+          <div class="profile-identity">
+            <div class="avatar avatar-photo avatar-lg" *ngIf="user.avatarUrl; else headerProfileAvatarFallback">
+              <img [src]="user.avatarUrl" [alt]="user.name" (error)="onAvatarError()">
+            </div>
+            <ng-template #headerProfileAvatarFallback>
+              <div class="avatar avatar-lg">{{ getUserInitials() }}</div>
+            </ng-template>
+            <div class="profile-copy">
+              <strong>{{ user.name }}</strong>
+              <small>@{{ user.username || 'unknown-user' }}</small>
+            </div>
+          </div>
+          <small><i class="bi bi-shield me-1"></i>{{ user.role }}</small>
+          <small><i class="bi bi-briefcase me-1"></i>{{ user.roleName }}</small>
+          <small><i class="bi bi-geo-alt me-1"></i>{{ user.branch }}</small>
+        </div>
+
+        <button type="button" class="dropdown-action" (click)="openProfile($event)">
+          <i class="bi bi-person"></i>
+          <span>{{ 'My Profile' | sbmsTranslate }}</span>
+        </button>
+        <button type="button" class="dropdown-action" (click)="openSecurity($event)">
+          <i class="bi bi-key"></i>
+          <span>{{ 'Change Password' | sbmsTranslate }}</span>
+        </button>
+        <div class="panel-divider"></div>
+        <button type="button" class="dropdown-action text-danger" (click)="logout($event)">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>{{ 'Sign Out' | sbmsTranslate }}</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</header>

@@ -1,0 +1,63 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container statement-module">
+  <app-page-header title="Statement Management" homeLabel="Home" homeRoute="/statement/dashboard" currentLabel="Branch Statement List"></app-page-header>
+
+  <app-page-title title="Branch Statement List" subtitle="Review generated branch statement requests with print/export and downloadable files">
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button *ngIf="can('STATEMENT_BRANCH_REQUEST')" class="btn btn-primary" routerLink="/statement/branch/request"><i class="fa fa-plus"></i> New Request</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search request / branch" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="REQUESTED">REQUESTED</option>
+        <option value="GENERATED">GENERATED</option>
+        <option value="DOWNLOADED">DOWNLOADED</option>
+        <option value="FAILED">FAILED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No branch statement request found" emptyMessage="Generated branch statement requests will appear here.">
+    <thead>
+      <tr>
+        <th style="width:60px;">#</th>
+        <th>Request</th>
+        <th>Branch</th>
+        <th>Period</th>
+        <th>Status</th>
+        <th class="text-center print-hide" style="width:180px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>{{ item.requestNo }}</td>
+        <td><div class="item-name"><strong>{{ item.branchName }}</strong><span>{{ item.branchCode }}</span></div></td>
+        <td>{{ item.dateFrom }} to {{ item.dateTo }}</td>
+        <td><app-status-badge [status]="item.requestStatus"></app-status-badge></td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn view" type="button" title="Preview" (click)="onPreview(item)" [disabled]="!item.generatedFileId"><i class="fa fa-file-text-o"></i></button>
+            <button class="action-btn edit" type="button" title="Print" (click)="onPrintFile(item)" [disabled]="!item.generatedFileId"><i class="fa fa-print"></i></button>
+            <button class="action-btn download" type="button" title="Download" (click)="onDownload(item)" [disabled]="!item.generatedFileId"><i class="fa fa-download"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

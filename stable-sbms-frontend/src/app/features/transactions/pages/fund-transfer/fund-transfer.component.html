@@ -1,0 +1,134 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 transaction-module">
+  <app-page-header title="Transactions" homeLabel="Home" homeRoute="/transactions/dashboard" currentLabel="Fund Transfer"></app-page-header>
+
+  <app-page-title title="Fund Transfer" subtitle="Move funds between accounts with branch validation, balance check and traceable journal posting">
+    <button class="btn btn-outline-secondary" routerLink="/transactions/dashboard"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-primary" routerLink="/transactions/list"><i class="fa fa-list"></i> Transaction List</button>
+    <button class="btn btn-outline-success" routerLink="/transactions/deposit"><i class="fa fa-plus-circle"></i> Deposit</button>
+    <button class="btn btn-outline-warning" routerLink="/transactions/withdraw"><i class="fa fa-minus-circle"></i> Withdraw</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading" class="transaction-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-exchange"></i>
+        </div>
+        <div>
+          <h3>Fund Transfer Posting</h3>
+          <p>Map source and destination accounts carefully, then post the transfer with branch and timing context.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        READY
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-random"></i>
+          <div>
+            <h4>Transfer Mapping</h4>
+            <p>Select branch, source account and destination account correctly before money movement is posted.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Branch</label>
+            <div class="input-with-icon">
+              <i class="fa fa-building-o"></i>
+              <select class="form-select" [(ngModel)]="form.branchId"><option [ngValue]="null">Select branch</option><option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option></select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">From Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-arrow-circle-o-up"></i>
+              <select class="form-select" [(ngModel)]="form.fromAccountId"><option [ngValue]="null">Select account</option><option *ngFor="let item of accounts" [ngValue]="item.id">{{ getAccountLabel(item) }}</option></select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">To Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-arrow-circle-o-down"></i>
+              <select class="form-select" [(ngModel)]="form.toAccountId"><option [ngValue]="null">Select account</option><option *ngFor="let item of accounts" [ngValue]="item.id">{{ getAccountLabel(item) }}</option></select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Transfer Mode</label>
+            <div class="input-with-icon">
+              <i class="fa fa-exchange"></i>
+              <select class="form-select" [(ngModel)]="form.transferMode"><option *ngFor="let item of transferModes" [ngValue]="item.value">{{ item.label }}</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-clock-o"></i>
+          <div>
+            <h4>Posting Detail</h4>
+            <p>Set amount and transaction timestamp exactly as captured from the transfer event.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Amount</label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.amount">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Transaction Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="datetime-local" [(ngModel)]="form.transactionDate">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Transfer Note</h4>
+            <p>Write a clear note so audit, reversal and statement views can explain why this transfer happened.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Remarks</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-commenting-o"></i>
+              <textarea class="form-control" rows="4" [(ngModel)]="form.remarks"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" routerLink="/transactions/dashboard" type="button">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        Post Transfer
+      </button>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,89 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/contracts/list" currentLabel="Contract View"></app-page-header>
+
+  <app-page-title title="Contract View" subtitle="Review contract text, sign posture, lock state, template version, source module and version history">
+    <button class="btn btn-outline-secondary" routerLink="/contracts/list"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-secondary" type="button" (click)="previewPrintCopy()" [disabled]="!item"><i class="fa fa-eye"></i> Preview Copy</button>
+    <button class="btn btn-outline-primary" type="button" (click)="printPrintCopy()" [disabled]="!item"><i class="fa fa-print"></i> Print Copy</button>
+    <button *ngIf="can('CONTRACTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openVersions()" [disabled]="!item"><i class="fa fa-history"></i> Versions</button>
+    <button *ngIf="canAny(['CONTRACT_CUSTOMER_SIGN', 'CONTRACT_SHARIAH_SIGN'])" class="btn btn-outline-success" type="button" (click)="openSign()" [disabled]="!item"><i class="fa fa-pencil-square-o"></i> Sign</button>
+    <button *ngIf="can('SHARIAH_REVIEW_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openShariahCases()"><i class="fa fa-balance-scale"></i> Shariah Cases</button>
+    <button *ngIf="can('SHARIAH_REVIEW_ACCESS')" class="btn btn-outline-success" type="button" (click)="submitShariahCase()" [disabled]="!item"><i class="fa fa-plus-circle"></i> Submit Review</button>
+    <button *ngIf="can('CONTRACT_GENERATE')" class="btn btn-outline-primary" type="button" (click)="regenerate()" [disabled]="!item"><i class="fa fa-files-o"></i> Generate New</button>
+    <button class="btn btn-primary" type="button" (click)="downloadPrintCopy()" [disabled]="!item"><i class="fa fa-download"></i> Download PDF</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading contract view...</div>
+
+  <div *ngIf="!loading && item as contract">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <img *ngIf="customerImageUrl; else contractHeroFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="contract.customerName">
+        <ng-template #contractHeroFallback>
+          <div class="hero-icon"><i class="fa fa-files-o"></i></div>
+        </ng-template>
+        <div>
+          <h3>{{ contract.contractNo }}</h3>
+          <p>{{ contract.customerCode }} | {{ contract.customerName }} | {{ contract.templateCode }} | {{ getLabel(contract.referenceModule) }} / {{ contract.referenceId }}</p>
+        </div>
+      </div>
+      <app-status-badge [status]="contract.contractStatus"></app-status-badge>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-file-text-o"></i></div><div><div class="summary-label">Template</div><div class="summary-value small">{{ contract.templateCode }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><i class="fa fa-user"></i></div><div><div class="summary-label">Customer Signed</div><div class="summary-value small">{{ contract.signedByCustomer || 'No' }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon info"><i class="fa fa-balance-scale"></i></div><div><div class="summary-label">Shariah Signed</div><div class="summary-value small">{{ contract.signedByShariah || 'No' }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-lock"></i></div><div><div class="summary-label">Versions</div><div class="summary-value">{{ contract.versions.length }}</div></div></div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="info-list">
+          <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+          <div class="info-row"><span>Contract Type</span><strong>{{ getLabel(contract.contractType) }}</strong></div>
+          <div class="info-row"><span>Template Name</span><strong>{{ contract.templateName }}</strong></div>
+          <div class="info-row"><span>Template Version</span><strong>v{{ contract.templateVersionNo }}</strong></div>
+          <div class="info-row"><span>Reference</span><strong>{{ getLabel(contract.referenceModule) }} / {{ contract.referenceId }}</strong></div>
+          <div class="info-row">
+            <span>Supporting File</span>
+            <strong>
+              <ng-container *ngIf="contract.supportingDocumentName; else noContractDocument">
+                <button class="btn btn-sm btn-outline-primary" type="button" (click)="previewSupportingDocument()">
+                  <i class="fa fa-eye"></i> {{ contract.supportingDocumentName | displayFileName }}
+                </button>
+              </ng-container>
+              <ng-template #noContractDocument>-</ng-template>
+            </strong>
+          </div>
+          <div class="info-row"><span>Created At</span><strong>{{ contract.createdAt || '-' }}</strong></div>
+          <div class="info-row"><span>Signed Date</span><strong>{{ contract.signedDate || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="info-list">
+          <div class="info-row"><span>Customer Signer</span><strong>{{ contract.signedByCustomer || '-' }}</strong></div>
+          <div class="info-row"><span>Customer Signed At</span><strong>{{ contract.customerSignedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Shariah Signer</span><strong>{{ contract.signedByShariah || '-' }}</strong></div>
+          <div class="info-row"><span>Shariah Signed At</span><strong>{{ contract.shariahSignedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Remarks</span><strong>{{ contract.remarks || '-' }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ getLabel(contract.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card" style="grid-column: 1 / -1;">
+        <div class="card-heading">
+          <i class="fa fa-align-left"></i>
+          <div>
+            <h4>Contract Text</h4>
+            <p>Editable text snapshot that becomes final after lock.</p>
+          </div>
+        </div>
+        <div class="contract-text-box">{{ contract.contractText }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

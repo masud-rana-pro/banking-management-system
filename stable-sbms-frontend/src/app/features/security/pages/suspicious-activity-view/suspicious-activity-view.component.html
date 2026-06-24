@@ -1,0 +1,62 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Suspicious Activity View"></app-page-header>
+
+  <app-page-title title="Suspicious Activity View" subtitle="Inspect the flagged activity, threat context and reference details before case handling">
+    <button class="btn btn-outline-primary" type="button" (click)="openList()"><i class="fa fa-list"></i> Suspicious List</button>
+    <button class="btn btn-primary" type="button" (click)="openInvestigations()"><i class="fa fa-search"></i> Investigation Cases</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading suspicious activity detail...
+  </div>
+
+  <div *ngIf="!loading && item as data" class="details-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-exclamation-triangle"></i>
+        <div>
+          <h4>Risk Detail</h4>
+          <p>Flag code, severity, event timing and suspicious classification.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Event Code</span><strong>{{ data.eventCode }}</strong></div>
+        <div class="info-row"><span>Event Name</span><strong>{{ data.eventName }}</strong></div>
+        <div class="info-row"><span>Severity</span><strong>{{ getLabel(data.severityLevel) }}</strong></div>
+        <div class="info-row"><span>Suspicious</span><strong>{{ data.suspicious ? 'Yes' : 'No' }}</strong></div>
+        <div class="info-row"><span>Event Time</span><strong>{{ data.eventTime || '-' }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ data.status }}</strong></div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-link"></i>
+        <div>
+          <h4>Reference Context</h4>
+          <p>User, device and linked module reference captured with the flag.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="entity-inline-profile mb-3">
+          <img *ngIf="getUserImageUrl(data.username); else suspiciousViewUserFallback" class="entity-avatar-lg" [src]="getUserImageUrl(data.username)" [alt]="data.fullName || data.username || 'System'">
+          <ng-template #suspiciousViewUserFallback>
+            <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+          </ng-template>
+          <div class="item-name">
+            <strong>{{ data.fullName || data.username || 'System' }}</strong>
+            <span>{{ data.username || 'System Actor' }}</span>
+          </div>
+        </div>
+        <div class="info-row"><span>User</span><strong>{{ data.fullName || data.username || 'System' }}</strong></div>
+        <div class="info-row"><span>IP Address</span><strong>{{ data.ipAddress || '-' }}</strong></div>
+        <div class="info-row"><span>Device</span><strong>{{ data.deviceInfo || '-' }}</strong></div>
+        <div class="info-row"><span>Reference Module</span><strong>{{ data.referenceModule || '-' }}</strong></div>
+        <div class="info-row"><span>Reference ID</span><strong>{{ data.referenceId || '-' }}</strong></div>
+        <div class="info-row"><span>Remarks</span><strong>{{ data.remarks || '-' }}</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

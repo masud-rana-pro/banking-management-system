@@ -1,0 +1,431 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container integration-module">
+  <app-page-header title="Integration Management" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Integration Dashboard" subtitle="Track provider health, execution failures, retry queue and sync posture from one operational control center">
+    <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openProviders()" title="Open provider list"><i class="fa fa-plug"></i> Providers</button>
+    <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openLogs()" title="Open integration execution logs"><i class="fa fa-list-alt"></i> Execution Logs</button>
+    <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openRetryLogs()" title="Open retry-pending executions"><i class="fa fa-refresh"></i> Retry Queue</button>
+    <button *ngIf="can('INTEGRATION_PROVIDER_TEST')" class="btn btn-primary" type="button" (click)="openProviderTest()" title="Open provider test console"><i class="fa fa-paper-plane"></i> Provider Test</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading integration dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-plug"></i>
+              Provider Health
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Keep external providers stable before business services feel the impact</h3>
+          <p class="dashboard-subtitle">
+            Watch active providers, failure pressure, retry backlog and the recent execution trail across email, SMS, payment and other connectors.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Active Providers</span>
+              <div class="dashboard-hero-metric-value">{{ data.activeProviders }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.providerTypeSummary.length }} provider categories currently represented</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Failures</span>
+              <div class="dashboard-hero-metric-value">{{ data.failedIntegrations }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.retryPending }} executions are waiting for replay</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Success Rate</span>
+              <div class="dashboard-hero-metric-value">{{ data.successRate | number:'1.2-2' }}%</div>
+              <div class="dashboard-hero-metric-note">{{ data.lastSuccessfulSync || 'no successful sync timestamp' }}</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Operational Readiness</span>
+              <h3 class="dashboard-title">Healthy throughput versus integration strain</h3>
+              <p class="dashboard-subtitle">A compact view to understand if the integration backbone is stable enough for customer-facing workflows.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.activeProviders }}</div>
+          <div class="dashboard-focus-note">providers are currently active and available to support live message, payment and sync operations</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Retry Pending</span>
+              <strong class="dashboard-mini-value">{{ data.retryPending }}</strong>
+              <span class="dashboard-mini-note">replay queue pressure</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Failed</span>
+              <strong class="dashboard-mini-value">{{ data.failedIntegrations }}</strong>
+              <span class="dashboard-mini-note">providers under strain</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Logs</span>
+              <strong class="dashboard-mini-value">{{ data.recentLogs.length }}</strong>
+              <span class="dashboard-mini-note">recent execution trail</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Success Rate</span>
+              <strong class="dashboard-mini-value">{{ data.successRate | number:'1.0-0' }}%</strong>
+              <span class="dashboard-mini-note">current integration health</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Provider Types</span>
+          <strong class="dashboard-chip-value">{{ data.providerTypeSummary.length }}</strong>
+          <span class="dashboard-chip-note">connector categories currently configured</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Recent Logs</span>
+          <strong class="dashboard-chip-value">{{ data.recentLogs.length }}</strong>
+          <span class="dashboard-chip-note">current execution trail entries</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Retry Queue</span>
+          <strong class="dashboard-chip-value">{{ data.retryPending }}</strong>
+          <span class="dashboard-chip-note">requires repair or replay</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Success Rate</span>
+          <strong class="dashboard-chip-value">{{ data.successRate | number:'1.0-0' }}%</strong>
+          <span class="dashboard-chip-note">execution health snapshot</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Active Providers</div><div class="summary-value">{{ data.activeProviders }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-times-circle"></i></div><div><div class="summary-label">Failed Integrations</div><div class="summary-value">{{ data.failedIntegrations }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-refresh"></i></div><div><div class="summary-label">Retry Pending</div><div class="summary-value">{{ data.retryPending }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><i class="fa fa-line-chart"></i></div><div><div class="summary-label">Success Rate</div><div class="summary-value small">{{ data.successRate | number:'1.2-2' }}%</div></div></div>
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-clock-o"></i></div><div><div class="summary-label">Last Successful Sync</div><div class="summary-value small">{{ data.lastSuccessfulSync || '-' }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Integration Pressure Bands</h4>
+              <p class="dashboard-subtitle">Watch operational health across availability, failures, retries and overall success rate.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+          <div class="dashboard-stack">
+            <div *ngFor="let band of integrationBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ band.label }}</span>
+                <span class="dashboard-summary-band-value">{{ band.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+              </div>
+              <small>{{ band.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Provider Health Donut</h4>
+              <p class="dashboard-subtitle">A pie-style view of active providers, failures, retries and overall success-rate weight.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="integrationGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.activeProviders }}</div>
+                    <div class="dashboard-donut-label">providers currently available to support live system integrations</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-legend">
+              <div *ngFor="let legend of integrationLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ legend.label }}</span>
+                    <span class="dashboard-legend-note">{{ legend.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ legend.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Provider Type Distribution</h4>
+              <p class="dashboard-subtitle">Compare configured provider count by channel or service type.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+          <div *ngIf="providerColumns.length; else noProviderBars" class="dashboard-column-chart integration-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of providerAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of providerColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noProviderBars>
+            <div class="empty-mini">No provider type distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Execution Status Mix</h4>
+              <p class="dashboard-subtitle">See whether recent logs are dominated by success, failure or retry-pending outcomes.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-random"></i></span>
+          </div>
+          <div *ngIf="executionColumns.length; else noExecutionBars" class="dashboard-column-chart integration-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of executionAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <button *ngFor="let chart of executionColumns" type="button" class="dashboard-column integration-chart-button" (click)="selectSpotlightByStatus(chart.label)">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </button>
+          </div>
+          <ng-template #noExecutionBars>
+            <div class="empty-mini">No recent execution status distribution available.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <section class="dashboard-analytics-grid mt-3">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Execution Activity Trend</h4>
+              <p class="dashboard-subtitle">A seven-day view of integration traffic moving through execution logs and sync activity.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+          <div *ngIf="integrationTrendPoints.length; else noIntegrationTrend" class="integration-line-chart-shell">
+            <svg class="integration-line-chart" viewBox="0 0 620 220" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="integrationTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#0f9f96"></stop>
+                  <stop offset="100%" stop-color="#0f9f96" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <line x1="38" y1="188" x2="592" y2="188" class="integration-line-axis"></line>
+              <line x1="38" y1="42" x2="38" y2="188" class="integration-line-axis"></line>
+              <path *ngIf="integrationTrendAreaPath" [attr.d]="integrationTrendAreaPath" class="integration-line-area"></path>
+              <path *ngIf="integrationTrendPath" [attr.d]="integrationTrendPath" class="integration-line-path"></path>
+              <g *ngFor="let point of integrationTrendPoints">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5.5" class="integration-line-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 12" text-anchor="middle" class="integration-line-value">{{ point.value }}</text>
+                <text [attr.x]="point.x" y="208" text-anchor="middle" class="integration-line-label">{{ point.label }}</text>
+              </g>
+            </svg>
+          </div>
+          <ng-template #noIntegrationTrend>
+            <div class="empty-mini">No integration activity trend available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Module Load Profile</h4>
+              <p class="dashboard-subtitle">See which modules are generating the highest integration traffic across recent execution activity.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-columns"></i></span>
+          </div>
+          <div *ngIf="moduleColumns.length; else noModuleBars" class="dashboard-column-chart integration-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of moduleAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of moduleColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noModuleBars>
+            <div class="empty-mini">No module load profile available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel integration-spotlight-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Provider Spotlight</h4>
+              <p class="dashboard-subtitle">Live provider context from the currently selected or most recent integration execution row.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-plug"></i></span>
+          </div>
+          <div *ngIf="spotlightLog as item; else noSpotlightLog" class="integration-spotlight-card">
+            <div class="integration-spotlight-head">
+              <span class="integration-spotlight-avatar">{{ getProviderBadgeText(item) }}</span>
+              <div class="integration-spotlight-copy">
+                <h5>{{ item.providerName }}</h5>
+                <div class="integration-spotlight-meta">{{ item.providerCode }} | {{ getLabel(item.providerType) }}</div>
+                <div class="integration-spotlight-meta">{{ getLabel(item.executionStatus) }} | Retry {{ item.retryCount || 0 }}</div>
+              </div>
+            </div>
+
+            <div class="integration-spotlight-grid">
+              <div class="integration-spotlight-metric">
+                <span>Reference Module</span>
+                <strong>{{ item.referenceModule || 'General' }}</strong>
+              </div>
+              <div class="integration-spotlight-metric">
+                <span>Reference ID</span>
+                <strong>{{ item.referenceId || '-' }}</strong>
+              </div>
+              <div class="integration-spotlight-metric">
+                <span>HTTP Status</span>
+                <strong>{{ item.httpStatus || '-' }}</strong>
+              </div>
+              <div class="integration-spotlight-metric">
+                <span>Executed At</span>
+                <strong>{{ item.executedAt || item.createdAt || '-' }}</strong>
+              </div>
+            </div>
+          </div>
+          <ng-template #noSpotlightLog>
+            <div class="empty-mini">No provider spotlight available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Execution Heatmap</h4>
+              <p class="dashboard-subtitle">Compare success, failure and retry load across the provider types carrying the most visible execution activity.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+          </div>
+          <div class="integration-heatmap" *ngIf="executionHeatRows.length; else noExecutionHeat">
+            <div class="integration-heatmap-head">
+              <span>Provider Type</span>
+              <span>Success</span>
+              <span>Failed</span>
+              <span>Retry</span>
+            </div>
+            <div class="integration-heatmap-row" *ngFor="let row of executionHeatRows">
+              <span class="integration-heatmap-label">{{ row.label }}</span>
+              <button
+                *ngFor="let cell of row.cells"
+                type="button"
+                class="integration-heatmap-cell"
+                [style.opacity]="cell.intensity"
+                [attr.title]="row.label + ' | ' + cell.label + ' : ' + cell.value">
+                {{ cell.value }}
+              </button>
+            </div>
+          </div>
+          <ng-template #noExecutionHeat>
+            <div class="empty-mini">No execution heatmap available.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <div class="details-grid">
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-exchange"></i>
+            <div>
+              <h4>Provider Type Summary</h4>
+              <p>See which integration provider categories are configured and currently active.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Provider Type</th>
+                  <th>Total</th>
+                  <th>Active</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.providerTypeSummary">
+                  <td>{{ getLabel(item.providerType) }}</td>
+                  <td>{{ item.totalProviders }}</td>
+                  <td>{{ item.activeProviders }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-history"></i>
+            <div>
+              <h4>Recent Execution Activity</h4>
+              <p>Latest provider requests with module reference and execution outcome.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Provider</th>
+                  <th>Reference</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentLogs | slice:0:8">
+                  <td>
+                    <strong>{{ item.providerCode }}</strong><br>
+                    <span>{{ item.providerName }}</span>
+                  </td>
+                  <td>{{ item.referenceModule || '-' }}{{ item.referenceId ? (' | ' + item.referenceId) : '' }}</td>
+                  <td><app-status-badge [status]="item.executionStatus"></app-status-badge></td>
+                </tr>
+                <tr *ngIf="data.recentLogs.length === 0">
+                  <td colspan="3" class="text-center">No execution log found yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

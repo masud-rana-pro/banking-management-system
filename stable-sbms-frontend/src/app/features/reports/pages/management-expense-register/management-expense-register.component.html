@@ -1,0 +1,161 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+  <div class="container report-module management-expense-module">
+    <app-page-header
+      title="Management Expense Register"
+      homeLabel="Home"
+      homeRoute="/reports/dashboard"
+      currentLabel="Management Expense Register">
+    </app-page-header>
+
+    <app-page-title
+      title="Management Expense Register"
+      subtitle="Record operating expenses that are not yet captured by a ledger engine so management P&L can reflect a more realistic net result.">
+      <button class="btn btn-outline-primary" type="button" routerLink="/reports/management-pl">
+        <i class="fa fa-balance-scale"></i> Open Management P&amp;L
+      </button>
+    </app-page-title>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-plus-circle"></i>
+        <div>
+          <h4>New Operating Expense</h4>
+          <p>Capture a real operating expense line so the management P&amp;L report can deduct it from current spread.</p>
+        </div>
+      </div>
+
+      <div class="entry-grid">
+        <app-form-field>
+          <input class="form-control" type="date" [(ngModel)]="createForm.expenseDate">
+        </app-form-field>
+
+        <app-form-field>
+          <select class="form-select" [(ngModel)]="createForm.branchId">
+            <option [ngValue]="null">Head Office / All Branches</option>
+            <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchName }} ({{ branch.branchCode }})</option>
+          </select>
+        </app-form-field>
+
+        <app-form-field>
+          <select class="form-select" [(ngModel)]="createForm.expenseCategory">
+            <option *ngFor="let category of expenseCategories" [value]="category">{{ formatCategory(category) }}</option>
+          </select>
+        </app-form-field>
+
+        <app-form-field>
+          <input class="form-control" type="number" min="0" step="0.01" [(ngModel)]="createForm.amount" placeholder="Expense amount">
+        </app-form-field>
+
+        <app-form-field>
+          <input class="form-control" [(ngModel)]="createForm.expenseCode" placeholder="Expense code">
+        </app-form-field>
+
+        <app-form-field>
+          <input class="form-control" [(ngModel)]="createForm.referenceNo" placeholder="Reference no">
+        </app-form-field>
+
+        <div class="entry-remarks multiline-field">
+          <app-form-field>
+            <textarea class="form-control" rows="3" [(ngModel)]="createForm.remarks" placeholder="Remarks / purpose"></textarea>
+          </app-form-field>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+          <i class="fa fa-save"></i> {{ saving ? 'Saving...' : 'Record Expense' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-filter"></i>
+        <div>
+          <h4>Expense Filter</h4>
+          <p>Review recorded expense entries by period, branch, category or keyword before checking management P&amp;L.</p>
+        </div>
+      </div>
+
+      <div class="entry-grid filter-grid">
+        <app-form-field>
+          <input class="form-control" type="date" [(ngModel)]="filters.dateFrom">
+        </app-form-field>
+
+        <app-form-field>
+          <input class="form-control" type="date" [(ngModel)]="filters.dateTo">
+        </app-form-field>
+
+        <app-form-field>
+          <select class="form-select" [(ngModel)]="filters.branchId">
+            <option [ngValue]="null">All Branches</option>
+            <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchName }} ({{ branch.branchCode }})</option>
+          </select>
+        </app-form-field>
+
+        <app-form-field>
+          <select class="form-select" [(ngModel)]="filters.expenseCategory">
+            <option value="">All Categories</option>
+            <option *ngFor="let category of expenseCategories" [value]="category">{{ formatCategory(category) }}</option>
+          </select>
+        </app-form-field>
+
+        <app-form-field>
+          <input class="form-control" [(ngModel)]="filters.keyword" placeholder="Code, ref no, remarks">
+        </app-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="button" (click)="loadEntries()">
+          <i class="fa fa-search"></i> View Entries
+        </button>
+        <button class="btn btn-outline-secondary" type="button" (click)="resetFilters()">
+          <i class="fa fa-undo"></i> Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-list-alt"></i>
+        <div>
+          <h4>Recorded Expense Entries</h4>
+          <p>These rows feed the operating expense side of the management P&amp;L report.</p>
+        </div>
+      </div>
+
+      <app-data-table
+        [loading]="loading"
+        [empty]="!loading && items.length === 0"
+        emptyTitle="No management expense entry found"
+        emptyMessage="Create a real operating expense entry to start reducing management P&L spread.">
+        <thead>
+          <tr>
+            <th style="width: 60px;">#</th>
+            <th>Date</th>
+            <th>Branch</th>
+            <th>Category</th>
+            <th>Code</th>
+            <th>Reference</th>
+            <th>Amount</th>
+            <th>Created By</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.expenseDate }}</td>
+            <td>{{ item.branchName || 'Head Office / All Branches' }}</td>
+            <td>{{ formatCategory(item.expenseCategory) }}</td>
+            <td>{{ item.expenseCode || '-' }}</td>
+            <td>{{ item.referenceNo || '-' }}</td>
+            <td>{{ formatAmount(item.amount) }}</td>
+            <td>{{ item.createdBy || '-' }}</td>
+            <td>{{ item.remarks || '-' }}</td>
+          </tr>
+        </tbody>
+      </app-data-table>
+    </div>
+  </div>
+</div>

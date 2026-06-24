@@ -1,0 +1,52 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container lookup-module">
+  <app-page-header title="Lookup / Config" homeLabel="Home" homeRoute="/lookups/dashboard" currentLabel="Lookup Values"></app-page-header>
+
+  <app-page-title title="Lookup Value List" subtitle="Manage display labels, Bangla labels, sort order and activation state for shared dropdown values">
+    <button class="btn btn-primary" type="button" (click)="openNew()" title="Create a lookup value"><i class="fa fa-plus"></i> New Value</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="folder-open">
+      <select class="form-select" [(ngModel)]="filters.lookupTypeId">
+        <option value="">All Types</option>
+        <option *ngFor="let type of types" [value]="type.id">{{ type.typeCode }} - {{ type.typeName }}</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="search">
+      <input class="form-control" [(ngModel)]="filters.keyword" placeholder="Search value code / label" (keyup.enter)="onSearch()">
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && items.length === 0" emptyTitle="No lookup value found" emptyMessage="Create values after defining a lookup type.">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Value Code</th>
+        <th>Value Label</th>
+        <th>Sort</th>
+        <th>Status</th>
+        <th class="text-center" style="width:140px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items">
+        <td>{{ item.typeCode }}</td>
+        <td>{{ item.valueCode }}</td>
+        <td>{{ item.valueLabel }}</td>
+        <td>{{ item.sortOrder ?? '-' }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="openView(item)" title="View lookup value"><i class="fa fa-eye"></i></button>
+            <button class="action-btn edit" type="button" (click)="openEdit(item)" title="Edit lookup value"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn" [ngClass]="item.status === 'ARCHIVED' ? 'restore' : 'archive'" type="button" (click)="toggleArchive(item)" [title]="item.status === 'ARCHIVED' ? 'Restore lookup value' : 'Archive lookup value'">
+              <i class="fa" [ngClass]="item.status === 'ARCHIVED' ? 'fa-undo' : 'fa-archive'"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

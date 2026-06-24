@@ -1,0 +1,204 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/dashboard"
+    currentLabel="Account List">
+  </app-page-header>
+
+  <app-page-title
+    title="Account List"
+    subtitle="Monitor created accounts, account status action, balances and navigation to request or customer">
+
+    <div class="view-toggle-group">
+      <button class="btn" type="button" [ngClass]="viewMode === 'list' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('list')">
+        <i class="fa fa-list"></i> List View
+      </button>
+      <button class="btn" type="button" [ngClass]="viewMode === 'grid' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('grid')">
+        <i class="fa fa-th-large"></i> Grid View
+      </button>
+    </div>
+
+    <button class="btn btn-outline-secondary" routerLink="/accounts/list">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+     
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button *ngIf="can('STATEMENTS_ACCESS')" class="btn btn-outline-primary" routerLink="/statement/customer/list">
+      <i class="fa fa-file-text-o"></i> Statements
+    </button>
+
+    <button *ngIf="can('ACCOUNT_REQUEST_CREATE')" class="btn btn-primary" routerLink="/accounts/opening-requests/new">
+      <i class="fa fa-plus"></i> New
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-bank"></i></div>
+      <div><div class="summary-label">Total Accounts</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-bolt"></i></div>
+      <div><div class="summary-label">Pending Activation</div><div class="summary-value">{{ pendingActivationCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-lock"></i></div>
+      <div><div class="summary-label">Blocked / Frozen</div><div class="summary-value">{{ blockedFrozenCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search account / customer / type" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.accountStatus">
+        <option value="">All Account Status</option>
+        <option value="PENDING_ACTIVATION">PENDING ACTIVATION</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="BLOCKED">BLOCKED</option>
+        <option value="FROZEN">FROZEN</option>
+        <option value="CLOSED">CLOSED</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <ng-container *ngIf="viewMode === 'list'; else accountGridView">
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No account found" emptyMessage="Approved opening requests will create accounts here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Account</th>
+        <th>Customer</th>
+        <th>Type</th>
+        <th>Balance</th>
+        <th>Branch</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 300px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.accountNumber }}</strong>
+            <span>{{ item.openedDate || '-' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="entity-inline-profile">
+            <div class="entity-avatar">
+              <img *ngIf="hasAccountHolderImage(item); else accountCustomerFallback" [src]="getAccountHolderImageUrl(item)" alt="Account holder image">
+              <ng-template #accountCustomerFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder"></ng-template>
+            </div>
+            <div class="item-name">
+              <strong>{{ item.customerName }}</strong>
+              <span>{{ item.customerCode }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.accountTypeName }}</strong>
+            <span>{{ item.accountTypeCode }}</span>
+          </div>
+        </td>
+        <td><span class="balance-chip">{{ item.availableBalance | number:'1.2-2' }}</span></td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td><app-status-badge [status]="item.accountStatus"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="canAny(['ACCOUNT_ACTIVATE', 'ACCOUNT_BLOCK', 'ACCOUNT_FREEZE', 'ACCOUNT_CLOSE'])" class="action-btn status" type="button" title="Status Action" (click)="onStatus(item)"><i class="fa fa-sliders"></i></button>
+            <button class="action-btn search" type="button" title="Customer" (click)="onOpenCustomer(item)"><i class="fa fa-user"></i></button>
+            <button *ngIf="item.openingRequestId" class="action-btn request" type="button" title="Opening Request" (click)="onOpenRequest(item)"><i class="fa fa-file-text-o"></i></button>
+            <button *ngIf="can('TRANSACTION_DEPOSIT')" class="action-btn activate" type="button" title="Deposit" (click)="onDeposit(item)"><i class="fa fa-plus-circle"></i></button>
+            <button *ngIf="can('TRANSACTION_WITHDRAW')" class="action-btn block" type="button" title="Withdraw" (click)="onWithdraw(item)"><i class="fa fa-minus-circle"></i></button>
+            <button *ngIf="can('TRANSACTION_TRANSFER')" class="action-btn request" type="button" title="Transfer" (click)="onTransfer(item)"><i class="fa fa-exchange"></i></button>
+            <button *ngIf="can('CARD_MANAGEMENT_ACCESS')" class="action-btn view" type="button" title="Card List" (click)="onCards(item)"><i class="fa fa-credit-card"></i></button>
+            <button *ngIf="can('CARD_CREATE')" class="action-btn activate" type="button" title="Issue Card" (click)="onIssueCard(item)"><i class="fa fa-plus-square"></i></button>
+            <button *ngIf="can('STATEMENT_CUSTOMER_REQUEST')" class="action-btn request" type="button" title="Statement" (click)="onStatement(item)"><i class="fa fa-file-text-o"></i></button>
+            <button *ngIf="can('DEPOSIT_SCHEME_ENROLLMENT_CREATE')" class="action-btn profit" type="button" title="Enroll Scheme" (click)="onDepositScheme(item)"><i class="fa fa-user-plus"></i></button>
+            <button *ngIf="can('FINANCING_APPLICATION_CREATE')" class="action-btn activate" type="button" title="New Financing" (click)="onFinancing(item)"><span class="taka-icon" aria-hidden="true">&#2547;</span></button>
+            <button *ngIf="can('PROFIT_SCHEDULE_CREATE')" class="action-btn search" type="button" title="Profit Schedule" (click)="onProfitSchedule(item)"><i class="fa fa-calendar"></i></button>
+            <button *ngIf="can('PROFIT_MANAGEMENT_ACCESS')" class="action-btn status" type="button" title="Profit Postings" (click)="onProfitPostings(item)"><i class="fa fa-line-chart"></i></button>
+            <button *ngIf="item.accountStatus !== 'ACTIVE' && can('ACCOUNT_ACTIVATE')" class="action-btn activate" type="button" title="Activate" (click)="runStatusAction(item, 'activate')"><i class="fa fa-play"></i></button>
+            <button *ngIf="(item.accountStatus === 'ACTIVE' || item.accountStatus === 'PENDING_ACTIVATION') && can('ACCOUNT_BLOCK')" class="action-btn block" type="button" title="Block" (click)="runStatusAction(item, 'block')"><i class="fa fa-ban"></i></button>
+            <button *ngIf="item.accountStatus === 'ACTIVE' && can('ACCOUNT_FREEZE')" class="action-btn freeze" type="button" title="Freeze" (click)="runStatusAction(item, 'freeze')"><i class="fa fa-snowflake-o"></i></button>
+            <button *ngIf="item.accountStatus !== 'CLOSED' && can('ACCOUNT_CLOSE')" class="action-btn close" type="button" title="Close" (click)="runStatusAction(item, 'close')"><i class="fa fa-times-circle"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+  </ng-container>
+
+  <ng-template #accountGridView>
+    <div class="grid-state" *ngIf="loading">
+      <i class="fa fa-spinner fa-spin"></i> Loading accounts...
+    </div>
+    <div class="grid-state" *ngIf="!loading && total === 0">
+      <i class="fa fa-inbox"></i> No account found for the current filter.
+    </div>
+    <div class="entity-grid" *ngIf="!loading && total > 0">
+      <article class="entity-card" *ngFor="let item of items">
+        <span class="status-chip status-chip--account">{{ getLabel(item.accountStatus) }}</span>
+        <div class="entity-card-avatar">
+          <img *ngIf="hasAccountHolderImage(item); else accountGridFallback" [src]="getAccountHolderImageUrl(item)" alt="Account holder image">
+          <ng-template #accountGridFallback>
+            <img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder">
+          </ng-template>
+        </div>
+        <h3>{{ item.customerName }}</h3>
+        <p>{{ item.accountNumber }}</p>
+        <span class="meta-pill">{{ item.accountTypeCode }}</span>
+        <div class="entity-card-meta">
+          <div><span>Branch</span><strong>{{ getBranchName(item.branchId) }}</strong></div>
+          <div><span>Balance</span><strong>{{ item.availableBalance | number:'1.2-2' }}</strong></div>
+          <div><span>Status</span><strong>{{ getLabel(item.accountStatus) }}</strong></div>
+          <div><span>Opened</span><strong>{{ item.openedDate || '-' }}</strong></div>
+        </div>
+        <div class="entity-card-actions">
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="onView(item)">View</button>
+          <button *ngIf="canAny(['ACCOUNT_ACTIVATE', 'ACCOUNT_BLOCK', 'ACCOUNT_FREEZE', 'ACCOUNT_CLOSE'])" class="btn btn-sm btn-outline-secondary" type="button" (click)="onStatus(item)">Status</button>
+          <button *ngIf="can('STATEMENT_CUSTOMER_REQUEST')" class="btn btn-sm btn-outline-info" type="button" (click)="onStatement(item)">Statement</button>
+        </div>
+      </article>
+    </div>
+  </ng-template>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

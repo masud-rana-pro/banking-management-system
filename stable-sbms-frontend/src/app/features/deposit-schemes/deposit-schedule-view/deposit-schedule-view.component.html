@@ -1,0 +1,114 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container deposit-scheme-module">
+
+  <app-page-header
+    title="Deposit Scheme Management"
+    homeLabel="Home"
+    homeRoute="/deposit-schemes/enrollments/list"
+    currentLabel="Deposit Schedule View">
+  </app-page-header>
+
+  <app-page-title
+    title="Deposit Schedule View"
+    subtitle="Review installment schedule, due amounts, profit portions and maturity progression for this enrollment">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openScheme()" [disabled]="!enrollment">
+      <i class="fa fa-tags"></i> Scheme
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openProfit()" [disabled]="!enrollment">
+      <i class="fa fa-line-chart"></i> Profit
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading schedule...
+  </div>
+
+  <div *ngIf="!loading && enrollment as item">
+    <div class="hero-strip">
+      <div class="entity-inline-profile">
+        <img *ngIf="customerImageUrl; else depositScheduleFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="item.customerName">
+        <ng-template #depositScheduleFallback>
+          <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+        </ng-template>
+        <div>
+          <h3>{{ item.enrollmentNo }} | {{ item.schemeCode }}</h3>
+          <p>{{ item.customerName }} | {{ item.linkedAccountNumber }} | Maturity {{ item.maturityDate }}</p>
+        </div>
+      </div>
+      <app-status-badge [status]="item.enrollmentStatus"></app-status-badge>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-calendar"></i></div>
+        <div><div class="summary-label">Total Installments</div><div class="summary-value">{{ item.totalScheduledInstallments }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Paid</div><div class="summary-value">{{ item.paidInstallments }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Remaining</div><div class="summary-value">{{ item.remainingInstallments }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Maturity Amount</div><div class="summary-value small">{{ item.maturityAmount | number:'1.2-2' }}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-card mb-3">
+      <div class="info-list">
+        <div class="info-row"><span>Customer</span><strong>{{ item.customerName }}</strong></div>
+        <div class="info-row"><span>Customer Code</span><strong>{{ item.customerCode }}</strong></div>
+        <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="info-row"><span>Linked Account</span><strong>{{ item.linkedAccountNumber }}</strong></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-table"></i>
+        <div>
+          <h4>Installment Schedule</h4>
+          <p>Installment amount, profit amount and payable amount by due date.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Due Date</th>
+              <th>Installment</th>
+              <th>Profit</th>
+              <th>Total Due</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of schedules">
+              <td>{{ row.installmentNo }}</td>
+              <td>{{ row.dueDate }}</td>
+              <td>{{ row.installmentAmount | number:'1.2-2' }}</td>
+              <td>{{ row.profitAmount | number:'1.2-2' }}</td>
+              <td>{{ row.totalDueAmount | number:'1.2-2' }}</td>
+              <td><app-status-badge [status]="row.paymentStatus"></app-status-badge></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

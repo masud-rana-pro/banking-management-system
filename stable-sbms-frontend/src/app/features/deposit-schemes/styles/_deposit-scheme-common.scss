@@ -1,0 +1,221 @@
+.deposit-scheme-module {
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .summary-card,
+  .detail-card,
+  .form-card,
+  .table-card {
+    background: #fff;
+    border: 1px solid #dbe4f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .summary-card {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .summary-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+
+    &.primary { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+    &.success { background: linear-gradient(135deg, #166534, #22c55e); }
+    &.warning { background: linear-gradient(135deg, #b45309, #f59e0b); }
+    &.danger { background: linear-gradient(135deg, #b91c1c, #ef4444); }
+    &.info { background: linear-gradient(135deg, #1d4ed8, #38bdf8); }
+  }
+
+  .summary-label {
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .summary-value {
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 700;
+
+    &.small {
+      font-size: 16px;
+      line-height: 1.4;
+    }
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  .detail-card,
+  .form-card,
+  .table-card {
+    padding: 18px;
+  }
+
+  .card-heading {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+
+    i {
+      color: #0f766e;
+      font-size: 18px;
+      margin-top: 3px;
+    }
+
+    h4 {
+      margin: 0;
+      color: #0f172a;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: #64748b;
+      font-size: 13px;
+    }
+  }
+
+  .info-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px dashed #dbe4f0;
+    padding-bottom: 8px;
+
+    span {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    strong {
+      color: #0f172a;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .form-group {
+    display: grid;
+    gap: 6px;
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+  }
+
+  .hint-text,
+  .empty-mini {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+
+    &.view { background: #2563eb; }
+    &.edit { background: #0f766e; }
+    &.archive { background: #dc2626; }
+    &.restore { background: #16a34a; }
+    &.enroll { background: #7c3aed; }
+    &.schedule { background: #ea580c; }
+    &.profit { background: #0284c7; }
+    &.customer { background: #475569; }
+  }
+
+  .mini-table-wrap {
+    overflow-x: auto;
+  }
+
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      color: #334155;
+      background: #f8fafc;
+      font-weight: 700;
+    }
+  }
+
+  .hero-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #effcf9, #eef6ff);
+    border: 1px solid #dbeafe;
+
+    h3 {
+      margin: 0;
+      color: #0f172a;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 13px;
+    }
+  }
+}

@@ -1,0 +1,199 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/customers/list"
+    currentLabel="Address Manage">
+  </app-page-header>
+
+  <app-page-title
+    title="Customer Address Manage"
+    subtitle="Maintain present, permanent, office and mailing address records for the selected customer">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="resetForm()">
+      <i class="fa fa-refresh"></i> Reset Form
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading customer address information...
+  </div>
+
+  <div *ngIf="!loading && customer as customerItem" class="manage-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="entity-avatar entity-avatar-lg">
+          <img *ngIf="customerItem.profileImageName; else customerAddressAvatarFallback" [src]="getImageUrl(customerItem.profileImageName)" alt="Customer image">
+          <ng-template #customerAddressAvatarFallback><i class="fa fa-map-marker"></i></ng-template>
+        </div>
+        <div>
+          <h3>{{ customerItem.fullName }}</h3>
+          <p>{{ customerItem.customerCode }} â€¢ Address management workspace</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        {{ addresses.length }} Address Record(s)
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-map"></i></div>
+        <div><div class="summary-label">Total Addresses</div><div class="summary-value">{{ addresses.length }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-star"></i></div>
+        <div><div class="summary-label">Primary Address</div><div class="summary-value">{{ primaryCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-home"></i></div>
+        <div><div class="summary-label">Present Address</div><div class="summary-value">{{ presentCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-building"></i></div>
+        <div><div class="summary-label">Office Address</div><div class="summary-value">{{ officeCount }}</div></div>
+      </div>
+    </div>
+
+    <div class="manage-grid">
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-list"></i>
+          <div>
+            <h4>Existing Addresses</h4>
+            <p>Review and edit customer address records.</p>
+          </div>
+        </div>
+
+        <div *ngIf="addresses.length; else noAddress" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Address Line 1</th>
+                <th>Primary</th>
+                <th>Status</th>
+                <th style="width: 70px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of addresses">
+                <td>{{ getLabel(item.addressType) }}</td>
+                <td>{{ item.addressLine1 }}</td>
+                <td>{{ item.primaryAddress ? 'YES' : 'NO' }}</td>
+                <td><app-status-badge [status]="item.status"></app-status-badge></td>
+                <td>
+                  <button class="action-btn edit" type="button" (click)="editAddress(item)">
+                    <i class="fa fa-pencil"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noAddress>
+          <div class="empty-mini">No address record found for this customer.</div>
+        </ng-template>
+      </div>
+
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-edit"></i>
+          <div>
+            <h4>{{ editingId ? 'Update Address' : 'Create Address' }}</h4>
+            <p>Follow the playbook address save mapping and mark one address as primary when needed.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Address Type <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-map-pin"></i>
+              <select class="form-select" [(ngModel)]="form.addressType">
+                <option value="">Select Type</option>
+                <option *ngFor="let item of addressTypeOptions" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Primary Address</label>
+            <div class="readonly-chip">
+              <input type="checkbox" [(ngModel)]="form.primaryAddress">
+              Mark as primary address
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">Address Line 1 <span class="text-danger">*</span></label>
+            <input class="form-control" [(ngModel)]="form.addressLine1" placeholder="Address line 1">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">Address Line 2</label>
+            <input class="form-control" [(ngModel)]="form.addressLine2" placeholder="Address line 2">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Country</label>
+            <select class="form-select" [(ngModel)]="form.countryId">
+              <option *ngFor="let item of countries" [ngValue]="item.id">{{ item.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Division</label>
+            <select class="form-select" [(ngModel)]="form.divisionId">
+              <option *ngFor="let item of divisionOptions" [ngValue]="item.id">{{ item.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">District</label>
+            <select class="form-select" [(ngModel)]="form.districtId">
+              <option *ngFor="let item of districtOptions" [ngValue]="item.id">{{ item.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Upazila</label>
+            <select class="form-select" [(ngModel)]="form.upazilaId">
+              <option *ngFor="let item of upazilaOptions" [ngValue]="item.id">{{ item.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Postal Code</label>
+            <input class="form-control" [(ngModel)]="form.postalCode" placeholder="Postal code">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Record Status</label>
+            <select class="form-select" [(ngModel)]="form.status">
+              <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions px-0 pb-0 border-0 mt-3">
+          <button class="btn btn-outline-secondary" type="button" (click)="resetForm()">Cancel Edit</button>
+          <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+            <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+            {{ editingId ? 'Update Address' : 'Save Address' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

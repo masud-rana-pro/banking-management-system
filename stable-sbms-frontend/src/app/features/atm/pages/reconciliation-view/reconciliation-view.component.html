@@ -1,0 +1,82 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/reconciliations"
+    currentLabel="Reconciliation Profile">
+  </app-page-header>
+
+  <app-page-title
+    title="Reconciliation Profile"
+    subtitle="View ATM/CDM reconciliation result, variance summary and approval information">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" [disabled]="!reconciliation">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="previewReport()" [disabled]="!reconciliation">
+      <i class="fa fa-eye"></i> Preview Report
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="downloadReport()" [disabled]="!reconciliation">
+      <i class="fa fa-download"></i> Download PDF
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="viewTerminal()" [disabled]="!reconciliation">
+      <i class="fa fa-credit-card"></i> View Terminal
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading reconciliation profile...
+  </div>
+
+  <div *ngIf="!loading && reconciliation as item" class="view-shell">
+    <div class="hero">
+      <div>
+        <h3>{{ item.terminalCode }} / {{ item.reconDate }}</h3>
+        <p>{{ item.terminalName }} &bull; Variance {{ item.varianceAmount }}</p>
+      </div>
+      <app-status-badge [status]="item.status"></app-status-badge>
+    </div>
+
+    <div class="entity-inline-profile" *ngIf="item.approvedBy">
+      <img *ngIf="getUserImageUrl(item.approvedBy); else reconciliationViewUserFallback" class="entity-avatar-lg" [src]="getUserImageUrl(item.approvedBy)" [alt]="getUserDisplay(item.approvedBy)">
+      <ng-template #reconciliationViewUserFallback>
+        <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user-check"></i></span>
+      </ng-template>
+      <div>
+        <strong>{{ getUserDisplay(item.approvedBy) }}</strong>
+        <span>Approval owner</span>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card"><span>System Amount</span><strong>{{ item.systemAmount }}</strong></div>
+      <div class="summary-card"><span>Physical Amount</span><strong>{{ item.physicalAmount }}</strong></div>
+      <div class="summary-card"><span>Variance</span><strong>{{ item.varianceAmount }}</strong></div>
+      <div class="summary-card"><span>Approved By</span><strong>{{ getUserDisplay(item.approvedBy) }}</strong></div>
+    </div>
+
+    <div class="detail-card">
+      <div class="info-row"><span>Terminal Code</span><strong>{{ item.terminalCode }}</strong></div>
+      <div class="info-row"><span>Terminal Name</span><strong>{{ item.terminalName }}</strong></div>
+      <div class="info-row"><span>Recon Date</span><strong>{{ item.reconDate }}</strong></div>
+      <div class="info-row"><span>Status</span><strong>{{ item.status }}</strong></div>
+      <div class="info-row"><span>Approved At</span><strong>{{ item.approvedAt || '-' }}</strong></div>
+      <div class="info-row"><span>Approved By</span><strong>{{ getUserDisplay(item.approvedBy) }}</strong></div>
+      <div class="info-row"><span>Remarks</span><strong>{{ item.remarks || '-' }}</strong></div>
+      <div class="info-row"><span>Created At</span><strong>{{ item.createdAt || '-' }}</strong></div>
+    </div>
+  </div>
+
+</div>
+</div>

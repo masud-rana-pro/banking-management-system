@@ -1,0 +1,71 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container workflow-module">
+  <app-page-header title="Workflow Support" homeLabel="Home" homeRoute="/workflow/dashboard" currentLabel="Workflow History View"></app-page-header>
+
+  <app-page-title title="Workflow History View" subtitle="Inspect source transition, actor, remarks and related comments timeline">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <button class="btn btn-outline-primary" type="button" (click)="exportJson()"><i class="fa fa-download"></i> Export</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openSource()"><i class="fa fa-external-link"></i> Open Source</button>
+    <button class="btn btn-primary" type="button" (click)="openList()"><i class="fa fa-list"></i> Workflow History</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading workflow history detail...
+  </div>
+
+  <div *ngIf="!loading && item as data">
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-random"></i>
+          <div>
+            <h4>Transition Detail</h4>
+            <p>Source module, reference, from/to status and workflow action trace.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Module</span><strong>{{ data.moduleName }}</strong></div>
+          <div class="info-row"><span>Reference ID</span><strong>{{ data.referenceId }}</strong></div>
+          <div class="info-row"><span>Action</span><strong>{{ data.actionName }}</strong></div>
+          <div class="info-row"><span>From Status</span><strong>{{ data.fromStatus || '-' }}</strong></div>
+          <div class="info-row"><span>To Status</span><strong>{{ getLabel(data.toStatus) }}</strong></div>
+          <div class="info-row"><span>Actor</span><strong>{{ data.actionBy }}</strong></div>
+          <div class="info-row"><span>Action At</span><strong>{{ data.actionAt || '-' }}</strong></div>
+          <div class="info-row"><span>Remarks</span><strong>{{ data.remarks || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-comments-o"></i>
+          <div>
+            <h4>Comments Timeline</h4>
+            <p>Related workflow comments stay attached to the source record for traceability.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Comment</th>
+                <th>By</th>
+                <th>At</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let comment of data.comments">
+                <td>{{ comment.commentText }}</td>
+                <td>{{ comment.commentBy }}</td>
+                <td>{{ comment.commentAt || '-' }}</td>
+              </tr>
+              <tr *ngIf="data.comments.length === 0">
+                <td colspan="3" class="text-center">No comments available for this workflow reference.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

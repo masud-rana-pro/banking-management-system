@@ -1,0 +1,131 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container deposit-scheme-module">
+
+  <app-page-header
+    title="Deposit Scheme Management"
+    homeLabel="Home"
+    homeRoute="/deposit-schemes/dashboard"
+    currentLabel="Enrollment List">
+  </app-page-header>
+
+  <app-page-title
+    title="Enrollment List"
+    subtitle="Track customer enrollment, schedule progress, maturity status and early withdrawal requests">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button *ngIf="can('DEPOSIT_SCHEMES_ACCESS')" class="btn btn-outline-primary" routerLink="/deposit-schemes/list">
+      <i class="fa fa-tags"></i> Scheme List
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEME_ENROLLMENT_CREATE')" class="btn btn-primary" type="button" (click)="openNew()">
+      <i class="fa fa-plus"></i> New Enrollment
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-users"></i></div>
+      <div><div class="summary-label">Total Enrollments</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-flag-checkered"></i></div>
+      <div><div class="summary-label">Matured</div><div class="summary-value">{{ maturedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-sign-out"></i></div>
+      <div><div class="summary-label">Early Withdrawal</div><div class="summary-value">{{ earlyWithdrawalCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search enrollment / customer / account" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.enrollmentStatus">
+        <option value="">All Enrollment Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="MATURED">MATURED</option>
+        <option value="EARLY_WITHDRAWAL_REQUESTED">EARLY WITHDRAWAL REQUESTED</option>
+        <option value="EARLY_WITHDRAWN">EARLY WITHDRAWN</option>
+        <option value="CLOSED">CLOSED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No enrollment found" emptyMessage="Create a deposit scheme enrollment to generate schedule and profit distribution.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Enrollment</th>
+        <th>Customer</th>
+        <th>Account</th>
+        <th>Maturity</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 280px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.enrollmentNo }}</strong>
+            <span>{{ item.schemeCode }} | {{ item.schemeName }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getCustomerImageUrl(item.customerId); else enrollmentCustomerFallback" class="entity-avatar" [src]="getCustomerImageUrl(item.customerId)" [alt]="item.customerName">
+            <ng-template #enrollmentCustomerFallback>
+              <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ item.customerName }}</strong>
+              <span>{{ item.customerCode }}</span>
+            </div>
+          </div>
+        </td>
+        <td>{{ item.linkedAccountNumber }}</td>
+        <td>
+          <strong>{{ item.maturityDate }}</strong><br>
+          <span>{{ item.maturityAmount | number:'1.2-2' }}</span>
+        </td>
+        <td><app-status-badge [status]="item.enrollmentStatus"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="openView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn schedule" type="button" title="Schedule" (click)="openSchedule(item)"><i class="fa fa-calendar"></i></button>
+            <button class="action-btn profit" type="button" title="Profit" (click)="openProfit(item)"><i class="fa fa-line-chart"></i></button>
+            <button *ngIf="can('DEPOSIT_SCHEMES_ACCESS')" class="action-btn view" type="button" title="Scheme" (click)="openScheme(item)"><i class="fa fa-tags"></i></button>
+            <button *ngIf="can('CUSTOMER_MANAGEMENT_ACCESS')" class="action-btn customer" type="button" title="Customer" (click)="openCustomer(item)"><i class="fa fa-user"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

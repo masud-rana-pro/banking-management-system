@@ -1,0 +1,173 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="sbms-page-container">
+
+  <app-page-header
+    title="Administration"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Admin Dashboard"
+    subtitle="Access control, configuration readiness and core admin workload from one control surface">
+  </app-page-title>
+
+  <section class="admin-hero-grid">
+    <article class="admin-hero-card">
+      <span class="hero-eyebrow"><i class="bi bi-shield-lock"></i> Admin Control</span>
+      <h2>Core configuration, user governance and branch readiness in one workspace</h2>
+      <p>Use this command surface to monitor role coverage, user readiness, branch setup and the modules still pending deeper operational rollout.</p>
+
+      <div class="hero-metric-grid">
+        <div class="hero-metric-box" *ngFor="let kpi of kpis | slice:0:3">
+          <span>{{ kpi.title }}</span>
+          <strong>{{ kpi.value }}</strong>
+          <small>{{ kpi.subtitle }}</small>
+        </div>
+      </div>
+    </article>
+
+    <article class="admin-focus-card">
+      <span class="hero-eyebrow light"><i class="bi bi-cpu"></i> Control Readiness</span>
+      <h3>Configured modules before deeper banking execution begins</h3>
+      <p>Watch which setup layers are already ready and which modules still need rollout before live transaction volume expands.</p>
+
+      <div class="focus-value">{{ configuredModuleCount }}</div>
+      <div class="focus-note">configured modules currently ready for admin and governance operations</div>
+
+      <div class="focus-stat-grid">
+        <div class="focus-stat">
+          <span>Pending Modules</span>
+          <strong>{{ pendingModuleCount }}</strong>
+        </div>
+        <div class="focus-stat">
+          <span>Active Users</span>
+          <strong>{{ activeUserCount }}</strong>
+        </div>
+        <div class="focus-stat">
+          <span>Locked Users</span>
+          <strong>{{ lockedUserCount }}</strong>
+        </div>
+        <div class="focus-stat">
+          <span>Branches</span>
+          <strong>{{ branchCount }}</strong>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div class="hero-chip-row">
+    <div class="hero-chip" *ngFor="let kpi of kpis">
+      <span>{{ kpi.title }}</span>
+      <strong>{{ kpi.value }}</strong>
+      <small>{{ kpi.subtitle }}</small>
+    </div>
+  </div>
+
+  <div class="kpi-grid mb-4">
+    <div
+      class="kpi-card"
+      *ngFor="let kpi of kpis"
+      [ngClass]="[kpi.colorClass, kpi.disabled ? 'kpi-disabled' : 'kpi-clickable']"
+      (click)="navigate(kpi)">
+
+      <div class="kpi-icon-wrap">
+        <i [class]="kpi.icon"></i>
+      </div>
+
+      <div class="kpi-body">
+        <div class="kpi-value">{{ kpi.value }}</div>
+        <div class="kpi-title">{{ kpi.title }}</div>
+        <div class="kpi-subtitle">{{ kpi.subtitle }}</div>
+      </div>
+
+      <div class="kpi-arrow" *ngIf="!kpi.disabled">
+        <i class="bi bi-arrow-up-right"></i>
+      </div>
+
+      <div class="kpi-badge-disabled" *ngIf="kpi.disabled">
+        <i class="bi bi-hourglass-split me-1"></i>Soon
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-lg-5">
+      <div class="content-card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <i class="bi bi-cpu card-head-icon teal"></i>
+            <div>
+              <div class="card-title">System Configuration</div>
+              <div class="card-subtitle">Module readiness status</div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="status-list">
+          <li *ngFor="let s of systemStatus" class="status-item">
+            <div class="status-label">
+              <i class="bi bi-grid-3x3-gap-fill status-dot" [ngClass]="s.status === 'Configured' ? 'teal' : 'amber'"></i>
+              {{ s.label }}
+            </div>
+            <span class="status-chip" [ngClass]="s.status === 'Configured' ? 'chip-success' : 'chip-warning'">
+              <i class="bi" [ngClass]="s.status === 'Configured' ? 'bi-check-circle-fill' : 'bi-clock-fill'"></i>
+              {{ s.status }}
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="content-card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <i class="bi bi-bar-chart-line card-head-icon blue"></i>
+            <div>
+              <div class="card-title">Operational Snapshot</div>
+              <div class="card-subtitle">Live operational counters</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="snapshot-grid">
+          <div class="snapshot-box" *ngFor="let o of operationalSummary">
+            <div class="snapshot-icon" [ngClass]="o.iconClass">
+              <i [class]="o.icon"></i>
+            </div>
+            <div class="snapshot-value">{{ o.value }}</div>
+            <div class="snapshot-label">{{ o.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="card-head">
+      <div class="card-title-group">
+        <i class="bi bi-activity card-head-icon purple"></i>
+        <div>
+          <div class="card-title">Recent Activities</div>
+          <div class="card-subtitle">Latest system events</div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="activity-list">
+      <li *ngFor="let a of recentActivities; let i = index" class="activity-item">
+        <div class="activity-indicator" [ngClass]="'indicator-' + (i % 4)"></div>
+        <div class="activity-content">
+          <span class="activity-msg">{{ a.message }}</span>
+          <span class="activity-time">
+            <i class="bi bi-clock me-1"></i>{{ a.time }}
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+</div>

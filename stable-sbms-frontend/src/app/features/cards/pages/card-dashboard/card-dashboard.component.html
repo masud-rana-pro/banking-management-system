@@ -1,0 +1,568 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container card-module">
+
+  <app-page-header
+    title="Card Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Card Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Card Dashboard"
+    subtitle="Monitor issue volume, activation backlog, expiry pressure and recent ATM or CDM alert behavior">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="load()" title="Refresh dashboard">
+      <i class="fa fa-refresh"></i> Refresh
+    </button>
+
+    <button *ngIf="can('CARD_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openList()" title="Open card list">
+      <i class="fa fa-list"></i> Card List
+    </button>
+
+    <button *ngIf="can('CARD_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openTransactions()" title="Open ATM and CDM usage activity">
+      <i class="fa fa-exchange"></i> ATM/CDM Usage
+    </button>
+
+    <button *ngIf="can('CARD_CREATE')" class="btn btn-primary" type="button" (click)="openCreate()" title="Issue new card">
+      <i class="fa fa-plus"></i> Issue Card
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading card dashboard...
+  </div>
+
+  <div *ngIf="!loading && summary as item" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow">
+            <i class="fa fa-credit-card"></i>
+            Card Operations
+          </span>
+        </div>
+
+        <h3 class="dashboard-title">Protect activation flow while keeping usage risk under control</h3>
+        <p class="dashboard-subtitle">
+          Use this surface to balance new issue volume, blocked exposure, expiry management and unusual ATM or CDM events.
+        </p>
+
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Total Cards</span>
+            <div class="dashboard-hero-metric-value">{{ item.totalCards }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.activeCards }} cards currently active</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Activation Queue</span>
+            <div class="dashboard-hero-metric-value">{{ item.pendingActivations }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.pendingActivationCards.length }} cards visible in the current queue</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Usage Alerts</span>
+            <div class="dashboard-hero-metric-value">{{ item.cardUsageAlertsToday }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.cardTxnCount }} total card usage events recorded</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Service Readiness</span>
+            <h3 class="dashboard-title">Active usage versus blocked and expiring pressure</h3>
+            <p class="dashboard-subtitle">A fast checkpoint on whether the live card portfolio is healthy enough for customer demand.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-focus-value">{{ item.activeCards }}</div>
+        <div class="dashboard-focus-note">cards are currently active and available for routine customer transaction flow</div>
+
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Blocked</span>
+            <strong class="dashboard-mini-value">{{ item.blockedCards }}</strong>
+            <span class="dashboard-mini-note">currently restricted</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Expiring</span>
+            <strong class="dashboard-mini-value">{{ item.expiringSoon }}</strong>
+            <span class="dashboard-mini-note">needs renewal attention</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Usage Alerts</span>
+            <strong class="dashboard-mini-value">{{ item.cardUsageAlertsToday }}</strong>
+            <span class="dashboard-mini-note">generated today</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Transactions</span>
+            <strong class="dashboard-mini-value">{{ item.cardTxnCount }}</strong>
+            <span class="dashboard-mini-note">card event volume</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-chip-row">
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Activation Queue</span>
+        <strong class="dashboard-chip-value">{{ item.pendingActivations }}</strong>
+        <span class="dashboard-chip-note">issued cards waiting for activation</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Expiry Pressure</span>
+        <strong class="dashboard-chip-value">{{ item.expiringSoon }}</strong>
+        <span class="dashboard-chip-note">cards nearing renewal date</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Blocked Exposure</span>
+        <strong class="dashboard-chip-value">{{ item.blockedCards }}</strong>
+        <span class="dashboard-chip-note">cards under operational restriction</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Usage Event Feed</span>
+        <strong class="dashboard-chip-value">{{ item.recentUsageAlerts.length }}</strong>
+        <span class="dashboard-chip-note">recent alert events visible below</span>
+      </div>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-credit-card"></i></div>
+        <div><div class="summary-label">Total Cards</div><div class="summary-value">{{ item.totalCards }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Active Cards</div><div class="summary-value">{{ item.activeCards }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-ban"></i></div>
+        <div><div class="summary-label">Blocked Cards</div><div class="summary-value">{{ item.blockedCards }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Expiring Soon</div><div class="summary-value">{{ item.expiringSoon }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-exchange"></i></div>
+        <div><div class="summary-label">Card Txn Count</div><div class="summary-value">{{ item.cardTxnCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-hourglass-half"></i></div>
+        <div><div class="summary-label">Pending Activation</div><div class="summary-value">{{ item.pendingActivations }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-bell"></i></div>
+        <div><div class="summary-label">Usage Alerts Today</div><div class="summary-value">{{ item.cardUsageAlertsToday }}</div></div>
+      </div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Card Operations Bands</h4>
+            <p class="dashboard-subtitle">Keep expiry, block, activation and alert load visible before service quality drops.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+        </div>
+
+        <div class="dashboard-stack">
+          <div *ngFor="let band of cardBands" class="dashboard-summary-band">
+            <div class="dashboard-summary-band-head">
+              <span class="dashboard-summary-band-title">{{ band.label }}</span>
+              <span class="dashboard-summary-band-value">{{ band.value }}</span>
+            </div>
+            <div class="dashboard-band-track">
+              <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+            </div>
+            <small>{{ band.note }}</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Card Status Distribution</h4>
+            <p class="dashboard-subtitle">See how the live card portfolio is split across active, blocked, pending and expiring states.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="cardStatusGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ item.totalCards }}</div>
+                  <div class="dashboard-donut-label">cards tracked in the operating card portfolio</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-legend">
+            <div *ngFor="let legend of statusLegend" class="dashboard-legend-item">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ legend.label }}</span>
+                  <span class="dashboard-legend-note">{{ legend.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ legend.value }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Usage Alert Event Distribution</h4>
+            <p class="dashboard-subtitle">Each bar shows which recent card event types are driving the most operational alert noise.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+
+        <div *ngIf="eventColumns.length; else noEventBars" class="dashboard-column-chart card-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of eventAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of eventColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noEventBars>
+          <div class="empty-mini">No usage alert event distribution available.</div>
+        </ng-template>
+        <div class="dashboard-chart-note">Higher bars indicate the alert types that are generating the strongest recent card support workload.</div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Usage Activity Trend</h4>
+            <p class="dashboard-subtitle">Recent ATM and CDM related alert activity across the latest operating dates in the visible feed.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+        </div>
+        <div *ngIf="usageTrend.length; else noUsageTrend" class="dashboard-trend-shell">
+          <div class="dashboard-trend-axis">
+            <span *ngFor="let tick of usageTrendTicks" class="dashboard-trend-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div class="card-line-card">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="card-line-svg">
+              <defs>
+                <linearGradient id="cardTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(20,184,166,0.28)"></stop>
+                  <stop offset="100%" stop-color="rgba(20,184,166,0.03)"></stop>
+                </linearGradient>
+              </defs>
+              <path [attr.d]="usageTrendAreaPath" fill="url(#cardTrendFill)"></path>
+              <path [attr.d]="usageTrendPath" class="card-line-path"></path>
+              <g *ngFor="let point of usageTrend">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" class="dashboard-trend-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 5" text-anchor="middle" class="card-line-value">{{ point.value }}</text>
+              </g>
+            </svg>
+            <div class="card-line-labels">
+              <span *ngFor="let point of usageTrend">{{ point.shortLabel }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noUsageTrend>
+          <div class="empty-mini">No usage activity trend available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Card Load</h4>
+            <p class="dashboard-subtitle">See which branch pockets are carrying the heaviest expiring and activation-related card workload.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-building"></i></span>
+        </div>
+        <div *ngIf="branchColumns.length; else noBranchBars" class="dashboard-column-chart card-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of branchAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of branchColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noBranchBars>
+          <div class="empty-mini">No branch card load profile available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Card Spotlight</h4>
+            <p class="dashboard-subtitle">Highlight the most material card in the current queue using real customer binding and card-level operational context.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-user-circle-o"></i></span>
+        </div>
+        <div *ngIf="selectedCard as card; else noCardSpotlight" class="card-spotlight">
+          <div class="card-spotlight-hero">
+            <div class="card-spotlight-avatar" [class.has-image]="!!getCustomerImageUrl(card.customerCode)">
+              <img *ngIf="getCustomerImageUrl(card.customerCode)" [src]="getCustomerImageUrl(card.customerCode)" [alt]="card.customerName">
+              <span *ngIf="!getCustomerImageUrl(card.customerCode)">{{ selectedCardBadgeText }}</span>
+            </div>
+            <div class="card-spotlight-copy">
+              <h5>{{ card.customerName }}</h5>
+              <p>{{ card.cardRefNo }} | {{ card.maskedCardNo }}</p>
+              <span class="card-spotlight-module">{{ card.accountNumber }} | {{ getLabel(card.cardType) }}</span>
+            </div>
+          </div>
+
+          <div class="card-spotlight-grid">
+            <div class="card-spotlight-stat">
+              <span>Current Balance</span>
+              <strong>{{ card.currentBalance | number:'1.2-2' }}</strong>
+            </div>
+            <div class="card-spotlight-stat">
+              <span>Usage Alerts</span>
+              <strong>{{ card.usageAlertCount }}</strong>
+            </div>
+          </div>
+
+          <div class="card-spotlight-badges">
+            <div *ngFor="let badge of selectedCardBadges" class="card-spotlight-pill">
+              <span>{{ badge.label }}</span>
+              <strong>{{ badge.value }}</strong>
+            </div>
+          </div>
+        </div>
+        <ng-template #noCardSpotlight>
+          <div class="empty-mini">No card available for spotlight.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Status Matrix</h4>
+            <p class="dashboard-subtitle">See how expiring cards, activation queue and alert activity are distributed across the busiest branch pockets.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+        </div>
+        <div *ngIf="matrixRows.length && matrixColumns.length; else noMatrix" class="card-matrix">
+          <div class="card-matrix-header">
+            <div class="card-matrix-corner">Branch</div>
+            <div *ngFor="let column of matrixColumns" class="card-matrix-col">{{ column.label }}</div>
+          </div>
+          <div *ngFor="let row of matrixRows" class="card-matrix-row">
+            <div class="card-matrix-label" [title]="row.label">{{ row.shortLabel }}</div>
+            <div *ngFor="let value of row.values" class="card-matrix-cell" [class.is-active]="value > 0">{{ value }}</div>
+          </div>
+        </div>
+        <ng-template #noMatrix>
+          <div class="empty-mini">No branch status matrix available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Operations Snapshot</h4>
+            <p class="dashboard-subtitle">A quick board for the items card operations teams should keep in their daily brief.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-shield"></i></span>
+        </div>
+
+        <div class="dashboard-info-stack">
+          <div *ngFor="let row of cardRows" class="dashboard-info-row">
+            <span class="dashboard-info-label">{{ row.label }}</span>
+            <span class="dashboard-info-value">{{ row.value }}</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="meta-grid">
+      <div class="info-card">
+        <div class="card-heading">
+          <i class="fa fa-clock-o"></i>
+          <div>
+            <h4>Expiring Soon</h4>
+            <p>Cards expiring within the next 30 days.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap" *ngIf="item.expiringCards.length; else noExpiring">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Card</th>
+                <th>Customer</th>
+                <th>Expiry</th>
+                <th class="print-hide">Open</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let card of item.expiringCards">
+                <td>
+                  <div class="item-name">
+                    <strong>{{ card.cardRefNo }}</strong>
+                    <span>{{ card.maskedCardNo }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="entity-inline-profile">
+                    <img *ngIf="getCustomerImageUrl(card.customerCode); else cardDashboardExpiringFallback" class="entity-avatar" [src]="getCustomerImageUrl(card.customerCode)" [alt]="card.customerName">
+                    <ng-template #cardDashboardExpiringFallback>
+                      <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div>{{ card.customerName }}</div>
+                  </div>
+                </td>
+                <td>{{ card.expiryDate }}</td>
+                <td class="print-hide">
+                  <div class="table-actions">
+                    <button class="action-btn preview" type="button" (click)="focusCard(card)" title="Focus card">
+                      <i class="fa fa-bullseye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="openCard(card)" title="Open card details">View</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noExpiring><div class="empty-mini">No expiring card found.</div></ng-template>
+      </div>
+
+      <div class="info-card">
+        <div class="card-heading">
+          <i class="fa fa-play-circle"></i>
+          <div>
+            <h4>Pending Activation Queue</h4>
+            <p>Issued cards waiting for customer activation.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap" *ngIf="item.pendingActivationCards.length; else noPending">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Card</th>
+                <th>Account</th>
+                <th>Status</th>
+                <th class="print-hide">Open</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let card of item.pendingActivationCards">
+                <td>
+                  <div class="entity-inline-profile">
+                    <img *ngIf="getCustomerImageUrl(card.customerCode); else cardDashboardPendingFallback" class="entity-avatar" [src]="getCustomerImageUrl(card.customerCode)" [alt]="card.customerName">
+                    <ng-template #cardDashboardPendingFallback>
+                      <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div class="item-name">
+                      <strong>{{ card.cardRefNo }}</strong>
+                      <span>{{ card.customerCode }} | {{ card.customerName }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ card.accountNumber }}</td>
+                <td>{{ getLabel(card.cardStatus) }}</td>
+                <td class="print-hide">
+                  <div class="table-actions">
+                    <button class="action-btn preview" type="button" (click)="focusCard(card)" title="Focus card">
+                      <i class="fa fa-bullseye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" type="button" (click)="openCard(card)" title="Open activation record">Open</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noPending><div class="empty-mini">No pending activation card found.</div></ng-template>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-heading">
+        <i class="fa fa-bell"></i>
+        <div>
+          <h4>Recent Usage Alerts</h4>
+          <p>ATM or CDM alert events generated from card monitoring workflow.</p>
+        </div>
+      </div>
+
+      <app-data-table [loading]="false" [empty]="item.recentUsageAlerts.length === 0" emptyTitle="No card alert found" emptyMessage="ATM/CDM alert events will appear here.">
+        <thead>
+          <tr>
+            <th>Card</th>
+            <th>Customer</th>
+            <th>Event</th>
+            <th>Performed By</th>
+            <th>Date</th>
+            <th class="print-hide text-center" style="width: 90px;">Open</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let txn of item.recentUsageAlerts">
+            <td>
+              <div class="item-name">
+                <strong>{{ txn.cardRefNo }}</strong>
+                <span>{{ txn.maskedCardNo }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="entity-inline-profile">
+                <img *ngIf="getCustomerImageUrl(txn.customerCode); else cardDashboardTxnFallback" class="entity-avatar" [src]="getCustomerImageUrl(txn.customerCode)" [alt]="txn.customerName">
+                <ng-template #cardDashboardTxnFallback>
+                  <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                </ng-template>
+                <div>{{ txn.customerName }}</div>
+              </div>
+            </td>
+            <td>{{ getLabel(txn.eventType) }}</td>
+            <td>
+              <div class="entity-inline-profile">
+                <img *ngIf="getUserImageUrl(txn.performedBy); else cardDashboardTxnUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(txn.performedBy)" [alt]="txn.performedBy || '-'">
+                <ng-template #cardDashboardTxnUserFallback>
+                  <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                </ng-template>
+                <div class="item-name"><strong>{{ txn.performedBy || '-' }}</strong></div>
+              </div>
+            </td>
+            <td>{{ txn.eventDate | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td class="print-hide text-center">
+              <div class="table-actions">
+                <button class="action-btn preview" type="button" (click)="focusTransaction(txn)" title="Focus card">
+                  <i class="fa fa-bullseye"></i>
+                </button>
+                <button class="action-btn view" type="button" (click)="openTransaction(txn)" title="Open related card activity">
+                  <i class="fa fa-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </app-data-table>
+    </div>
+  </div>
+
+</div>
+</div>

@@ -1,0 +1,92 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container notification-module">
+  <app-page-header title="Notification & Alerts" homeLabel="Home" homeRoute="/notifications/dashboard" currentLabel="Template View"></app-page-header>
+
+  <app-page-title title="Template View" subtitle="Inspect template content, channel mapping and related delivery log footprint">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openLogs()" [disabled]="!item"><i class="fa fa-list-alt"></i> Logs</button>
+    <button *ngIf="can('NOTIFICATION_TEMPLATE_EDIT')" class="btn btn-primary" type="button" (click)="edit()" [disabled]="!item"><i class="fa fa-pencil"></i> Edit</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading template view...
+  </div>
+
+  <div *ngIf="!loading && item as template">
+    <div class="hero-strip">
+      <div>
+        <h3>{{ template.templateCode }} | {{ template.templateName }}</h3>
+        <p>{{ getLabel(template.channelType) }} | {{ template.subjectText || 'No subject text' }}</p>
+      </div>
+      <app-status-badge [status]="template.status"></app-status-badge>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Template Detail</h4>
+            <p>Channel binding and reusable metadata used by notification event rules.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Template Code</span><strong>{{ template.templateCode }}</strong></div>
+          <div class="info-row"><span>Template Name</span><strong>{{ template.templateName }}</strong></div>
+          <div class="info-row"><span>Channel</span><strong>{{ getLabel(template.channelType) }}</strong></div>
+          <div class="info-row"><span>Subject</span><strong>{{ template.subjectText || '-' }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ getLabel(template.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-file-text-o"></i>
+          <div>
+            <h4>Message Body</h4>
+            <p>Final managed text that will be resolved when notification service sends alerts.</p>
+          </div>
+        </div>
+
+        <div class="provider-box">{{ template.bodyText }}</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-history"></i>
+        <div>
+          <h4>Recent Delivery Logs</h4>
+          <p>Latest sends that used this template.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Recipient</th>
+              <th>Channel</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of recentLogs">
+              <td>{{ log.eventCode }}</td>
+              <td>{{ log.recipientTo }}</td>
+              <td>{{ getLabel(log.channelType) }}</td>
+              <td><app-status-badge [status]="log.deliveryStatus"></app-status-badge></td>
+            </tr>
+            <tr *ngIf="recentLogs.length === 0">
+              <td colspan="4" class="text-center">No log found for this template yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

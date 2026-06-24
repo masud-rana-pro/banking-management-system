@@ -1,0 +1,178 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 card-module">
+
+  <app-page-header
+    title="Card Management"
+    homeLabel="Home"
+    homeRoute="/cards/dashboard"
+    [currentLabel]="editMode ? 'Edit Card' : 'Issue Card'">
+  </app-page-header>
+
+  <app-page-title
+    [title]="editMode ? 'Edit Card' : 'Issue Card'"
+    subtitle="Capture customer, account, card type, masked card number, issue date, expiry date and status at issuance time">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!model.customerId">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openAccount()" [disabled]="!model.accountId">
+      <i class="fa fa-bank"></i> View Account
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading card form...
+  </div>
+
+  <div *ngIf="!loading" class="card-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-credit-card"></i>
+        </div>
+
+        <div>
+          <h3>{{ editMode ? 'Update Card Profile' : 'New Card Issue Setup' }}</h3>
+          <p>Link customer and account properly, then define card profile, expiry and operational status.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ model.cardStatus || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-users"></i>
+          <div>
+            <h4>Customer & Account Mapping</h4>
+            <p>Keep card issuance tied to the correct customer and linked account before card operations begin.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Customer</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <select class="form-select" [(ngModel)]="model.customerId" (change)="onCustomerChange()">
+                <option [ngValue]="null">Select customer</option>
+                <option *ngFor="let item of customers" [ngValue]="item.id">{{ item.customerCode }} - {{ item.fullName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-bank"></i>
+              <select class="form-select" [(ngModel)]="model.accountId">
+                <option [ngValue]="null">Select account</option>
+                <option *ngFor="let item of filteredAccounts" [ngValue]="item.id">{{ item.accountNumber }} - {{ item.accountTypeCode }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-credit-card-alt"></i>
+          <div>
+            <h4>Card Profile</h4>
+            <p>Set card type, masked number, issue date and expiry date so downstream activation and statement flows remain consistent.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Card Type</label>
+            <div class="input-with-icon">
+              <i class="fa fa-clone"></i>
+              <select class="form-select" [(ngModel)]="model.cardType">
+                <option *ngFor="let option of cardTypes" [ngValue]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Masked Card No</label>
+            <div class="input-with-icon">
+              <i class="fa fa-hashtag"></i>
+              <input class="form-control" [(ngModel)]="model.maskedCardNo" placeholder="Leave blank for auto-generated masked number">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Issue Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="date" [(ngModel)]="model.issueDate">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Expiry Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-clock-o"></i>
+              <input class="form-control" type="date" [(ngModel)]="model.expiryDate">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-shield"></i>
+          <div>
+            <h4>Operational Status</h4>
+            <p>Choose the live card status carefully, and mention any block rationale when the card is not active.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Card Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="model.cardStatus">
+                <option *ngFor="let option of cardStatuses" [ngValue]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="full-span">
+            <label class="form-label">Block Reason</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-commenting-o"></i>
+              <textarea class="form-control" rows="4" [(ngModel)]="model.blockReason" placeholder="Required only when status is blocked"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ editMode ? 'Update Card' : 'Issue Card' }}
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

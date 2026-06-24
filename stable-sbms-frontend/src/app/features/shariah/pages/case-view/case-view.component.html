@@ -1,0 +1,137 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container shariah-module">
+  <app-page-header title="Shariah Review" homeLabel="Home" homeRoute="/shariah/cases" currentLabel="Case View"></app-page-header>
+
+  <app-page-title title="Case View" subtitle="Review case source, checklist coverage, board notes, decision trail and certification readiness">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openReview()" [disabled]="!item"><i class="fa fa-list-alt"></i> Review Case</button>
+    <button class="btn btn-outline-warning" type="button" (click)="openCorrectionQueue()"><i class="fa fa-reply"></i> Correction Queue</button>
+    <button class="btn btn-outline-success" type="button" (click)="openCertificates()"><i class="fa fa-certificate"></i> Fatwa Certificates</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading Shariah review case...
+  </div>
+
+  <div *ngIf="!loading && item as data" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-balance-scale"></i></div>
+        <div>
+          <h3>{{ data.caseNo }}</h3>
+          <p>{{ getLabel(data.referenceModule) }} / {{ data.referenceId }} | Submitted by {{ data.submittedBy }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="data.caseStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-folder-open-o"></i></div><div><div class="summary-label">Reference</div><div class="summary-value small">{{ getLabel(data.referenceModule) }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon info"><i class="fa fa-list"></i></div><div><div class="summary-label">Checklist Selected</div><div class="summary-value">{{ selectedChecklistCount }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><i class="fa fa-history"></i></div><div><div class="summary-label">History Events</div><div class="summary-value">{{ data.history.length }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-clock-o"></i></div><div><div class="summary-label">Submitted At</div><div class="summary-value small">{{ data.submittedAt | date:'yyyy-MM-dd' }}</div></div></div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Case Source</h4>
+            <p>Source module linkage and submission details returned by backend.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Case No</span><strong>{{ data.caseNo }}</strong></div>
+          <div class="info-row"><span>Reference Module</span><strong>{{ getLabel(data.referenceModule) }}</strong></div>
+          <div class="info-row"><span>Reference ID</span><strong>{{ data.referenceId }}</strong></div>
+          <div class="info-row"><span>Submitted By</span><strong>{{ data.submittedBy }}</strong></div>
+          <div class="info-row"><span>Submitted At</span><strong>{{ data.submittedAt | date:'yyyy-MM-dd HH:mm' }}</strong></div>
+          <div class="info-row"><span>Current Status</span><strong>{{ getLabel(data.caseStatus) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Review Notes</h4>
+            <p>Latest remarks, archive state and board workflow narrative.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Latest Remarks</span><strong>{{ data.remarks || '-' }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ getLabel(data.status) }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ data.createdAt | date:'yyyy-MM-dd HH:mm' }}</strong></div>
+          <div class="info-row"><span>Updated At</span><strong>{{ data.updatedAt | date:'yyyy-MM-dd HH:mm' }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-check-square-o"></i>
+        <div>
+          <h4>Checklist</h4>
+          <p>Checklist preparation state saved for this case.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Item</th>
+              <th>Selected</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let checklist of data.checklistItems">
+              <td>{{ checklist.itemCode }}</td>
+              <td>{{ checklist.itemName }}</td>
+              <td>{{ checklist.selected ? 'YES' : 'NO' }}</td>
+              <td>{{ checklist.note || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-history"></i>
+        <div>
+          <h4>Decision History</h4>
+          <p>Traceability for submission, checklist changes and board decisions.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Decision</th>
+              <th>Decision By</th>
+              <th>Decision At</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let history of data.history">
+              <td><app-status-badge [status]="history.decision"></app-status-badge></td>
+              <td>{{ history.decisionBy }}</td>
+              <td>{{ history.decisionAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td>{{ history.remarks || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

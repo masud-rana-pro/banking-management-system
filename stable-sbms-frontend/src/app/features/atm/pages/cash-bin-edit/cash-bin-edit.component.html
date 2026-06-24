@@ -1,0 +1,188 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/cash-bins"
+    currentLabel="Cash Bin Form">
+  </app-page-header>
+
+  <app-page-title
+    [title]="id ? 'Edit Cash Bin' : 'Create Cash Bin'"
+    subtitle="Maintain ATM/CDM cassette setup, denomination, capacity and cash level">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="cash-bin-form-shell">
+
+    <div class="cash-bin-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+        </div>
+
+        <div>
+          <h3>{{ id ? 'Update Cash Bin Setup' : 'New Cash Bin Setup' }}</h3>
+          <p>Configure terminal cash cassette, denomination, capacity and current cash level.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.status || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-box">
+      <i class="fa fa-spinner fa-spin"></i>
+      Loading cash bin information...
+    </div>
+
+    <div *ngIf="!loading" class="form-body">
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-credit-card"></i>
+          <div>
+            <h4>Terminal Mapping</h4>
+            <p>Select the active ATM/CDM terminal for this cash bin.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Terminal <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-desktop"></i>
+              <select class="form-select" [(ngModel)]="form.terminalId">
+                <option [ngValue]="null">Select Terminal</option>
+                <option *ngFor="let t of terminals" [ngValue]="t.id">
+                  {{ t.terminalCode }} - {{ t.terminalName }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Selected Terminal</label>
+            <div class="readonly-chip">
+              <i class="fa fa-info-circle"></i>
+              {{ selectedTerminalLabel }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-archive"></i>
+          <div>
+            <h4>Cash Cassette Information</h4>
+            <p>Define bin number, denomination and capacity control.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <label class="form-label">Bin No <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.binNo" placeholder="Example: BIN-A">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Denomination <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.denomination" placeholder="Example: 1000">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Max Capacity <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-database"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.maxCapacity" placeholder="Example: 2000">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Current Count</label>
+            <div class="input-with-icon">
+              <i class="fa fa-sort-numeric-asc"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.currentCount" placeholder="Example: 500">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Current Amount</label>
+            <div class="readonly-chip amount">
+              <i class="fa fa-calculator"></i>
+              {{ currentAmount }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Capacity Usage</label>
+            <div class="capacity-box">
+              <div class="capacity-meta">
+                <span>{{ capacityPercent }}%</span>
+                <strong>{{ form.currentCount || 0 }} / {{ form.maxCapacity || 0 }}</strong>
+              </div>
+              <div class="capacity-track">
+                <div class="capacity-fill" [style.width.%]="capacityPercent"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-toggle-on"></i>
+          <div>
+            <h4>Operational Status</h4>
+            <p>Control whether this cash bin is active, low cash, full or archived.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="form.status">
+                <option *ngFor="let s of statusOptions" [value]="s.value">
+                  {{ s.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-actions" *ngIf="!loading">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ id ? 'Update Cash Bin' : 'Save Cash Bin' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>
+</div>

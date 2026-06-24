@@ -1,0 +1,105 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/account-types"
+    currentLabel="{{ id ? 'Edit Account Type' : 'New Account Type' }}">
+  </app-page-header>
+
+  <app-page-title
+    [title]="id ? 'Edit Account Type' : 'New Account Type'"
+    subtitle="Configure Islamic account type, contract, currency, minimum opening balance and product behavior">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/accounts/account-types">
+      <i class="fa fa-list"></i> Account Type List
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading account type form...
+  </div>
+
+  <div *ngIf="!loading" class="form-shell">
+    <div class="form-body">
+      <div class="form-hero">
+        <div class="hero-left">
+          <div class="hero-icon"><i class="fa fa-tags"></i></div>
+          <div>
+            <h3>{{ form.typeName || 'Islamic Account Type Setup' }}</h3>
+            <p>{{ form.typeCode || 'Auto-generated code on save if left empty' }}</p>
+          </div>
+        </div>
+        <div class="hero-status">
+          <span class="status-dot"></span>
+          {{ form.status || 'ACTIVE' }}
+        </div>
+      </div>
+
+      <div class="form-section mt-3">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Type Code</label>
+            <input class="form-control" [(ngModel)]="form.typeCode" placeholder="Leave blank for auto code">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Type Name</label>
+            <input class="form-control" [(ngModel)]="form.typeName" placeholder="Savings / Mudarabah Deposit / Current">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Shariah Contract</label>
+            <select class="form-select" [(ngModel)]="form.shariahContractType">
+              <option value="">Select Contract</option>
+              <option *ngFor="let item of shariahOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Currency</label>
+            <select class="form-select" [(ngModel)]="form.currencyCode">
+              <option *ngFor="let item of currencyOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Minimum Opening Balance</label>
+            <input class="form-control" type="number" min="0" [(ngModel)]="form.minimumOpeningBalance">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Record Status</label>
+            <select class="form-select" [(ngModel)]="form.status">
+              <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="profitApplicable" [(ngModel)]="form.profitApplicable">
+              <label class="form-check-label" for="profitApplicable">Profit Applicable</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="withdrawalAllowed" [(ngModel)]="form.withdrawalAllowed">
+              <label class="form-check-label" for="withdrawalAllowed">Withdrawal Allowed</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()">Cancel</button>
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ id ? 'Update Account Type' : 'Create Account Type' }}
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

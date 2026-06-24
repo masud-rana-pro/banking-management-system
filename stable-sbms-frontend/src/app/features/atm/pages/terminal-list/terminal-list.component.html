@@ -1,0 +1,263 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/admin/dashboard"
+    currentLabel="Terminal Management">
+  </app-page-header>
+
+  <app-page-title
+    title="Terminal List"
+    subtitle="View and manage ATM/CDM terminals, branch mapping and operational status">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('csv')">
+            <i class="fa fa-file-text-o"></i> CSV
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('excel')">
+            <i class="fa fa-file-excel-o"></i> Excel
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('pdf')">
+            <i class="fa fa-file-pdf-o"></i> PDF
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <button *ngIf="can('ATM_TERMINAL_CREATE')" class="btn btn-primary" routerLink="/atm/terminals/new">
+      <i class="fa fa-plus"></i> Add Terminal
+    </button>
+
+  </app-page-title>
+
+  <div class="terminal-summary-row">
+
+    <div class="terminal-summary-card card-total">
+      <div class="summary-icon primary">
+        <i class="fa fa-credit-card"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Total Terminals</div>
+        <div class="summary-value">{{ totalAll }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-database"></i>
+          All registered terminals
+        </div>
+      </div>
+    </div>
+
+    <div class="terminal-summary-card card-active">
+      <div class="summary-icon success">
+        <i class="fa fa-check-circle"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Active Terminals</div>
+        <div class="summary-value">{{ activeCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-line-chart"></i>
+          Ready for transaction
+        </div>
+      </div>
+    </div>
+
+    <div class="terminal-summary-card card-maintenance">
+      <div class="summary-icon warning">
+        <i class="fa fa-wrench"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Maintenance</div>
+        <div class="summary-value">{{ maintenanceCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-exclamation-circle"></i>
+          Under service
+        </div>
+      </div>
+    </div>
+
+    <div class="terminal-summary-card card-archived">
+      <div class="summary-icon danger">
+        <i class="fa fa-archive"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Archived</div>
+        <div class="summary-value">{{ archivedCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-ban"></i>
+          Removed from operation
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+
+    <app-form-field icon="search">
+      <input
+        class="form-control"
+        placeholder="Search code / name / IP / serial / vendor"
+        [(ngModel)]="filters.search"
+        (keyup.enter)="onSearch()" />
+    </app-form-field>
+
+    <app-form-field icon="credit-card">
+      <select class="form-select" [(ngModel)]="filters.terminalType">
+        <option *ngFor="let t of terminalTypeOptions" [value]="t.value">
+          {{ t.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let s of statusOptions" [value]="s.value">
+          {{ s.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+  </app-filter-bar>
+
+  <div id="terminal-print-area" class="terminal-print-area">
+
+    <app-data-table
+      [loading]="loading"
+      [empty]="!loading && total === 0"
+      emptyTitle="No terminals found"
+      emptyMessage="Try adjusting filters or create a new ATM/CDM terminal.">
+
+      <thead>
+        <tr>
+          <th style="width: 60px;">#</th>
+          <th>Terminal</th>
+          <th>Type</th>
+          <th>Branch</th>
+          <th>Device</th>
+          <th>Vendor</th>
+          <th>Installed</th>
+          <th style="width: 130px;">Status</th>
+          <th class="text-center" style="width: 250px;">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let t of terminals; let i = index">
+          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+
+          <td>
+            <div class="terminal-name">
+              <i class="fa fa-credit-card"></i>
+              <div>
+                <strong>{{ t.terminalName }}</strong>
+                <span>
+                  {{ t.terminalCode }}
+                  <ng-container *ngIf="t.ipAddress"> Ã¢â‚¬Â¢ {{ t.ipAddress }}</ng-container>
+                </span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="type-pill">
+              <i class="fa fa-desktop"></i> {{ t.terminalType }}
+            </span>
+          </td>
+
+          <td>
+            <span class="mono">BR-{{ t.branchId }}</span>
+          </td>
+
+          <td>
+            <div class="device-cell">
+              <span><i class="fa fa-barcode"></i> {{ t.serialNo || '-' }}</span>
+              <small><i class="fa fa-map-marker"></i> {{ t.locationNote || '-' }}</small>
+            </div>
+          </td>
+
+          <td>{{ t.vendorName || '-' }}</td>
+
+          <td>{{ t.installDate || '-' }}</td>
+
+          <td>
+            <app-status-badge [status]="t.status"></app-status-badge>
+          </td>
+
+          <td class="text-center">
+            <div class="terminal-actions">
+
+              <button class="action-btn view" title="View" (click)="onView(t)">
+                <i class="fa fa-eye"></i>
+              </button>
+
+              <button *ngIf="can('ATM_TERMINAL_EDIT')" class="action-btn edit" title="Edit" (click)="onEdit(t)">
+                <i class="fa fa-pencil"></i>
+              </button>
+
+              <button *ngIf="can('ATM_CASH_BIN_CREATE')" class="action-btn cash" title="Add Cash Bin" (click)="onAddCashBin(t)">
+                <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              </button>
+
+              <button *ngIf="can('ATM_REPLENISHMENT_CREATE')" class="action-btn replenish" title="Replenish" (click)="onReplenish(t)">
+                <i class="fa fa-plus-circle"></i>
+              </button>
+
+              <button *ngIf="can('ATM_RECONCILIATION_CREATE')" class="action-btn reconcile" title="Reconcile" (click)="onReconcile(t)">
+                <i class="fa fa-balance-scale"></i>
+              </button>
+
+              <button
+                *ngIf="t.status !== 'ARCHIVED' && can('ATM_TERMINAL_EDIT')"
+                class="action-btn archive"
+                title="Archive"
+                (click)="onArchive(t)">
+                <i class="fa fa-archive"></i>
+              </button>
+
+              <button
+                *ngIf="t.status === 'ARCHIVED' && can('ATM_TERMINAL_EDIT')"
+                class="action-btn restore"
+                title="Restore"
+                (click)="onRestore(t)">
+                <i class="fa fa-undo"></i>
+              </button>
+
+            </div>
+          </td>
+        </tr>
+      </tbody>
+
+    </app-data-table>
+
+  </div>
+
+  <app-pagination
+    [page]="page"
+    [pageSize]="pageSize"
+    [total]="total"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+
+</div>
+</div>

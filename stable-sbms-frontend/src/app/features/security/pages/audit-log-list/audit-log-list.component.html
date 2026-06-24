@@ -1,0 +1,56 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Audit Logs"></app-page-header>
+
+  <app-page-title title="Audit Log List" subtitle="Review sensitive action trail, diff payloads and accountability across modules">
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search module / action / actor" [(ngModel)]="filters.keyword" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="folder-open">
+      <input class="form-control" placeholder="Exact module name" [(ngModel)]="filters.moduleName" (keyup.enter)="onSearch()">
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No audit log found" emptyMessage="Sensitive actions will appear here after workflow operations.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Module</th>
+        <th>Action</th>
+        <th>Actor</th>
+        <th>Performed At</th>
+        <th class="text-center" style="width: 90px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>{{ item.moduleName }}</td>
+        <td>{{ item.actionName }}</td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getUserImageUrl(item.performedBy); else auditListUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.performedBy)" [alt]="item.performedBy">
+            <ng-template #auditListUserFallback>
+              <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ item.performedBy }}</strong>
+            </div>
+          </div>
+        </td>
+        <td>{{ item.performedAt || '-' }}</td>
+        <td class="text-center">
+          <button class="action-btn view" type="button" (click)="openView(item)">
+            <i class="fa fa-eye"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

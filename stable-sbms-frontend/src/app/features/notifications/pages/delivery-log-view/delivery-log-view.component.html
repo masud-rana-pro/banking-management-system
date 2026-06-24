@@ -1,0 +1,59 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container notification-module">
+  <app-page-header title="Notification & Alerts" homeLabel="Home" homeRoute="/notifications/dashboard" currentLabel="Delivery Log View"></app-page-header>
+
+  <app-page-title title="Delivery Log View" subtitle="Inspect event, template, recipient, provider response and retry footprint">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openTemplate()" [disabled]="!item"><i class="fa fa-file-text-o"></i> Template</button>
+    <button *ngIf="can('NOTIFICATION_RETRY')" class="btn btn-primary" type="button" (click)="retry()" [disabled]="!item"><i class="fa fa-refresh"></i> Retry</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading notification log...
+  </div>
+
+  <div *ngIf="!loading && item as log">
+    <div class="hero-strip">
+      <div>
+        <h3>{{ log.eventCode }} | {{ log.templateCode }}</h3>
+        <p>{{ log.recipientTo }} | {{ getLabel(log.channelType) }}</p>
+      </div>
+      <app-status-badge [status]="log.deliveryStatus"></app-status-badge>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Log Detail</h4>
+            <p>Core delivery trace captured for retry and audit visibility.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Event</span><strong>{{ log.eventCode }} - {{ log.eventName }}</strong></div>
+          <div class="info-row"><span>Template</span><strong>{{ log.templateCode }} - {{ log.templateName }}</strong></div>
+          <div class="info-row"><span>Recipient</span><strong>{{ log.recipientTo }}</strong></div>
+          <div class="info-row"><span>Channel</span><strong>{{ getLabel(log.channelType) }}</strong></div>
+          <div class="info-row"><span>Delivery Status</span><strong>{{ getLabel(log.deliveryStatus) }}</strong></div>
+          <div class="info-row"><span>Retry Count</span><strong>{{ log.retryCount }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-server"></i>
+          <div>
+            <h4>Provider Response</h4>
+            <p>Latest provider or system note attached to this notification attempt.</p>
+          </div>
+        </div>
+
+        <div class="provider-box">{{ log.providerResponse || 'No provider response captured yet.' }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

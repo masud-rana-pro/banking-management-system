@@ -1,0 +1,265 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 branch-form-page">
+
+  <app-page-header title="Branch Assignments" homeLabel="Home" homeRoute="/admin/dashboard"
+    currentLabel="Branch User Assignment">
+  </app-page-header>
+
+  <app-page-title title="Branch User Assignment"
+    subtitle="Assign branch manager, teller, officer and supervisor roles to branch users">
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('csv')">
+            <i class="fa fa-file-text-o"></i> CSV
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('excel')">
+            <i class="fa fa-file-excel-o"></i> Excel
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('pdf')">
+            <i class="fa fa-file-pdf-o"></i> PDF
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="resetForm()">
+      <i class="fa fa-refresh"></i> Reset Form
+    </button>
+
+  </app-page-title>
+
+  <div class="assignment-form-card">
+
+    <div class="assignment-form-hero">
+      <div class="section-title">
+        <i class="fa fa-user-plus"></i>
+        <div>
+          <span class="section-kicker">Staff Mapping</span>
+          <h4>{{ editingId ? 'Edit Branch Assignment' : 'Create Branch Assignment' }}</h4>
+          <p>Assign branch manager, teller, officer and supervisor roles with effective period control.</p>
+        </div>
+      </div>
+
+      <div class="form-mode-badge" [ngClass]="editingId ? 'edit-mode' : 'create-mode'">
+        <i class="fa" [ngClass]="editingId ? 'fa-pencil' : 'fa-plus-circle'"></i>
+        {{ editingId ? 'Edit Mode' : 'New Assignment' }}
+      </div>
+    </div>
+
+    <div class="assignment-grid">
+
+      <div class="form-panel">
+        <div class="panel-title">
+          <i class="fa fa-bank"></i>
+          <span>Branch & User</span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Branch <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-building"></i>
+              <select class="form-select" [(ngModel)]="form.branchId">
+                <option [ngValue]="0">Select Branch</option>
+                <option *ngFor="let b of branches" [ngValue]="b.id">
+                  {{ b.branchCode }} - {{ b.branchName }}
+                </option>
+              </select>
+            </div>
+            <small class="field-hint">Source: branch table</small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">User ID <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.userId" placeholder="Enter user id">
+            </div>
+            <small class="field-hint">Later replace with app_user by-search lookup</small>
+            <div class="entity-inline-profile mt-2" *ngIf="form.userId > 0">
+              <img *ngIf="getUserImageUrl(form.userId); else branchAssignmentFormUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(form.userId)" [alt]="getUserDisplay(form.userId)">
+              <ng-template #branchAssignmentFormUserFallback>
+                <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+              </ng-template>
+              <div>
+                <strong>{{ getUserDisplay(form.userId) }}</strong>
+                <span>User preview context</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-panel">
+        <div class="panel-title">
+          <i class="fa fa-id-badge"></i>
+          <span>Role & Responsibility</span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Assignment Role <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-briefcase"></i>
+              <select class="form-select" [(ngModel)]="form.assignmentRole">
+                <option *ngFor="let r of roleOptions" [value]="r.value">{{ r.label }}</option>
+              </select>
+            </div>
+            <small class="field-hint">Lookup: ASSIGNMENT_ROLE</small>
+          </div>
+
+          <div class="col-md-6 d-flex align-items-end">
+            <label class="primary-check enhanced">
+              <input type="checkbox" [(ngModel)]="form.isPrimary">
+              <span>
+                <i class="fa fa-star"></i>
+                Primary Assignment
+                <small>Only one active primary role should exist per branch/role.</small>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-panel full">
+        <div class="panel-title">
+          <i class="fa fa-calendar"></i>
+          <span>Effective Period & Status</span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">From Date <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar-check-o"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.fromDate">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">To Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar-times-o"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.toDate">
+            </div>
+            <small class="field-hint">Blank means present/active period</small>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="form.status">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="assignment-rule-note">
+      <i class="fa fa-info-circle"></i>
+      <span>
+        Rule: From Date cannot be after To Date. Primary assignment is controlled by backend validation.
+      </span>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="resetForm()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="saveAssignment()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ editingId ? 'Update Assignment' : 'Save Assignment' }}
+      </button>
+    </div>
+
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search branch name / branch code / branch id"
+        [(ngModel)]="filters.branchSearch" (keyup.enter)="onSearch()" />
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let s of statusOptions" [value]="s.value">
+          {{ s.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No assignments found"
+    emptyMessage="Try adjusting filters or create a new branch user assignment.">
+
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Branch</th>
+        <th>User ID</th>
+        <th>Role</th>
+        <th>Period</th>
+        <th>Primary</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 130px;">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+        <tr *ngFor="let a of assignments; let i = index">
+          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+          <td>{{ getBranchName(a.branchId) }}</td>
+          <td>
+            <div class="entity-inline-profile">
+              <img *ngIf="getUserImageUrl(a.userId); else branchAssignmentListUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(a.userId)" [alt]="getUserDisplay(a.userId)">
+              <ng-template #branchAssignmentListUserFallback>
+                <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+              </ng-template>
+              <div class="item-name">
+                <strong>{{ getUserDisplay(a.userId) }}</strong>
+                <span>#{{ a.userId }}</span>
+              </div>
+            </div>
+          </td>
+        <td><span class="role-pill"><i class="fa fa-id-badge"></i> {{ a.assignmentRole }}</span></td>
+        <td>{{ a.fromDate }} <span class="text-muted">to</span> {{ a.toDate || 'Present' }}</td>
+        <td>
+          <span class="primary-badge" *ngIf="a.isPrimary"><i class="fa fa-star"></i> Primary</span>
+          <span class="text-muted" *ngIf="!a.isPrimary">No</span>
+        </td>
+        <td><app-status-badge [status]="a.status"></app-status-badge></td>
+        <td class="text-center">
+          <button class="action-btn edit" title="Edit" (click)="editAssignment(a)">
+            <i class="fa fa-pencil"></i>
+          </button>
+          <button class="action-btn archive" title="Deactivate" (click)="deactivate(a)">
+            <i class="fa fa-ban"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)">
+  </app-pagination>
+
+</div>
+</div>

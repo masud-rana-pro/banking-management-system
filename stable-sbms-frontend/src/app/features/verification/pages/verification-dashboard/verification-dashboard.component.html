@@ -1,0 +1,391 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container verification-module">
+  <app-page-header title="Verification" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Verification Dashboard" subtitle="Track OTP request flow, provider dispatch, verification outcomes and contact-quality readiness">
+    <button class="btn btn-outline-primary" type="button" (click)="openLogs()" title="Open verification logs"><i class="fa fa-list-alt"></i> Logs</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openProviderTest()" title="Open provider test console"><i class="fa fa-paper-plane"></i> Provider Test</button>
+    <button class="btn btn-primary" type="button" (click)="openVerify()" title="Open OTP verify console"><i class="fa fa-shield"></i> Verify OTP</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading verification dashboard...
+  </div>
+
+  <div *ngIf="!loading && summary as item" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow">
+            <i class="fa fa-shield"></i>
+            Verification Control
+          </span>
+        </div>
+
+        <h3 class="dashboard-title">Keep OTP and reset journeys fast, trusted and operationally observable</h3>
+        <p class="dashboard-subtitle">
+          Watch pending requests, failed attempts, contact verification gaps and provider queue behavior before authentication friction spreads.
+        </p>
+
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Pending Requests</span>
+            <div class="dashboard-hero-metric-value">{{ item.pendingRequests }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.providerDispatchCount }} requests currently waiting in provider dispatch</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Verified Requests</span>
+            <div class="dashboard-hero-metric-value">{{ item.verifiedRequests }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.recentRequests.length }} recent verification requests visible in the feed</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Failed Requests</span>
+            <div class="dashboard-hero-metric-value">{{ item.failedRequests }}</div>
+            <div class="dashboard-hero-metric-note">{{ item.passwordResetRequests }} password reset requests generated</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Trust Readiness</span>
+            <h3 class="dashboard-title">Contact confidence versus delivery and verification strain</h3>
+            <p class="dashboard-subtitle">Use this panel to see whether the trusted contact base is strong enough for OTP-heavy flows.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-focus-value">{{ item.verifiedRequests }}</div>
+        <div class="dashboard-focus-note">requests already completed successfully through the verification engine</div>
+
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Unverified Email</span>
+            <strong class="dashboard-mini-value">{{ item.unverifiedEmailCount }}</strong>
+            <span class="dashboard-mini-note">needs trusted email setup</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Unverified Mobile</span>
+            <strong class="dashboard-mini-value">{{ item.unverifiedMobileCount }}</strong>
+            <span class="dashboard-mini-note">not yet ready for SMS OTP</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Recent Attempts</span>
+            <strong class="dashboard-mini-value">{{ item.recentAttempts.length }}</strong>
+            <span class="dashboard-mini-note">attempt log entries in current view</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Contact Status</span>
+            <strong class="dashboard-mini-value">{{ item.recentContactStatuses.length }}</strong>
+            <span class="dashboard-mini-note">recent contact-state rows visible</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-chip-row">
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Pending Queue</span>
+        <strong class="dashboard-chip-value">{{ item.pendingRequests }}</strong>
+        <span class="dashboard-chip-note">requests waiting for completion</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Failed Requests</span>
+        <strong class="dashboard-chip-value">{{ item.failedRequests }}</strong>
+        <span class="dashboard-chip-note">expired or failed outcomes</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Dispatch Queue</span>
+        <strong class="dashboard-chip-value">{{ item.providerDispatchCount }}</strong>
+        <span class="dashboard-chip-note">provider send workload</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Contact Gaps</span>
+        <strong class="dashboard-chip-value">{{ item.unverifiedEmailCount + item.unverifiedMobileCount }}</strong>
+        <span class="dashboard-chip-note">users or customers not fully trusted yet</span>
+      </div>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Pending Requests</div><div class="summary-value">{{ item.pendingRequests }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Verified Requests</div><div class="summary-value">{{ item.verifiedRequests }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-times-circle"></i></div>
+        <div><div class="summary-label">Failed Requests</div><div class="summary-value">{{ item.failedRequests }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-refresh"></i></div>
+        <div><div class="summary-label">Password Resets</div><div class="summary-value">{{ item.passwordResetRequests }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-send"></i></div>
+        <div><div class="summary-label">Dispatch Queue</div><div class="summary-value">{{ item.providerDispatchCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-envelope-o"></i></div>
+        <div><div class="summary-label">Unverified Email</div><div class="summary-value">{{ item.unverifiedEmailCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-mobile"></i></div>
+        <div><div class="summary-label">Unverified Mobile</div><div class="summary-value">{{ item.unverifiedMobileCount }}</div></div>
+      </div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Verification Pressure Bands</h4>
+            <p class="dashboard-subtitle">Monitor queue health, completion reliability, failure strain and contact-readiness gaps.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+        </div>
+
+        <div class="dashboard-stack">
+          <div *ngFor="let band of verificationBands" class="dashboard-summary-band">
+            <div class="dashboard-summary-band-head">
+              <span class="dashboard-summary-band-title">{{ band.label }}</span>
+              <span class="dashboard-summary-band-value">{{ band.value }}</span>
+            </div>
+            <div class="dashboard-band-track">
+              <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+            </div>
+            <small>{{ band.note }}</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Verification Outcome Donut</h4>
+            <p class="dashboard-subtitle">A pie-style view of pending, verified, failed and password-reset request behavior.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="verificationGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ item.pendingRequests + item.verifiedRequests + item.failedRequests }}</div>
+                  <div class="dashboard-donut-label">request outcomes currently visible in the verification workload</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-legend">
+            <div *ngFor="let legend of verificationLegend" class="dashboard-legend-item">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ legend.label }}</span>
+                  <span class="dashboard-legend-note">{{ legend.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ legend.value }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Request Purpose Bar Chart</h4>
+            <p class="dashboard-subtitle">A statistical chart comparing recent request volume by verification purpose.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+
+        <div *ngIf="purposeColumns.length; else noPurposeBars" class="dashboard-column-chart">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of purposeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of purposeColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noPurposeBars>
+          <div class="empty-mini">No request purpose distribution available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Attempt Type Bar Chart</h4>
+            <p class="dashboard-subtitle">See which verification actions are generating the most recent operational footprint.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-history"></i></span>
+        </div>
+
+        <div *ngIf="attemptColumns.length; else noAttemptBars" class="dashboard-column-chart">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of attemptAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of attemptColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noAttemptBars>
+          <div class="empty-mini">No attempt type distribution available.</div>
+        </ng-template>
+      </article>
+    </section>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-list-ul"></i>
+          <div>
+            <h4>Recent Requests</h4>
+            <p>Latest OTP and password reset requests generated by the system.</p>
+          </div>
+        </div>
+        <div *ngIf="item.recentRequests.length; else noRecentRequests" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+            <tr>
+              <th>Contact</th>
+              <th>Purpose</th>
+              <th>Status</th>
+              <th>Sent</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let request of item.recentRequests">
+              <td>
+                <div class="entity-inline-profile">
+                  <img *ngIf="getActorImageUrl(request); else verificationDashboardAvatarFallback" class="entity-avatar" [src]="getActorImageUrl(request)" [alt]="request.customerName || request.username || request.referenceModule || 'Verification'">
+                  <ng-template #verificationDashboardAvatarFallback>
+                    <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                  </ng-template>
+                  <div class="item-name">
+                    <strong>{{ request.contactValueMasked }}</strong>
+                    <span>{{ request.customerName || request.username || request.referenceModule || '-' }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>{{ getLabel(request.purpose) }}</td>
+              <td><app-status-badge [status]="request.requestStatus"></app-status-badge></td>
+              <td>{{ request.sentAt | date:'yyyy-MM-dd HH:mm' }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noRecentRequests><div class="empty-mini">No verification request found.</div></ng-template>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Recent Attempts</h4>
+            <p>Send, verify, expire and reset actions captured in the attempt log.</p>
+          </div>
+        </div>
+        <div *ngIf="item.recentAttempts.length; else noRecentAttempts" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+            <tr>
+              <th>Type</th>
+              <th>Masked Value</th>
+              <th>Status</th>
+              <th>Time</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let attempt of item.recentAttempts">
+              <td>{{ getLabel(attempt.attemptType) }}</td>
+              <td>{{ attempt.attemptValueMasked || '-' }}</td>
+              <td><app-status-badge [status]="attempt.attemptStatus"></app-status-badge></td>
+              <td>{{ attempt.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noRecentAttempts><div class="empty-mini">No verification attempt found.</div></ng-template>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-address-card-o"></i>
+          <div>
+            <h4>Recent Contact Status</h4>
+            <p>Latest contact verification state per user or customer reference.</p>
+          </div>
+        </div>
+        <div *ngIf="item.recentContactStatuses.length; else noContactStatuses" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Contact</th>
+              <th>Verified</th>
+              <th>Updated</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let status of item.recentContactStatuses">
+              <td>
+                <div class="item-name">
+                  <strong>{{ getLabel(status.referenceModule) }}</strong>
+                  <span>#{{ status.referenceId }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="item-name">
+                  <strong>{{ status.contactValue }}</strong>
+                  <span>{{ getLabel(status.contactType) }}</span>
+                </div>
+              </td>
+              <td><app-status-badge [status]="status.isVerified ? 'VERIFIED' : 'PENDING'"></app-status-badge></td>
+              <td>{{ status.updatedAt | date:'yyyy-MM-dd HH:mm' }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noContactStatuses><div class="empty-mini">No contact verification status found.</div></ng-template>
+      </div>
+
+      <div class="info-card">
+        <div class="card-heading">
+          <i class="fa fa-bolt"></i>
+          <div>
+            <h4>Quick Actions</h4>
+            <p>Jump directly into the most-used verification workflows.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>OTP Verify Console</span><strong><button class="btn btn-sm btn-outline-primary" type="button" (click)="openVerify()" title="Open OTP verification console">Open</button></strong></div>
+          <div class="info-row"><span>Provider Test Console</span><strong><button class="btn btn-sm btn-outline-primary" type="button" (click)="openProviderTest()" title="Open provider test console">Open</button></strong></div>
+          <div class="info-row"><span>Forgot Password Flow</span><strong><button class="btn btn-sm btn-outline-primary" type="button" (click)="openForgotPassword()" title="Open forgot-password flow">Open</button></strong></div>
+          <div class="info-row"><span>Password Reset Flow</span><strong><button class="btn btn-sm btn-outline-primary" type="button" (click)="openResetPassword()" title="Open password-reset flow">Open</button></strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

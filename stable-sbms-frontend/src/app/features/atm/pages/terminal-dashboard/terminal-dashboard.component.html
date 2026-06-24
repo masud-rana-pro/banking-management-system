@@ -1,0 +1,229 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="ATM Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="ATM Dashboard"
+    subtitle="Track terminal health, cash pressure, reconciliation exception and device activity from one operations console">
+
+    <button *ngIf="can('ATM_CDM_ACCESS')" class="btn btn-outline-primary" routerLink="/atm/terminals" title="Open terminal list">
+      <i class="fa fa-list"></i> Terminal List
+    </button>
+
+    <button *ngIf="can('ATM_TERMINAL_CREATE')" class="btn btn-primary" routerLink="/atm/terminals/new" title="Add terminal">
+      <i class="fa fa-plus"></i> Add Terminal
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading ATM dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow"><i class="fa fa-credit-card"></i> Self Service Network</span>
+          </div>
+
+          <h3 class="dashboard-title">Terminal availability, cash pressure and device throughput in one surface</h3>
+          <p class="dashboard-subtitle">
+            Monitor terminal stability, replenishment volume and reconciliation signals before service issues turn customer-facing.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Total Terminals</span>
+              <div class="dashboard-hero-metric-value">{{ summary.totalTerminals }}</div>
+              <div class="dashboard-hero-metric-note">{{ summary.activeTerminals }} currently active</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Today Volume</span>
+              <div class="dashboard-hero-metric-value">{{ summary.todayVolumeAmount | number:'1.2-2' }}</div>
+              <div class="dashboard-hero-metric-note">{{ summary.todayVolumeCount }} replenishment movements logged</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Exception Queue</span>
+              <div class="dashboard-hero-metric-value">{{ summary.lowCashAlerts + summary.unreconciledTerminals + summary.downtimeTerminals }}</div>
+              <div class="dashboard-hero-metric-note">cash, reconciliation and uptime exceptions combined</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Exception Pressure</span>
+              <h3 class="dashboard-title">Cash, reconciliation and uptime load</h3>
+              <p class="dashboard-subtitle">Keep the live service map healthy by clearing low-cash, downtime and variance items quickly.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ summary.lowCashAlerts }}</div>
+          <div class="dashboard-focus-note">cash bins are already below the preferred operational threshold</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Unreconciled</span>
+              <strong class="dashboard-mini-value">{{ summary.unreconciledTerminals }}</strong>
+              <span class="dashboard-mini-note">terminals needing reconciliation follow-up</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Downtime</span>
+              <strong class="dashboard-mini-value">{{ summary.downtimeTerminals }}</strong>
+              <span class="dashboard-mini-note">maintenance or out-of-service terminals</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Low Cash Bins</span>
+              <strong class="dashboard-mini-value">{{ lowCashBins.length }}</strong>
+              <span class="dashboard-mini-note">cash bins visible in the action queue</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Variance Rows</span>
+              <strong class="dashboard-mini-value">{{ varianceList.length }}</strong>
+              <span class="dashboard-mini-note">recent recon variances needing review</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-credit-card"></i></div><div><div class="summary-label">Total Terminals</div><div class="summary-value">{{ summary.totalTerminals }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Active Terminals</div><div class="summary-value">{{ summary.activeTerminals }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-exclamation-triangle"></i></div><div><div class="summary-label">Low Cash Alert</div><div class="summary-value">{{ summary.lowCashAlerts }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-balance-scale"></i></div><div><div class="summary-label">Unreconciled</div><div class="summary-value">{{ summary.unreconciledTerminals }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><i class="fa fa-plug"></i></div><div><div class="summary-label">Downtime</div><div class="summary-value">{{ summary.downtimeTerminals }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-line-chart"></i></div><div><div class="summary-label">Today Volume</div><div class="summary-value">{{ summary.todayVolumeAmount | number:'1.2-2' }}</div><div class="summary-hint">{{ summary.todayVolumeCount }} events</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Terminal Health Donut</h4>
+              <p class="dashboard-subtitle">A pie-style view across active service, low cash, unreconciled and downtime states.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="atmHealthGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ summary.totalTerminals }}</div>
+                    <div class="dashboard-donut-label">terminals under current ATM / CDM monitoring</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of terminalHealthLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Terminal Type Bar Chart</h4>
+              <p class="dashboard-subtitle">A statistical comparison of ATM, CDM and hybrid endpoints in the network.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="terminalTypeColumns.length; else noTypeColumns" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of terminalTypeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of terminalTypeColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noTypeColumns><div class="empty-mini">No terminal type data found.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Device Event Bar Chart</h4>
+              <p class="dashboard-subtitle">Most frequent device journal event categories across the recent activity stream.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+
+          <div *ngIf="journalEventColumns.length; else noEventColumns" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of eventAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of journalEventColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noEventColumns><div class="empty-mini">No device journal data found.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Action Queue</h4>
+              <p class="dashboard-subtitle">Immediate low cash and variance items that need operator attention first.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-exclamation-triangle"></i></span>
+          </div>
+
+          <div class="queue-group">
+            <div class="queue-title">Low Cash Bins</div>
+            <div *ngIf="lowCashBins.length; else noLowCash" class="queue-list">
+              <button class="queue-item" *ngFor="let item of lowCashBins" (click)="openTerminal(item.terminalId)">
+                <span>{{ item.terminalCode }} / {{ item.binNo }}</span>
+                <strong>{{ item.currentAmount | number:'1.2-2' }}</strong>
+              </button>
+            </div>
+            <ng-template #noLowCash><div class="empty-mini">No low cash alert found.</div></ng-template>
+          </div>
+
+          <div class="queue-group">
+            <div class="queue-title">Variance Reconciliation</div>
+            <div *ngIf="varianceList.length; else noVariance" class="queue-list">
+              <button class="queue-item" *ngFor="let item of varianceList" (click)="openReconciliation(item.id)">
+                <span>{{ item.terminalCode }} / {{ item.reconDate }}</span>
+                <strong>{{ item.varianceAmount | number:'1.2-2' }}</strong>
+              </button>
+            </div>
+            <ng-template #noVariance><div class="empty-mini">No variance reconciliation found.</div></ng-template>
+          </div>
+        </article>
+      </section>
+    </div>
+  </ng-container>
+
+</div>
+</div>

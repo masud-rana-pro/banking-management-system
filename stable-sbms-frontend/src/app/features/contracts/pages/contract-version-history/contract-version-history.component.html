@@ -1,0 +1,40 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/contracts/list" currentLabel="Version History"></app-page-header>
+
+  <app-page-title title="Contract Version History" subtitle="Track generated, customer-signed and shariah-locked snapshots with notes and timestamps">
+    <button class="btn btn-outline-secondary" [routerLink]="['/contracts', id]"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading version history...</div>
+
+  <div *ngIf="!loading" class="table-card">
+    <div class="mini-table-wrap">
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>Version</th>
+            <th>Change Type</th>
+            <th>Changed By</th>
+            <th>Note</th>
+            <th>Status</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items">
+            <td><strong>{{ item.contractNo }}</strong><br><span>v{{ item.versionNo }}</span></td>
+            <td>{{ getLabel(item.changeType) }}</td>
+            <td>{{ item.changedBy || '-' }}</td>
+            <td>{{ item.changeNote || '-' }}</td>
+            <td><app-status-badge [status]="item.status"></app-status-badge></td>
+            <td>{{ item.createdAt || '-' }}</td>
+          </tr>
+          <tr *ngIf="!items.length"><td colspan="6" class="text-center">No version history found.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>

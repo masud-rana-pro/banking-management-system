@@ -1,0 +1,122 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/products"
+    currentLabel="Product View">
+  </app-page-header>
+
+  <app-page-title
+    title="Financing Product View"
+    subtitle="Review financing definition, product range, application footprint and next navigation paths">
+
+    <button class="btn btn-outline-secondary" routerLink="/financing/products">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openEdit()" [disabled]="!item">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCalculator()" [disabled]="!item">
+      <i class="fa fa-calculator"></i> Calculate
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openApplications()" [disabled]="!item">
+      <i class="fa fa-folder-open"></i> Applications
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openNewApplication()" [disabled]="!item">
+      <i class="fa fa-plus-circle"></i> New Application
+    </button>
+
+    <button *ngIf="item?.status !== 'ARCHIVED'" class="btn btn-outline-danger" type="button" (click)="toggleArchive()" [disabled]="!item">
+      <i class="fa fa-archive"></i> Archive
+    </button>
+
+    <button *ngIf="item?.status === 'ARCHIVED'" class="btn btn-outline-success" type="button" (click)="toggleArchive()" [disabled]="!item">
+      <i class="fa fa-undo"></i> Restore
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading financing product view...
+  </div>
+
+  <div *ngIf="!loading && item as product">
+    <div class="hero-strip">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-tags"></i></div>
+        <div>
+          <h3>{{ product.productCode }} | {{ product.productName }}</h3>
+          <p>{{ getLabel(product.financingType) }} | {{ product.tenureMonths }} Months | {{ product.profitRule }}</p>
+        </div>
+      </div>
+      <app-status-badge [status]="product.status"></app-status-badge>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Minimum Amount</div><div class="summary-value small">{{ product.minimumAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Maximum Amount</div><div class="summary-value small">{{ product.maximumAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Tenure</div><div class="summary-value">{{ product.tenureMonths }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-folder-open-o"></i></div>
+        <div><div class="summary-label">Applications</div><div class="summary-value">{{ product.applicationCount }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Product Detail</h4>
+            <p>Core fields used during financing application and schedule generation.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Product Code</span><strong>{{ product.productCode }}</strong></div>
+          <div class="info-row"><span>Product Name</span><strong>{{ product.productName }}</strong></div>
+          <div class="info-row"><span>Financing Type</span><strong>{{ getLabel(product.financingType) }}</strong></div>
+          <div class="info-row"><span>Tenure</span><strong>{{ product.tenureMonths }} Months</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ getLabel(product.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-sliders"></i>
+          <div>
+            <h4>Range & Rule</h4>
+            <p>Amount range and profit computation instruction from the playbook flow.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Minimum Amount</span><strong>{{ product.minimumAmount | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Maximum Amount</span><strong>{{ product.maximumAmount | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Profit Rule</span><strong>{{ product.profitRule }}</strong></div>
+          <div class="info-row"><span>Updated At</span><strong>{{ product.updatedAt || '-' }}</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

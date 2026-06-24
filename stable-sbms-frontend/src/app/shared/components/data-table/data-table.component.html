@@ -1,0 +1,22 @@
+<div class="sbms-table-wrapper">
+
+  <div class="table-responsive">
+    <table class="table sbms-table">
+      <ng-content></ng-content>
+    </table>
+  </div>
+
+  <!-- Loading overlay -->
+  <div *ngIf="loading" class="sbms-table-overlay">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && empty" class="sbms-table-empty">
+    <app-empty-state
+      [title]="emptyTitle | sbmsTranslate"
+      [message]="emptyMessage | sbmsTranslate">
+    </app-empty-state>
+  </div>
+
+</div>

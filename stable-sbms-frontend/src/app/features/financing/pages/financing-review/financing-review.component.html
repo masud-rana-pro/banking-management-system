@@ -1,0 +1,159 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/applications"
+    currentLabel="Review">
+  </app-page-header>
+
+  <app-page-title
+    title="Financing Review"
+    subtitle="Application control, risk verification and sanction workflow">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="openView()">
+      <i class="fa fa-arrow-left"></i> Back To View
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openDisbursement()" [disabled]="processing">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Disbursement
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading review workspace...
+  </div>
+
+  <div *ngIf="!loading && item as application" class="review-workspace">
+    <section class="workflow-panel">
+      <div class="workflow-heading">
+        <div>
+          <span class="eyebrow">Financing Workflow Review</span>
+          <h3>{{ getWorkflowHeadline(application) }}</h3>
+          <p class="workflow-context">
+            {{ application.customerName }} | {{ application.productName }} | Tk {{ application.requestedAmount | number:'1.2-2' }}
+          </p>
+        </div>
+        <app-status-badge [status]="application.applicationStatus"></app-status-badge>
+      </div>
+
+      <div class="workflow-steps">
+        <div *ngFor="let stage of workflowStages" class="workflow-step" [ngClass]="getWorkflowState(stage.rank)">
+          <div class="step-marker">
+            <span class="step-icon"><i class="fa" [ngClass]="stage.icon"></i></span>
+          </div>
+          <div class="step-copy">
+            <div class="step-title-row">
+              <strong>{{ stage.title }}</strong>
+              <span class="step-state">{{ getStageStateLabel(stage.rank) }}</span>
+            </div>
+            <small>{{ getStageSummary(stage.rank) }}</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="details-grid review-details-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <img *ngIf="customerImageUrl; else financingReviewFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="application.customerName">
+        <ng-template #financingReviewFallback>
+          <i class="fa fa-folder-open-o"></i>
+        </ng-template>
+        <div>
+          <h4>Application File</h4>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Application No</span><strong>{{ application.applicationNo }}</strong></div>
+        <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="info-row"><span>Customer</span><strong>{{ application.customerName }}</strong></div>
+        <div class="info-row"><span>Product</span><strong>{{ application.productName }}</strong></div>
+        <div class="info-row"><span>Requested Amount</span><strong>{{ application.requestedAmount | number:'1.2-2' }}</strong></div>
+        <div class="info-row">
+          <span>Supporting File</span>
+          <strong>
+              <ng-container *ngIf="application.supportingDocumentName; else noReviewDocument">
+                <button class="btn btn-sm btn-outline-primary" type="button" (click)="previewSupportingDocument()">
+                  <i class="fa fa-eye"></i> {{ application.supportingDocumentName | displayFileName }}
+                </button>
+              </ng-container>
+            <ng-template #noReviewDocument>-</ng-template>
+          </strong>
+        </div>
+        <div class="info-row"><span>Status</span><strong>{{ getLabel(application.applicationStatus) }}</strong></div>
+      </div>
+    </div>
+
+    <div class="form-card asset-card">
+      <div class="card-heading">
+        <i class="fa fa-shield"></i>
+        <div>
+          <h4>Asset/Risk Verification</h4>
+        </div>
+      </div>
+      <div class="form-grid single">
+        <div>
+          <label class="form-label">Verified Asset Value</label>
+          <input class="form-control" type="number" [(ngModel)]="verifyForm.assetValue" min="0" step="0.01" [readonly]="verificationLocked">
+        </div>
+        <div>
+          <label class="form-label">Verified By</label>
+          <input class="form-control" [(ngModel)]="verifyForm.verifiedBy" [readonly]="verificationLocked">
+        </div>
+        <div>
+          <label class="form-label">Verification Note</label>
+          <textarea class="form-control" [(ngModel)]="verifyForm.verificationNote" [readonly]="verificationLocked"></textarea>
+        </div>
+        <div>
+          <label class="form-label">Verification Remarks</label>
+          <textarea class="form-control" [(ngModel)]="verifyForm.remarks" [readonly]="verificationLocked"></textarea>
+        </div>
+        <div class="inline-action-row">
+          <button class="btn btn-primary" type="button" (click)="verify()" [disabled]="processing">
+            <i class="fa fa-shield"></i> Complete Asset/Risk Review
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card decision-card">
+      <div class="card-heading">
+        <i class="fa fa-balance-scale"></i>
+        <div>
+          <h4>Review Decision</h4>
+        </div>
+      </div>
+      <div class="form-grid single">
+        <div>
+          <label class="form-label">Decision Remarks</label>
+          <textarea class="form-control" [(ngModel)]="actionForm.remarks" [readonly]="decisionLocked"></textarea>
+        </div>
+        <div>
+          <label class="form-label">Performed By</label>
+          <input class="form-control" [(ngModel)]="actionForm.performedBy" [readonly]="decisionLocked">
+        </div>
+        <div class="review-button-row">
+          <button class="btn btn-outline-primary" type="button" (click)="moveToReview()" [disabled]="processing">
+            <i class="fa fa-balance-scale"></i> Shariah Review
+          </button>
+          <button class="btn btn-outline-success" type="button" (click)="approve()" [disabled]="processing">
+            <i class="fa fa-certificate"></i> Approve / Sanction
+          </button>
+          <button class="btn btn-outline-warning" type="button" (click)="returnBack()" [disabled]="processing">
+            <i class="fa fa-undo"></i> Return
+          </button>
+          <button class="btn btn-outline-danger" type="button" (click)="reject()" [disabled]="processing">
+            <i class="fa fa-ban"></i> Reject
+          </button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+</div>
+</div>

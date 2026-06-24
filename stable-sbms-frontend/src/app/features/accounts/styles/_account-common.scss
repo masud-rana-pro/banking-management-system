@@ -1,0 +1,57 @@
+@import '../../customer/styles/customer-common';
+
+.contract-pill,
+.currency-pill,
+.balance-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  border: 1px solid transparent;
+}
+
+.contract-pill,
+.currency-pill {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: rgba(var(--primary-rgb), 0.18);
+}
+
+.balance-chip {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: rgba(22, 163, 74, 0.2);
+}
+
+.action-btn.submit,
+.action-btn.verify,
+.action-btn.approve,
+.action-btn.reject,
+.action-btn.return,
+.action-btn.status,
+.action-btn.type,
+.action-btn.request {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: rgba(var(--primary-rgb), 0.2);
+}
+
+.action-btn.approve,
+.action-btn.activate {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: rgba(22, 163, 74, 0.2);
+}
+
+.action-btn.reject,
+.action-btn.return,
+.action-btn.block,
+.action-btn.freeze,
+.action-btn.close {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: rgba(220, 38, 38, 0.18);
+}

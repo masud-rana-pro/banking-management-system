@@ -1,0 +1,20 @@
+@import '../../styles/report-common';
+
+.report-module {
+  ::ng-deep app-filter-bar {
+    margin-bottom: 18px;
+  }
+
+  ::ng-deep app-filter-bar .sbms-filter-controls app-form-field {
+    flex: 1 1 220px;
+  }
+
+  ::ng-deep app-data-table th:last-child,
+  ::ng-deep app-data-table td:last-child {
+    text-align: center;
+  }
+
+  ::ng-deep app-data-table td:last-child {
+    white-space: nowrap;
+  }
+}
