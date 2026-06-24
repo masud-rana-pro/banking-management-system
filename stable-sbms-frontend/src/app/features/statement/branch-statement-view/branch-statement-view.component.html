@@ -1,0 +1,81 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container statement-module">
+  <app-page-header title="Statement Management" homeLabel="Home" homeRoute="/statement/branch/list" currentLabel="Branch Statement View"></app-page-header>
+
+  <app-page-title title="Branch Statement View" subtitle="Review branch request detail, generated file metadata, operational summary and printable statement lines">
+    <button class="btn btn-outline-secondary" routerLink="/statement/branch/list"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" [disabled]="!item"><i class="fa fa-print"></i> Print</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openBranch()" [disabled]="!item"><i class="fa fa-building"></i> Branch</button>
+    <button class="btn btn-outline-primary" type="button" (click)="preview()" [disabled]="!item?.generatedFileId"><i class="fa fa-file-text-o"></i> Preview</button>
+    <button class="btn btn-primary" type="button" (click)="download()" [disabled]="!item?.generatedFileId"><i class="fa fa-download"></i> Download</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading branch statement...</div>
+
+  <div *ngIf="!loading && item" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-building"></i></div>
+        <div>
+          <h3>{{ item.requestNo }}</h3>
+          <p>{{ item.branchCode }} - {{ item.branchName }} | {{ item.dateFrom }} to {{ item.dateTo }}</p>
+        </div>
+      </div>
+      <div class="hero-status"><app-status-badge [status]="item.requestStatus"></app-status-badge></div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-list"></i></div><div><div class="summary-label">Transactions</div><div class="summary-value">{{ item.transactionCount }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon info"><span class="taka-icon" aria-hidden="true">&#2547;</span></div><div><div class="summary-label">Txn Amount</div><div class="summary-value small">{{ item.totalTransactionAmount | number:'1.2-2' }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><i class="fa fa-arrow-down"></i></div><div><div class="summary-label">Cash In</div><div class="summary-value small">{{ item.totalCashIn | number:'1.2-2' }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-arrow-up"></i></div><div><div class="summary-label">Cash Out</div><div class="summary-value small">{{ item.totalCashOut | number:'1.2-2' }}</div></div></div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading"><i class="fa fa-info-circle"></i><div><h4>Request Detail</h4><p>Selected branch, period and request audit metadata.</p></div></div>
+        <div class="info-list">
+          <div class="info-row"><span>Branch</span><strong>{{ item.branchCode }} - {{ item.branchName }}</strong></div>
+          <div class="info-row"><span>Requested By</span><strong>{{ item.requestedBy }}</strong></div>
+          <div class="info-row"><span>Requested At</span><strong>{{ item.requestedAt | date:'yyyy-MM-dd HH:mm' }}</strong></div>
+          <div class="info-row"><span>Generated At</span><strong>{{ item.generatedAt | date:'yyyy-MM-dd HH:mm' }}</strong></div>
+          <div class="info-row"><span>Request Status</span><strong>{{ getLabel(item.requestStatus) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading"><i class="fa fa-folder-open"></i><div><h4>Generated File</h4><p>Downloadable file metadata and operational totals.</p></div></div>
+        <div class="info-list">
+          <div class="info-row"><span>File Name</span><strong>{{ item.generatedFile?.originalFileName || '-' }}</strong></div>
+          <div class="info-row"><span>File Type</span><strong>{{ item.generatedFile?.fileType || '-' }}</strong></div>
+          <div class="info-row"><span>Vault Closing Balance</span><strong>{{ item.vaultClosingBalance | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Active Terminals</span><strong>{{ item.activeTerminalCount }}</strong></div>
+          <div class="info-row"><span>File Size</span><strong>{{ item.generatedFile?.fileSize || 0 }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-heading"><i class="fa fa-table"></i><div><h4>Operational Lines</h4><p>Branch transactions, vault rows and cash activity included in the generated summary.</p></div></div>
+      <app-data-table [loading]="false" [empty]="item.lines.length === 0" emptyTitle="No operational line found" emptyMessage="No matching branch activity found for the selected range.">
+        <thead>
+          <tr>
+            <th>Date</th><th>Type</th><th>Reference</th><th>Channel</th><th>Debit</th><th>Credit</th><th>Narration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let line of item.lines">
+            <td>{{ line.lineDate }}</td>
+            <td>{{ getLabel(line.lineType) }}</td>
+            <td>{{ line.referenceNo }}</td>
+            <td>{{ getLabel(line.channel) }}</td>
+            <td>{{ line.debitAmount | number:'1.2-2' }}</td>
+            <td>{{ line.creditAmount | number:'1.2-2' }}</td>
+            <td>{{ line.narration }}</td>
+          </tr>
+        </tbody>
+      </app-data-table>
+    </div>
+  </div>
+</div>
+</div>

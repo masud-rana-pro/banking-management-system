@@ -1,0 +1,60 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/dashboard" currentLabel="Beneficiary List"></app-page-header>
+
+  <app-page-title title="Beneficiary List" subtitle="Manage active beneficiaries and route charity payouts only to eligible active records">
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button class="btn btn-outline-success" type="button" (click)="openPayout()"><span class="taka-icon" aria-hidden="true">&#2547;</span> Payout</button>
+    <button class="btn btn-primary" type="button" (click)="openCreate()"><i class="fa fa-user-plus"></i> New Beneficiary</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search code / name / mobile" [(ngModel)]="search" (keyup.enter)="onSearch()"></app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No charity beneficiary found" emptyMessage="Create active beneficiaries before recording payouts.">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Beneficiary</th>
+        <th>Mobile</th>
+        <th>Address</th>
+        <th>Proof</th>
+        <th>Payout Count</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 220px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.beneficiaryName }}</strong><span>{{ item.beneficiaryCode }}</span></div></td>
+        <td>{{ item.mobile || '-' }}</td>
+        <td>{{ item.address || '-' }}</td>
+        <td>{{ item.proofDocumentName ? 'Available' : 'None' }}</td>
+        <td>{{ item.payoutCount }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn edit" type="button" title="Edit" (click)="openEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn view" type="button" title="Preview Proof" (click)="previewProof(item)" [disabled]="!item.proofDocumentName"><i class="fa fa-file-text-o"></i></button>
+            <button class="action-btn payout" type="button" title="Payout" (click)="openPayout(item)"><span class="taka-icon" aria-hidden="true">&#2547;</span></button>
+            <button *ngIf="item.status !== 'ARCHIVED'" class="action-btn archive" type="button" title="Archive" (click)="toggleArchive(item)"><i class="fa fa-archive"></i></button>
+            <button *ngIf="item.status === 'ARCHIVED'" class="action-btn restore" type="button" title="Restore" (click)="toggleArchive(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

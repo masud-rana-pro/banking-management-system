@@ -1,0 +1,367 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container statement-module">
+
+  <app-page-header
+    title="Statement Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Statement Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Statement Dashboard"
+    subtitle="Monitor customer and branch demand, generated files, request categories and download activity from one reporting desk">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="load()" title="Refresh statement dashboard">
+      <i class="fa fa-refresh"></i> Refresh
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openExportCenter()" title="Open export center">
+      <i class="fa fa-folder-open"></i> Export Center
+    </button>
+
+    <button *ngIf="can('STATEMENT_CUSTOMER_REQUEST')" class="btn btn-outline-primary" type="button" (click)="openCustomerRequest()" title="Create customer statement request">
+      <i class="fa fa-user"></i> Customer Request
+    </button>
+
+    <button *ngIf="can('STATEMENT_BRANCH_REQUEST')" class="btn btn-primary" type="button" (click)="openBranchRequest()" title="Create branch statement request">
+      <i class="fa fa-building"></i> Branch Request
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading statement dashboard...
+  </div>
+
+  <div *ngIf="!loading && summary as item" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow"><i class="fa fa-file-text-o"></i> Statement Factory</span>
+        </div>
+        <h3 class="dashboard-title">Request volume, generated files and download behavior in one reporting surface</h3>
+        <p class="dashboard-subtitle">
+          Track demand from both customer and branch sides while keeping export activity visible and easy to follow.
+        </p>
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Generated Today</span>
+            <div class="dashboard-hero-metric-value">{{ item.statementsGeneratedToday }}</div>
+            <div class="dashboard-hero-metric-note">statement files produced today</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Customer Requests</span>
+            <div class="dashboard-hero-metric-value">{{ item.customerStatementRequests }}</div>
+            <div class="dashboard-hero-metric-note">customer-side request volume</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Downloads</span>
+            <div class="dashboard-hero-metric-value">{{ item.exportDownloadCounts }}</div>
+            <div class="dashboard-hero-metric-note">generated files downloaded by users</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Demand Split</span>
+            <h3 class="dashboard-title">Customer vs branch pressure</h3>
+            <p class="dashboard-subtitle">Keep one eye on which side of the statement desk is generating more demand right now.</p>
+          </div>
+        </div>
+        <div class="dashboard-focus-value">{{ item.customerStatementRequests + item.branchStatementRequests }}</div>
+        <div class="dashboard-focus-note">combined statement requests currently represented in the dashboard summary</div>
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Customer Side</span>
+            <strong class="dashboard-mini-value">{{ item.customerStatementRequests }}</strong>
+            <span class="dashboard-mini-note">requests tied to customer accounts</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Branch Side</span>
+            <strong class="dashboard-mini-value">{{ item.branchStatementRequests }}</strong>
+            <span class="dashboard-mini-note">branch operational statements requested</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Recent Customer Rows</span>
+            <strong class="dashboard-mini-value">{{ item.recentCustomerRequests.length }}</strong>
+            <span class="dashboard-mini-note">latest customer requests shown below</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Recent Branch Rows</span>
+            <strong class="dashboard-mini-value">{{ item.recentBranchRequests.length }}</strong>
+            <span class="dashboard-mini-note">latest branch requests shown below</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-file-text-o"></i></div><div><div class="summary-label">Generated Today</div><div class="summary-value">{{ item.statementsGeneratedToday }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><i class="fa fa-user"></i></div><div><div class="summary-label">Customer Requests</div><div class="summary-value">{{ item.customerStatementRequests }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-building"></i></div><div><div class="summary-label">Branch Requests</div><div class="summary-value">{{ item.branchStatementRequests }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon info"><i class="fa fa-download"></i></div><div><div class="summary-label">Downloads</div><div class="summary-value">{{ item.exportDownloadCounts }}</div></div></div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Statement Demand Distribution</h4>
+            <p class="dashboard-subtitle">A pie-style distribution across generated files, customer requests, branch requests and downloads.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="statementGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ item.customerStatementRequests + item.branchStatementRequests }}</div>
+                  <div class="dashboard-donut-label">total request volume visible across customer and branch channels</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-legend">
+            <div *ngFor="let entry of requestLegend" class="dashboard-legend-item">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="entry.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ entry.label }}</span>
+                  <span class="dashboard-legend-note">{{ entry.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ entry.value }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Request Type Distribution</h4>
+            <p class="dashboard-subtitle">Compare the most frequently requested statement categories across the visible request mix.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+        <div *ngIf="requestTypeColumns.length; else noTypeColumns" class="dashboard-column-chart statement-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of requestAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let entry of requestTypeColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ entry.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + entry.tone" [style.height.%]="entry.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="entry.label">{{ entry.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noTypeColumns><div class="empty-mini">No statement type metric found.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Statement Activity Trend</h4>
+            <p class="dashboard-subtitle">A seven-day line view of customer and branch statement requests entering or completing the desk.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+        </div>
+        <div *ngIf="statementTrendPoints.length; else noStatementTrend" class="statement-line-chart-shell">
+          <svg class="statement-line-chart" viewBox="0 0 620 220" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="statementTrendFill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#0f9f96"></stop>
+                <stop offset="100%" stop-color="#0f9f96" stop-opacity="0"></stop>
+              </linearGradient>
+            </defs>
+            <line x1="38" y1="188" x2="592" y2="188" class="statement-line-axis"></line>
+            <line x1="38" y1="42" x2="38" y2="188" class="statement-line-axis"></line>
+            <path *ngIf="statementTrendAreaPath" [attr.d]="statementTrendAreaPath" class="statement-line-area"></path>
+            <path *ngIf="statementTrendPath" [attr.d]="statementTrendPath" class="statement-line-path"></path>
+            <g *ngFor="let point of statementTrendPoints">
+              <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5.5" class="statement-line-point"></circle>
+              <text [attr.x]="point.x" [attr.y]="point.y - 12" text-anchor="middle" class="statement-line-value">{{ point.value }}</text>
+              <text [attr.x]="point.x" y="208" text-anchor="middle" class="statement-line-label">{{ point.label }}</text>
+            </g>
+          </svg>
+        </div>
+        <ng-template #noStatementTrend><div class="empty-mini">No statement activity trend available.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Request Load</h4>
+            <p class="dashboard-subtitle">See which branches are appearing most often in the recent statement request stream.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-columns"></i></span>
+        </div>
+        <div *ngIf="branchColumns.length; else noBranchColumns" class="dashboard-column-chart statement-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of branchAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let entry of branchColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ entry.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + entry.tone" [style.height.%]="entry.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="entry.label">{{ entry.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noBranchColumns><div class="empty-mini">No branch request load available.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel statement-spotlight-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Customer Request Spotlight</h4>
+            <p class="dashboard-subtitle">Real customer context from the most recent or selected statement request currently visible in the desk.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-user-circle-o"></i></span>
+        </div>
+        <button *ngIf="spotlightRequest as entry; else noSpotlight" type="button" class="statement-spotlight-card" (click)="openCustomerView(entry.id)">
+          <div class="statement-spotlight-head">
+            <img *ngIf="getCustomerImageUrl(entry.customerId); else statementSpotlightFallback" class="statement-spotlight-avatar" [src]="getCustomerImageUrl(entry.customerId)" [alt]="entry.customerName">
+            <ng-template #statementSpotlightFallback>
+              <span class="statement-spotlight-avatar statement-spotlight-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div class="statement-spotlight-copy">
+              <h5>{{ entry.customerName }}</h5>
+              <div class="statement-spotlight-meta">{{ entry.customerCode }} | {{ entry.accountNumber }}</div>
+              <div class="statement-spotlight-meta">{{ getLabel(entry.requestStatus) }} | {{ entry.requestNo }}</div>
+            </div>
+          </div>
+          <div class="statement-spotlight-grid">
+            <div class="statement-spotlight-metric">
+              <span>Transactions</span>
+              <strong>{{ entry.transactionCount }}</strong>
+            </div>
+            <div class="statement-spotlight-metric">
+              <span>Total Debit</span>
+              <strong>{{ entry.totalDebit | number:'1.2-2' }}</strong>
+            </div>
+            <div class="statement-spotlight-metric">
+              <span>Total Credit</span>
+              <strong>{{ entry.totalCredit | number:'1.2-2' }}</strong>
+            </div>
+            <div class="statement-spotlight-metric">
+              <span>Balance</span>
+              <strong>{{ entry.currentBalance | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+        </button>
+        <ng-template #noSpotlight><div class="empty-mini">No customer request spotlight available.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Statement Flow Heatmap</h4>
+            <p class="dashboard-subtitle">Compare requested, generated and downloaded activity between customer and branch statement desks.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+        </div>
+        <div class="statement-heatmap" *ngIf="statementHeatRows.length; else noStatementHeat">
+          <div class="statement-heatmap-head">
+            <span>Desk</span>
+            <span>Requested</span>
+            <span>Generated</span>
+            <span>Downloaded</span>
+          </div>
+          <div class="statement-heatmap-row" *ngFor="let row of statementHeatRows">
+            <span class="statement-heatmap-label">{{ row.label }}</span>
+            <button
+              *ngFor="let cell of row.cells"
+              type="button"
+              class="statement-heatmap-cell"
+              [style.opacity]="cell.intensity"
+              [attr.title]="row.label + ' | ' + cell.label + ' : ' + cell.value">
+              {{ cell.value }}
+            </button>
+          </div>
+        </div>
+        <ng-template #noStatementHeat><div class="empty-mini">No statement flow heatmap available.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Recent Customer Statements</h4>
+            <p class="dashboard-subtitle">Latest account statement requests and generation status.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-user"></i></span>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Request</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th class="print-hide">Open</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of summary.recentCustomerRequests">
+                <td>{{ item.requestNo }}</td>
+                <td>
+                  <div class="entity-inline-profile">
+                    <img *ngIf="getCustomerImageUrl(item.customerId); else statementDashboardFallback" class="entity-avatar" [src]="getCustomerImageUrl(item.customerId)" [alt]="item.customerName">
+                    <ng-template #statementDashboardFallback>
+                      <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div>{{ item.customerCode }} - {{ item.customerName }}</div>
+                  </div>
+                </td>
+                <td>{{ getLabel(item.requestStatus) }}</td>
+                <td class="print-hide"><button class="btn btn-sm btn-outline-primary" type="button" (click)="selectSpotlightRequest(item.id)">Focus</button></td>
+              </tr>
+              <tr *ngIf="summary.recentCustomerRequests.length === 0"><td colspan="4">No customer statement request found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Recent Branch Statements</h4>
+            <p class="dashboard-subtitle">Latest branch operational summary requests.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-building"></i></span>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Request</th>
+                <th>Branch</th>
+                <th>Status</th>
+                <th class="print-hide">Open</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of summary.recentBranchRequests">
+                <td>{{ item.requestNo }}</td>
+                <td>{{ item.branchCode }} - {{ item.branchName }}</td>
+                <td>{{ getLabel(item.requestStatus) }}</td>
+                <td class="print-hide"><button class="btn btn-sm btn-outline-primary" type="button" (click)="openBranchView(item.id)">View</button></td>
+              </tr>
+              <tr *ngIf="summary.recentBranchRequests.length === 0"><td colspan="4">No branch statement request found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </div>
+
+</div>
+</div>

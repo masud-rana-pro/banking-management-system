@@ -1,0 +1,64 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container integration-module">
+  <app-page-header title="Integration Management" homeLabel="Home" homeRoute="/integrations/dashboard" currentLabel="Provider Test"></app-page-header>
+
+  <app-page-title title="Provider Test" subtitle="Run controlled provider connectivity test and immediately inspect generated execution log">
+    <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openProvider()" [disabled]="!form.providerId"><i class="fa fa-plug"></i> Provider</button>
+    <button class="btn btn-primary" type="button" (click)="submit()" [disabled]="loading"><i class="fa fa-paper-plane"></i> {{ loading ? 'Testing...' : 'Run Test' }}</button>
+  </app-page-title>
+
+  <div class="form-card">
+    <div class="card-heading">
+      <i class="fa fa-plug"></i>
+      <div>
+        <h4>Provider Connectivity Test</h4>
+        <p>Select provider and reference context before running a controlled outbound integration test.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label">Provider</label>
+        <select class="form-select" [(ngModel)]="form.providerId">
+          <option [ngValue]="null">Select Provider</option>
+          <option *ngFor="let item of providers" [ngValue]="item.id">{{ item.providerCode }} | {{ item.providerName }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Reference Module</label>
+        <input class="form-control" [(ngModel)]="form.referenceModule" placeholder="INTEGRATION_PROVIDER_TEST">
+      </div>
+      <div>
+        <label class="form-label">Reference ID</label>
+        <input class="form-control" type="number" [(ngModel)]="form.referenceId" placeholder="Optional reference id">
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <label class="form-label">Request Payload</label>
+      <textarea class="form-control" [(ngModel)]="form.requestPayload" placeholder="Optional test payload. Leave blank for default payload."></textarea>
+    </div>
+  </div>
+
+  <div *ngIf="result" class="detail-card">
+    <div class="card-heading">
+      <i class="fa fa-check-circle"></i>
+      <div>
+        <h4>Latest Test Result</h4>
+        <p>Generated execution log after provider test run.</p>
+      </div>
+    </div>
+
+    <div class="info-list">
+      <div class="info-row"><span>Provider</span><strong>{{ result.providerCode }} - {{ result.providerName }}</strong></div>
+      <div class="info-row"><span>HTTP Status</span><strong>{{ result.httpStatus || '-' }}</strong></div>
+      <div class="info-row"><span>Execution Status</span><strong>{{ getLabel(result.executionStatus) }}</strong></div>
+      <div class="info-row"><span>Executed At</span><strong>{{ result.executedAt || '-' }}</strong></div>
+    </div>
+
+    <div class="mt-3">
+      <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openLog()"><i class="fa fa-list-alt"></i> Open Log</button>
+    </div>
+  </div>
+</div>
+</div>

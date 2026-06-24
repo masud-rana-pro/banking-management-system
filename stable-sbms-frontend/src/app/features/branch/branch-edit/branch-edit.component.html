@@ -1,0 +1,270 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 branch-form-page">
+
+  <app-page-header
+    title="Branches"
+    homeLabel="Home"
+    homeRoute="/branches"
+    currentLabel="Branch Form">
+  </app-page-header>
+
+  <app-page-title
+    [title]="id ? 'Edit Branch' : 'Create Branch'"
+    subtitle="Maintain branch profile, routing information and operational address">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="branch-form-shell">
+
+    <div class="branch-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-bank"></i>
+        </div>
+
+        <div>
+          <h3>{{ id ? 'Update Branch Information' : 'New Branch Setup' }}</h3>
+          <p>Configure branch identity, routing, contact, location and operational status.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.status || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-box">
+      <i class="fa fa-spinner fa-spin"></i>
+      Loading branch information...
+    </div>
+
+    <div *ngIf="!loading" class="form-body">
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Basic Information</h4>
+            <p>Branch identity and routing setup.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Branch Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.branchCode" placeholder="Auto or manual code">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Branch Name <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-bank"></i>
+              <input class="form-control" [(ngModel)]="form.branchName" placeholder="Example: Dhaka Main Branch">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Short Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tag"></i>
+              <input class="form-control" [(ngModel)]="form.branchShortName" placeholder="Example: Dhaka Main">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Branch Type <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-sitemap"></i>
+              <select class="form-select" [(ngModel)]="form.branchType">
+                <option *ngFor="let t of branchTypeOptions" [value]="t.value">
+                  {{ t.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Routing No <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-random"></i>
+              <input class="form-control" [(ngModel)]="form.routingNo" placeholder="Example: 125260001">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">SWIFT Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-globe"></i>
+              <input class="form-control" [(ngModel)]="form.swiftCode" placeholder="Example: ABBLBDDH">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-address-book"></i>
+          <div>
+            <h4>Contact Information</h4>
+            <p>Communication channels for this branch.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Email</label>
+            <div class="input-with-icon">
+              <i class="fa fa-envelope-o"></i>
+              <input class="form-control" type="email" [(ngModel)]="form.email" placeholder="branch@sbms.com">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Mobile</label>
+            <div class="input-with-icon">
+              <i class="fa fa-mobile"></i>
+              <input class="form-control" [(ngModel)]="form.mobile" placeholder="01XXXXXXXXX">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Phone</label>
+            <div class="input-with-icon">
+              <i class="fa fa-phone"></i>
+              <input class="form-control" [(ngModel)]="form.phone" placeholder="02-XXXXXXX">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-map-marker"></i>
+          <div>
+            <h4>Address & Location</h4>
+            <p>Physical location and administrative area information.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Address Line 1 <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-map"></i>
+              <input class="form-control" [(ngModel)]="form.addressLine1" placeholder="Primary branch address">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Address Line 2</label>
+            <div class="input-with-icon">
+              <i class="fa fa-location-arrow"></i>
+              <input class="form-control" [(ngModel)]="form.addressLine2" placeholder="Optional address">
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Country ID</label>
+            <input class="form-control" type="number" [(ngModel)]="form.countryId">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Division ID</label>
+            <input class="form-control" type="number" [(ngModel)]="form.divisionId">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">District ID</label>
+            <input class="form-control" type="number" [(ngModel)]="form.districtId">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Upazila ID</label>
+            <input class="form-control" type="number" [(ngModel)]="form.upazilaId">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Postal Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-map-pin"></i>
+              <input class="form-control" [(ngModel)]="form.postalCode">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Manager User ID</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.managerUserId">
+            </div>
+            <div class="entity-inline-profile mt-2" *ngIf="form.managerUserId">
+              <img *ngIf="getUserImageUrl(form.managerUserId); else branchEditManagerFallback" class="entity-avatar-sm" [src]="getUserImageUrl(form.managerUserId)" [alt]="getUserDisplay(form.managerUserId)">
+              <ng-template #branchEditManagerFallback>
+                <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user-tie"></i></span>
+              </ng-template>
+              <div>
+                <strong>{{ getUserDisplay(form.managerUserId) }}</strong>
+                <span>Manager preview context</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Opened Date <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.openedDate">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-toggle-on"></i>
+          <div>
+            <h4>Operational Status</h4>
+            <p>Control whether the branch is active for operation.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="form.status">
+                <option *ngFor="let s of statusOptions" [value]="s.value">
+                  {{ s.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-actions" *ngIf="!loading">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ id ? 'Update Branch' : 'Save Branch' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>
+</div>

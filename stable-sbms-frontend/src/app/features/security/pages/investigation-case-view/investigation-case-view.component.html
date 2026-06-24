@@ -1,0 +1,107 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Investigation Case View"></app-page-header>
+
+  <app-page-title title="Investigation Case View" subtitle="Inspect lifecycle, assignee, remarks and audit trail before taking assign or close action">
+    <button class="btn btn-outline-primary" type="button" (click)="openList()"><i class="fa fa-list"></i> Case List</button>
+    <button class="btn btn-primary" type="button" (click)="openAction()"><i class="fa fa-user-plus"></i> Case Action</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading investigation case...
+  </div>
+
+  <div *ngIf="!loading && item as data">
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-search"></i>
+          <div>
+            <h4>Case Detail</h4>
+            <p>Case type, reference, opener and current lifecycle status.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Case No</span><strong>{{ data.caseNo }}</strong></div>
+          <div class="info-row"><span>Case Type</span><strong>{{ getLabel(data.caseType) }}</strong></div>
+          <div class="info-row"><span>Reference Module</span><strong>{{ data.referenceModule }}</strong></div>
+          <div class="info-row"><span>Reference ID</span><strong>{{ data.referenceId }}</strong></div>
+          <div class="info-row"><span>Opened By</span><strong>{{ data.openedBy }}</strong></div>
+          <div class="info-row"><span>Opened At</span><strong>{{ data.openedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ getLabel(data.caseStatus) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-user-secret"></i>
+          <div>
+            <h4>Assignee & Remarks</h4>
+            <p>Assigned reviewer, final remarks and record status trace.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="entity-inline-profile mb-3">
+            <img *ngIf="getUserImageUrl(data.assignedUsername); else investigationViewUserFallback" class="entity-avatar-lg" [src]="getUserImageUrl(data.assignedUsername)" [alt]="data.assignedFullName || data.assignedUsername || 'Unassigned'">
+            <ng-template #investigationViewUserFallback>
+              <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ data.assignedFullName || data.assignedUsername || '-' }}</strong>
+              <span>{{ data.assignedUsername || 'No assignee yet' }}</span>
+            </div>
+          </div>
+          <div class="info-row"><span>Assigned User</span><strong>{{ data.assignedFullName || data.assignedUsername || '-' }}</strong></div>
+          <div class="info-row"><span>Assigned User ID</span><strong>{{ data.assignedTo || '-' }}</strong></div>
+          <div class="info-row"><span>Remarks</span><strong>{{ data.remarks || '-' }}</strong></div>
+          <div class="info-row"><span>Evidence File</span><strong>{{ data.evidenceFileName | displayFileName }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ data.status }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ data.createdAt || '-' }}</strong></div>
+          <div class="info-row" *ngIf="hasEvidence()">
+            <span>Evidence Preview</span>
+            <strong><button class="btn btn-outline-primary btn-sm" type="button" (click)="previewEvidence()"><i class="fa fa-file-text-o"></i> Preview File</button></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-history"></i>
+        <div>
+          <h4>Audit Trail</h4>
+          <p>Assignment and closure actions remain visible for investigation lifecycle audit.</p>
+        </div>
+      </div>
+      <app-data-table [loading]="loading" [empty]="data.auditTrail.length === 0" emptyTitle="No case audit trail found" emptyMessage="Case actions will appear here once assign or close is performed.">
+        <thead>
+          <tr>
+            <th style="width: 60px;">#</th>
+            <th>Action</th>
+            <th>Performed By</th>
+            <th>Performed At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of data.auditTrail; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.actionName }}</td>
+            <td>
+              <div class="entity-inline-profile">
+                <img *ngIf="getUserImageUrl(item.performedBy); else investigationAuditUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.performedBy)" [alt]="item.performedBy">
+                <ng-template #investigationAuditUserFallback>
+                  <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+                </ng-template>
+                <div class="item-name">
+                  <strong>{{ item.performedBy }}</strong>
+                </div>
+              </div>
+            </td>
+            <td>{{ item.performedAt || '-' }}</td>
+          </tr>
+        </tbody>
+      </app-data-table>
+    </div>
+  </div>
+</div>
+</div>

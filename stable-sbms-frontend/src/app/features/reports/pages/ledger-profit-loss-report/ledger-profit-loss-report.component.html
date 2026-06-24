@@ -1,0 +1,470 @@
+<div class="container-fluid px-3 px-xl-4 py-2 pb-5 pt-2 user-module">
+  <div class="report-module ledger-profit-loss-shell">
+    <app-page-header
+      title="Ledger Profit & Loss"
+      homeLabel="Home"
+      homeRoute="/reports/dashboard"
+      currentLabel="Ledger Profit & Loss">
+    </app-page-header>
+
+    <app-page-title
+      title="Ledger Profit & Loss"
+      subtitle="Use posted GL income and expense heads to review the internal profit or loss position derived from ledger journals, not from operational proxy totals.">
+      <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+        <i class="fa fa-print"></i> Print
+      </button>
+
+      <div class="dropdown export-dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <i class="fa fa-download"></i> Export
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><button class="dropdown-item" type="button" (click)="onExport('CSV')">CSV</button></li>
+          <li><button class="dropdown-item" type="button" (click)="onExport('EXCEL')">Excel</button></li>
+        </ul>
+      </div>
+
+      <button class="btn btn-outline-primary" type="button" (click)="openHistory()">
+        <i class="fa fa-history"></i> Export History
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="openDashboard()">
+        <i class="fa fa-line-chart"></i> Dashboard
+      </button>
+    </app-page-title>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-filter"></i>
+        <div>
+          <h4>Report Filter</h4>
+          <p>Select date range and optional branch scope before viewing or exporting the report.</p>
+        </div>
+      </div>
+
+      <div class="filter-preset-bar">
+        <div class="filter-preset-group">
+          <button
+            *ngFor="let preset of datePresets"
+            class="filter-preset-chip"
+            type="button"
+            [class.active]="isPresetActive(preset.value)"
+            (click)="applyPreset(preset.value)">
+            {{ preset.label }}
+          </button>
+        </div>
+
+        <div class="filter-time-context">
+          <span class="time-context-pill"><i class="fa fa-calendar"></i> {{ filterRangeLabel }}</span>
+          <span class="time-context-pill"><i class="fa fa-clock-o"></i> {{ liveClockLabel }}</span>
+        </div>
+      </div>
+
+      <div class="filter-grid">
+        <div class="report-filter-field">
+          <label class="form-label">Date From</label>
+          <app-form-field icon="calendar">
+            <input class="form-control" type="date" [(ngModel)]="filters.dateFrom">
+          </app-form-field>
+        </div>
+
+        <div class="report-filter-field">
+          <label class="form-label">Date To</label>
+          <app-form-field icon="calendar-check">
+            <input class="form-control" type="date" [(ngModel)]="filters.dateTo">
+          </app-form-field>
+        </div>
+
+        <div class="report-filter-field">
+          <label class="form-label">Branch</label>
+          <app-form-field icon="building">
+            <select class="form-select" [(ngModel)]="filters.branchId">
+              <option [ngValue]="null">All Branches</option>
+              <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchName }} ({{ branch.branchCode }})</option>
+            </select>
+          </app-form-field>
+        </div>
+
+        <div class="report-filter-field">
+          <label class="form-label">Requested By</label>
+          <app-form-field icon="person">
+            <input class="form-control" [(ngModel)]="filters.requestedBy" placeholder="SYSTEM">
+          </app-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn btn-primary" type="button" (click)="onFilter()">
+            <i class="fa fa-search"></i> View
+          </button>
+          <button class="btn btn-outline-secondary" type="button" (click)="onReset()">
+            <i class="fa fa-undo"></i> Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-box">
+      <i class="fa fa-spinner fa-spin"></i>
+      Loading report data...
+    </div>
+
+    <ng-container *ngIf="!loading && report">
+      <div class="summary-row">
+        <div class="summary-card success">
+          <div class="summary-icon success"><i class="fa fa-line-chart"></i></div>
+          <div>
+            <div class="summary-label">Total Income</div>
+            <div class="summary-value">{{ report.totalIncome | number:'1.2-2' }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card warning">
+          <div class="summary-icon warning"><i class="fa fa-balance-scale"></i></div>
+          <div>
+            <div class="summary-label">Total Expense</div>
+            <div class="summary-value">{{ report.totalExpense | number:'1.2-2' }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card danger">
+          <div class="summary-icon danger"><i class="fa fa-bank"></i></div>
+          <div>
+            <div class="summary-label">Management Net Result</div>
+            <div class="summary-value">{{ managementNetResult | number:'1.2-2' }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card primary">
+          <div class="summary-icon primary"><i class="fa fa-check-circle"></i></div>
+          <div>
+            <div class="summary-label">Ledger Net Profit</div>
+            <div class="summary-value">{{ report.netProfit | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="card-heading">
+            <i class="fa fa-file-text-o"></i>
+            <div>
+              <h4>Run Summary</h4>
+              <p>Generated file, filter scope and run status for this report execution.</p>
+            </div>
+          </div>
+
+          <div class="info-list">
+            <div class="info-row"><span>Report</span><strong>Ledger Profit &amp; Loss</strong></div>
+            <div class="info-row"><span>Status</span><strong>{{ runStatus }}</strong></div>
+            <div class="info-row"><span>Date Range</span><strong>{{ filters.dateFrom }} to {{ filters.dateTo }}</strong></div>
+            <div class="info-row"><span>Requested By</span><strong>{{ filters.requestedBy }}</strong></div>
+            <div class="info-row"><span>Generated At</span><strong>{{ generatedAt || '-' }}</strong></div>
+            <div class="info-row"><span>Generated File</span><strong>{{ generatedFileName || 'ledger_pl_view.html' }}</strong></div>
+            <div class="info-row">
+              <span>File Actions</span>
+              <strong class="action-strip">
+                <button class="btn btn-outline-primary btn-sm" type="button" (click)="previewCurrentFile()">
+                  <i class="fa fa-file-text-o"></i> Preview
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" type="button" (click)="onPrint()">
+                  <i class="fa fa-print"></i> Print
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" (click)="downloadCurrentFile()">
+                  <i class="fa fa-download"></i> Download
+                </button>
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="card-heading">
+            <i class="fa fa-sliders"></i>
+            <div>
+              <h4>Filter Snapshot</h4>
+              <p>Audit-friendly filter payload captured when the report was generated.</p>
+            </div>
+          </div>
+
+          <div class="info-list">
+            <div class="info-row"><span>Report Code</span><strong>REP-LPL-001</strong></div>
+            <div class="info-row"><span>Report Type</span><strong>PROFIT</strong></div>
+            <div class="info-row"><span>Query Key</span><strong>LEDGER PROFIT LOSS</strong></div>
+            <div class="info-row"><span>Branch Scope</span><strong>{{ runBranchScope }}</strong></div>
+            <div class="info-row"><span>Export Type</span><strong>{{ activeExportType }}</strong></div>
+            <div class="info-row"><span>Filter JSON</span><strong>{{ filterSnapshotJson }}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-exchange"></i>
+          <div>
+            <h4>P&amp;L Reconciliation View</h4>
+            <p>Compare management proxy reporting with posted ledger output so the difference is explainable before month-end close.</p>
+          </div>
+        </div>
+
+        <div class="reconciliation-grid">
+          <div class="reconciliation-metric proxy-metric">
+            <span>Management Net Result</span>
+            <strong>{{ managementNetResult | number:'1.2-2' }}</strong>
+            <small>Proxy result after recorded operating expense</small>
+          </div>
+          <div class="reconciliation-metric spread-metric">
+            <span>Spread Before Expense</span>
+            <strong>{{ managementSpreadProxy | number:'1.2-2' }}</strong>
+            <small>Management financing spread before manual expense deduction</small>
+          </div>
+          <div class="reconciliation-metric expense-metric">
+            <span>Recorded Operating Expense</span>
+            <strong>{{ managementRecordedExpense | number:'1.2-2' }}</strong>
+            <small>Expense register impact currently reducing management result</small>
+          </div>
+          <div class="reconciliation-metric ledger-metric">
+            <span>Ledger Net Profit</span>
+            <strong>{{ report.netProfit | number:'1.2-2' }}</strong>
+            <small>Posted GL-based internal profit and loss result</small>
+          </div>
+        </div>
+
+        <div class="reconciliation-banner" [class.banner-positive]="reconciliationDifference >= 0" [class.banner-negative]="reconciliationDifference < 0">
+          <div>
+            <strong>Ledger vs Management Difference:</strong>
+            {{ reconciliationDifference | number:'1.2-2' }}
+          </div>
+          <span>The gap exists because ledger P&amp;L currently reflects only posted journals, while management P&amp;L uses operational financing proxy logic and manual expense capture.</span>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-bank"></i>
+          <div>
+            <h4>Branch Ledger P&amp;L Snapshot</h4>
+            <p>See which branches are contributing the strongest internal ledger income after recorded expense and profit distribution postings.</p>
+          </div>
+        </div>
+
+        <app-data-table
+          [loading]="loading"
+          [empty]="!report?.branchSummaries?.length"
+          emptyTitle="No branch ledger summary found"
+          emptyMessage="Branch-wise split appears after branch-coded ledger journals are present inside the selected period.">
+          <thead>
+            <tr>
+              <th style="width: 60px;">#</th>
+              <th>Branch</th>
+              <th>Income</th>
+              <th>Expense</th>
+              <th>Net Profit / Loss</th>
+              <th style="width: 120px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let branch of report.branchSummaries; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>
+                <div class="branch-title">{{ branch.branchName || 'Head Office / Unassigned' }}</div>
+                <div class="branch-code">{{ branch.branchCode || 'HO' }}</div>
+              </td>
+              <td class="amount-positive">{{ branch.totalIncome | number:'1.2-2' }}</td>
+              <td class="amount-negative">{{ branch.totalExpense | number:'1.2-2' }}</td>
+              <td [class.amount-positive]="branch.netProfit >= 0" [class.amount-negative]="branch.netProfit < 0">
+                {{ branch.netProfit | number:'1.2-2' }}
+              </td>
+              <td>
+                <button class="btn btn-outline-primary btn-sm" type="button" (click)="viewBranchJournals(branch.branchId || null, branch.branchName)">
+                  View Journals
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </app-data-table>
+      </div>
+
+      <div class="pl-grid">
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-arrow-up"></i>
+            <div>
+              <h4>Income Heads</h4>
+              <p>Credit-led income accounts contributing to the current internal ledger-based result.</p>
+            </div>
+          </div>
+
+          <app-data-table
+            [loading]="loading"
+            [empty]="!report.incomeRows.length"
+            emptyTitle="No income head found"
+            emptyMessage="Post a paid financing income journal to start building ledger income.">
+            <thead>
+              <tr>
+                <th style="width: 60px;">#</th>
+                <th>Account</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th style="width: 120px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of report.incomeRows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td><span class="code-chip income-chip">{{ row.accountCode }}</span></td>
+                <td>{{ row.accountName }}</td>
+                <td class="amount-positive">{{ row.amount | number:'1.2-2' }}</td>
+                <td>
+                  <button class="btn btn-outline-primary btn-sm" type="button" (click)="viewAccountJournals(row.accountCode, row.accountName)">
+                    View Journals
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </app-data-table>
+        </div>
+
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-arrow-down"></i>
+            <div>
+              <h4>Expense Heads</h4>
+              <p>Debit-led expense accounts reducing the current internal ledger result.</p>
+            </div>
+          </div>
+
+          <app-data-table
+            [loading]="loading"
+            [empty]="!report.expenseRows.length"
+            emptyTitle="No expense head found"
+            emptyMessage="Post management expense or profit distribution journals to start building ledger expense.">
+            <thead>
+              <tr>
+                <th style="width: 60px;">#</th>
+                <th>Account</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th style="width: 120px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of report.expenseRows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td><span class="code-chip expense-chip">{{ row.accountCode }}</span></td>
+                <td>{{ row.accountName }}</td>
+                <td class="amount-negative">{{ row.amount | number:'1.2-2' }}</td>
+                <td>
+                  <button class="btn btn-outline-primary btn-sm" type="button" (click)="viewAccountJournals(row.accountCode, row.accountName)">
+                    View Journals
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </app-data-table>
+        </div>
+      </div>
+
+      <div class="table-card" id="ledgerJournalDrilldown">
+        <div class="card-heading">
+          <i class="fa fa-search-plus"></i>
+          <div>
+            <h4>{{ selectedJournalTitle }}</h4>
+            <p>Review the posted journal headers and debit-credit lines behind the selected branch or account head.</p>
+          </div>
+        </div>
+
+        <div *ngIf="journalLoading" class="loading-box">
+          <i class="fa fa-spinner fa-spin"></i>
+          Loading journal drill-down...
+        </div>
+
+        <div class="journal-stack" *ngIf="!journalLoading">
+          <div class="journal-card" *ngFor="let journal of journals">
+            <div class="journal-head">
+              <div>
+                <strong>{{ journal.sourceReferenceNo || ('Journal #' + journal.id) }}</strong>
+                <div class="journal-meta">{{ journal.journalDate }} | {{ journal.journalType }} | {{ getJournalBranchLabel(journal.branchId) }}</div>
+              </div>
+              <span class="code-chip">{{ journal.sourceType }}</span>
+            </div>
+            <div class="journal-description">{{ journal.description || 'No description available.' }}</div>
+            <div class="mini-table-wrap">
+              <table class="mini-table compact">
+                <thead>
+                  <tr>
+                    <th>Line</th>
+                    <th>Account</th>
+                    <th>Side</th>
+                    <th>Amount</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let line of journal.lines">
+                    <td>{{ line.lineNo }}</td>
+                    <td><span class="code-chip">{{ line.accountCode }}</span></td>
+                    <td>{{ line.entrySide }}</td>
+                    <td [class.amount-positive]="line.entrySide === 'DEBIT'" [class.amount-primary]="line.entrySide === 'CREDIT'">
+                      {{ line.amount | number:'1.2-2' }}
+                    </td>
+                    <td>{{ line.remarks || '-' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="empty-hint text-center" *ngIf="journals.length === 0">
+            Select a branch or account head above to inspect the posted journals behind the report.
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" id="ledgerExportHistory">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Export History</h4>
+            <p>Recent export activity for this ledger report, including generated file references.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Requested By</th>
+                <th>Range</th>
+                <th>Status</th>
+                <th>Generated File</th>
+                <th class="text-center" style="width: 150px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of exportHistory">
+                <td>{{ item.requestedBy }}</td>
+                <td>{{ item.dateFrom }} to {{ item.dateTo }}</td>
+                <td><app-status-badge [status]="item.requestStatus"></app-status-badge></td>
+                <td>{{ item.generatedFile?.originalFileName || item.generatedFile?.fileName || '-' }}</td>
+                <td class="text-center">
+                  <button class="action-btn view" type="button" title="Preview File" (click)="previewHistoryFile(item.id)">
+                    <i class="fa fa-file-text-o"></i>
+                  </button>
+                  <button class="action-btn edit" type="button" title="Print File" (click)="printHistoryFile(item.id)">
+                    <i class="fa fa-print"></i>
+                  </button>
+                  <button class="action-btn download" type="button" title="Download File" (click)="downloadHistoryFile(item.id)">
+                    <i class="fa fa-download"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="exportHistory.length === 0">
+                <td colspan="5" class="text-center empty-hint">No export history found for this report yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

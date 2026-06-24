@@ -1,0 +1,138 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep app-page-title .btn {
+  margin-left: 8px;
+}
+
+:host ::ng-deep app-data-table td {
+  vertical-align: middle !important;
+}
+
+.branch-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  > i {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--primary-light);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    color: var(--text);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    line-height: 1.2;
+  }
+
+  span {
+    display: block;
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    margin-top: 3px;
+  }
+}
+
+.date-pill,
+.entry-pill,
+.source-pill,
+.amount-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.date-pill,
+.source-pill {
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.entry-pill.debit {
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid rgba(22, 163, 74, 0.18);
+}
+
+.entry-pill.credit {
+  color: var(--warning);
+  background: var(--warning-bg);
+  border: 1px solid rgba(217, 119, 6, 0.18);
+}
+
+.amount-pill.debit {
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid rgba(22, 163, 74, 0.18);
+}
+
+.amount-pill.credit {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid rgba(220, 38, 38, 0.18);
+}
+
+.amount-pill.balance {
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  border: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+.mono {
+  font-family: 'DM Mono', monospace;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text);
+}
+
+:host ::ng-deep app-page-title .btn {
+  margin-left: 8px;
+}
+
+.export-dropdown {
+  display: inline-flex;
+
+  .dropdown-menu {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 6px;
+  }
+
+  .dropdown-item {
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+
+    i {
+      width: 16px;
+      color: var(--primary);
+    }
+
+    &:hover {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+  }
+}

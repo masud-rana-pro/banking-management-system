@@ -1,0 +1,132 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container user-module">
+  <app-page-header title="User Management" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="User List"></app-page-header>
+
+  <app-page-title title="User List" subtitle="Manage system users, branch mapping, role assignment and security actions">
+    <div class="view-toggle-group">
+      <button class="btn" type="button" [ngClass]="viewMode === 'list' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('list')">
+        <i class="fa fa-list"></i> List View
+      </button>
+      <button class="btn" type="button" [ngClass]="viewMode === 'grid' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('grid')">
+        <i class="fa fa-th-large"></i> Grid View
+      </button>
+    </div>
+    <button class="btn btn-outline-primary" type="button" routerLink="/admin/users/dashboard" title="Open user dashboard"><i class="fa fa-bar-chart"></i> Dashboard</button>
+    <button class="btn btn-primary" type="button" routerLink="/admin/users/new" *ngIf="access.hasPermission('USER_CREATE')" title="Create a new user"><i class="fa fa-plus"></i> Add User</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search username / name / email / employee no" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="users">
+      <select class="form-select" [(ngModel)]="filters.roleId">
+        <option [ngValue]="null">All Roles</option>
+        <option *ngFor="let role of roleOptions" [ngValue]="role.id">{{ role.code }} - {{ role.name }}</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option [ngValue]="null">All Branches</option>
+        <option *ngFor="let branch of branchOptions" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="INACTIVE">INACTIVE</option>
+        <option value="LOCKED">LOCKED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <ng-container *ngIf="viewMode === 'list'; else userGridView">
+    <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No users found" emptyMessage="Create a user, assign a role, and set branch/security controls.">
+      <thead>
+        <tr>
+          <th style="width:60px;">#</th>
+          <th>User</th>
+          <th>Role</th>
+          <th>Branch</th>
+          <th>Status</th>
+          <th>Security</th>
+          <th class="text-center" style="width:260px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of rows; let i = index">
+          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+          <td>
+            <div class="entity-inline-profile">
+              <div class="entity-avatar entity-avatar-live">
+                <img *ngIf="user.profileImageName; else userAvatarFallback" [src]="getImageUrl(user.profileImageName)" alt="User image">
+                <ng-template #userAvatarFallback><i class="fa fa-user"></i></ng-template>
+                <span class="live-dot" [class.offline]="!isOnline(user)"></span>
+              </div>
+              <div>
+                <div><strong>{{ user.userCode || '-' }}</strong></div>
+                <div>{{ user.username }} / {{ user.fullName }}</div>
+                <small class="live-caption" [class.offline]="!isOnline(user)">{{ getConnectionLabel(user) }}</small>
+              </div>
+            </div>
+          </td>
+          <td>{{ user.roleName || 'Unassigned' }}</td>
+          <td>{{ user.branchName || 'Unassigned Branch' }}</td>
+          <td><app-status-badge [status]="user.status"></app-status-badge></td>
+          <td>{{ user.locked ? 'Locked' : 'Open' }} / Failed {{ user.failedLoginCount || 0 }}</td>
+          <td class="text-center">
+            <div class="table-actions">
+              <button class="action-btn view" type="button" (click)="onView(user)" *ngIf="access.hasPermission('USER_VIEW')" title="View user details"><i class="fa fa-eye"></i></button>
+              <button class="action-btn edit" type="button" (click)="onEdit(user)" *ngIf="access.hasPermission('USER_EDIT')" title="Edit user"><i class="fa fa-pencil"></i></button>
+              <button class="action-btn role" type="button" (click)="onAssignRole(user)" *ngIf="access.hasPermission('USER_ASSIGN_ROLE')" title="Assign role"><i class="fa fa-users"></i></button>
+              <button class="action-btn reset" type="button" (click)="onResetPassword(user)" *ngIf="access.hasPermission('USER_RESET_PASSWORD')" title="Reset password"><i class="fa fa-key"></i></button>
+              <button class="action-btn" [ngClass]="user.locked ? 'unlock' : 'lock'" type="button" (click)="onLockUnlock(user)" *ngIf="access.hasAnyPermission(['USER_LOCK','USER_UNLOCK'])" [title]="user.locked ? 'Unlock user' : 'Lock user'"><i class="fa" [ngClass]="user.locked ? 'fa-unlock' : 'fa-lock'"></i></button>
+              <button class="action-btn" [ngClass]="user.status === 'INACTIVE' ? 'restore' : 'archive'" type="button" (click)="onToggleArchive(user)" *ngIf="(user.status === 'INACTIVE' && access.hasPermission('USER_RESTORE')) || (user.status !== 'INACTIVE' && access.hasPermission('USER_ARCHIVE'))" [title]="user.status === 'INACTIVE' ? 'Restore user' : 'Archive user'">
+                <i class="fa" [ngClass]="user.status === 'INACTIVE' ? 'fa-undo' : 'fa-archive'"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </app-data-table>
+  </ng-container>
+
+  <ng-template #userGridView>
+    <div class="grid-state" *ngIf="loading">
+      <i class="fa fa-spinner fa-spin"></i> Loading users...
+    </div>
+    <div class="grid-state" *ngIf="!loading && total === 0">
+      <i class="fa fa-inbox"></i> No users found for the current filter.
+    </div>
+    <div class="entity-grid" *ngIf="!loading && total > 0">
+      <article class="entity-card" *ngFor="let user of rows">
+        <span class="connection-badge" [class.offline]="!isOnline(user)">{{ getConnectionLabel(user) }}</span>
+        <div class="entity-card-avatar entity-avatar-live">
+          <img *ngIf="user.profileImageName; else userGridAvatarFallback" [src]="getImageUrl(user.profileImageName)" alt="User image">
+          <ng-template #userGridAvatarFallback>
+            <span>{{ (user.fullName || user.username || 'U').charAt(0) | uppercase }}</span>
+          </ng-template>
+          <span class="live-dot" [class.offline]="!isOnline(user)"></span>
+        </div>
+        <h3>{{ user.fullName }}</h3>
+        <p>@{{ user.username }}</p>
+        <span class="meta-pill">{{ user.roleCode || 'NO_ROLE' }}</span>
+        <div class="entity-card-meta">
+          <div><span>User Code</span><strong>{{ user.userCode || '-' }}</strong></div>
+          <div><span>Branch</span><strong>{{ user.branchName || 'Unassigned' }}</strong></div>
+          <div><span>Status</span><strong>{{ user.status }}</strong></div>
+          <div><span>Security</span><strong>{{ user.locked ? 'Locked' : 'Open' }}</strong></div>
+        </div>
+        <div class="entity-card-actions">
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="onView(user)" *ngIf="access.hasPermission('USER_VIEW')">View</button>
+          <button class="btn btn-sm btn-outline-secondary" type="button" (click)="onEdit(user)" *ngIf="access.hasPermission('USER_EDIT')">Edit</button>
+          <button class="btn btn-sm btn-outline-warning" type="button" (click)="onLockUnlock(user)" *ngIf="access.hasAnyPermission(['USER_LOCK','USER_UNLOCK'])">{{ user.locked ? 'Unlock' : 'Lock' }}</button>
+        </div>
+      </article>
+    </div>
+  </ng-template>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

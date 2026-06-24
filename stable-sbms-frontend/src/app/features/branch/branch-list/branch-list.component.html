@@ -1,0 +1,223 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header title="Branches" homeLabel="Home" homeRoute="/branches/dashboard" currentLabel="Branch Management">
+  </app-page-header>
+
+  <app-page-title title="Branch List"
+    subtitle="View and manage bank branches, routing information and operational status">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('csv')">
+            <i class="fa fa-file-text-o"></i> CSV
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('excel')">
+            <i class="fa fa-file-excel-o"></i> Excel
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('pdf')">
+            <i class="fa fa-file-pdf-o"></i> PDF
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openDashboard()">
+      <i class="fa fa-th-large"></i> Dashboard
+    </button>
+
+    <button *ngIf="can('BRANCH_ASSIGN_USER')" class="btn btn-outline-primary" type="button" (click)="goAssignments()">
+      <i class="fa fa-users"></i> Assignments
+    </button>
+
+    <button *ngIf="can('BRANCH_VAULT_MANAGE')" class="btn btn-outline-success" type="button" (click)="goOpenVault()">
+      <i class="fa fa-unlock-alt"></i> Open Vault
+    </button>
+
+    <button class="btn btn-outline-warning" type="button" (click)="goEodSummary()">
+      <i class="fa fa-calendar-check-o"></i> EOD Summary
+    </button>
+
+    <button *ngIf="can('BRANCH_CREATE')" class="btn btn-primary" routerLink="/branches/new">
+      <i class="fa fa-plus"></i> Add Branch
+    </button>
+
+    <button *ngIf="can('STATEMENTS_ACCESS')" class="btn btn-outline-primary" routerLink="/statement/branch/list">
+      <i class="fa fa-file-text-o"></i> Statements
+    </button>
+
+  </app-page-title>
+
+  <div class="branch-summary-row">
+
+    <div class="branch-summary-card card-total">
+      <div class="summary-icon primary">
+        <i class="fa fa-bank"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Total Branches</div>
+        <div class="summary-value">{{ totalAll }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-database"></i>
+          All registered branches
+        </div>
+      </div>
+    </div>
+
+    <div class="branch-summary-card card-active">
+      <div class="summary-icon success">
+        <i class="fa fa-check-circle"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Active Branches</div>
+        <div class="summary-value">{{ activeCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-line-chart"></i>
+          Operational branches
+        </div>
+      </div>
+    </div>
+
+    <div class="branch-summary-card card-inactive">
+      <div class="summary-icon warning">
+        <i class="fa fa-pause-circle"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Inactive Branches</div>
+        <div class="summary-value">{{ inactiveCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-exclamation-circle"></i>
+          Archived or inactive
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search branch code / name / routing no" [(ngModel)]="filters.search"
+        (keyup.enter)="onSearch()" />
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchType">
+        <option *ngFor="let t of branchTypeOptions" [value]="t.value">
+          {{ t.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let s of statusOptions" [value]="s.value">
+          {{ s.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+  </app-filter-bar>
+  <div id="branch-print-area" class="branch-print-area">
+    <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No branches found"
+      emptyMessage="Try adjusting filters or create a new branch.">
+
+      <thead>
+        <tr>
+          <th style="width: 60px;">#</th>
+          <th>Branch</th>
+          <th>Type</th>
+          <th>Routing No</th>
+          <th>Contact</th>
+          <th>Opened</th>
+          <th style="width: 120px;">Status</th>
+          <th class="text-center" style="width: 150px;">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let b of branches; let i = index">
+          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+
+          <td>
+            <div class="branch-name">
+              <i class="fa fa-bank"></i>
+              <div>
+                <strong>{{ b.branchName }}</strong>
+                <span>{{ b.branchCode }} <ng-container *ngIf="b.branchShortName">â€¢ {{ b.branchShortName
+                    }}</ng-container></span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="type-pill">
+              <i class="fa fa-map-marker"></i> {{ b.branchType }}
+            </span>
+          </td>
+
+          <td>
+            <span class="mono">{{ b.routingNo }}</span>
+          </td>
+
+          <td>
+            <div class="contact-cell">
+              <span><i class="fa fa-phone"></i> {{ b.mobile || b.phone || '-' }}</span>
+              <small><i class="fa fa-envelope-o"></i> {{ b.email || '-' }}</small>
+            </div>
+          </td>
+
+          <td>{{ b.openedDate || '-' }}</td>
+
+          <td>
+            <app-status-badge [status]="b.status"></app-status-badge>
+          </td>
+
+          <td class="text-center">
+            <div class="branch-actions">
+              <button class="action-btn view" title="View" (click)="onView(b)">
+                <i class="fa fa-eye"></i>
+              </button>
+
+              <button *ngIf="can('BRANCH_EDIT')" class="action-btn edit" title="Edit" (click)="onEdit(b)">
+                <i class="fa fa-pencil"></i>
+              </button>
+
+              <button *ngIf="can('STATEMENT_BRANCH_REQUEST')" class="action-btn view" title="Statement" (click)="onStatement(b)">
+                <i class="fa fa-file-text-o"></i>
+              </button>
+
+              <button *ngIf="b.status === 'ACTIVE'" class="action-btn archive" title="Archive" (click)="onArchive(b)">
+                <i class="fa fa-archive"></i>
+              </button>
+
+              <button *ngIf="b.status === 'INACTIVE'" class="action-btn restore" title="Restore" (click)="onRestore(b)">
+                <i class="fa fa-undo"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+
+    </app-data-table>
+  </div>
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)">
+  </app-pagination>
+
+</div>
+</div>

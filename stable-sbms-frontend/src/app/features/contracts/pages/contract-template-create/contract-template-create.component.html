@@ -1,0 +1,100 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/contracts/templates" currentLabel="New Template"></app-page-header>
+
+  <app-page-title title="New Contract Template" subtitle="Create reusable agreement clauses with version tracking before contract generation">
+    <button class="btn btn-outline-secondary" routerLink="/contracts/templates"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <div class="contract-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-file-text-o"></i>
+        </div>
+        <div>
+          <h3>New Contract Template</h3>
+          <p>Prepare a reusable agreement body, version marker and contract type before generation starts.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        DRAFT
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-id-badge"></i>
+          <div>
+            <h4>Template Identity</h4>
+            <p>Use a readable code, business-friendly name and correct contract type so later generation stays traceable.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Template Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.templateCode" placeholder="Auto if blank">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Template Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tag"></i>
+              <input class="form-control" [(ngModel)]="form.templateName">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Contract Type</label>
+            <div class="input-with-icon">
+              <i class="fa fa-sitemap"></i>
+              <select class="form-select" [(ngModel)]="form.contractType">
+                <option value="">Select contract type</option>
+                <option *ngFor="let option of contractTypes" [value]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Version No</label>
+            <div class="input-with-icon">
+              <i class="fa fa-code-fork"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.versionNo" min="1">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-file-text"></i>
+          <div>
+            <h4>Clause Body</h4>
+            <p>Write the full reusable contract language so generated agreements stay consistent with approval standards.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Template Body</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-paragraph"></i>
+              <textarea class="form-control" [(ngModel)]="form.templateBody"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" routerLink="/contracts/templates"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-outline-primary" type="button" (click)="save(true)" [disabled]="saving"><i class="fa fa-plus-circle"></i> Save & Generate</button>
+      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving"><i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i> Save Template</button>
+    </div>
+  </div>
+</div>
+</div>

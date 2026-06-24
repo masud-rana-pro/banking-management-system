@@ -1,0 +1,211 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/customers/list"
+    currentLabel="Identity Manage">
+  </app-page-header>
+
+  <app-page-title
+    title="Customer Identity Manage"
+    subtitle="Maintain NID, passport and other identity records for the selected customer">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="resetForm()">
+      <i class="fa fa-refresh"></i> Reset Form
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading customer identity information...
+  </div>
+
+  <div *ngIf="!loading && customer as customerItem" class="manage-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="entity-avatar entity-avatar-lg">
+          <img *ngIf="customerItem.profileImageName; else customerIdentityAvatarFallback" [src]="getImageUrl(customerItem.profileImageName)" alt="Customer image">
+          <ng-template #customerIdentityAvatarFallback><i class="fa fa-id-card"></i></ng-template>
+        </div>
+        <div>
+          <h3>{{ customerItem.fullName }}</h3>
+          <p>{{ customerItem.customerCode }} â€¢ Identity management workspace</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        {{ identities.length }} Identity Record(s)
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-id-card-o"></i></div>
+        <div><div class="summary-label">Total Identities</div><div class="summary-value">{{ identities.length }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Verified</div><div class="summary-value">{{ verifiedCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-file-text-o"></i></div>
+        <div><div class="summary-label">NID Records</div><div class="summary-value">{{ nidCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-plane"></i></div>
+        <div><div class="summary-label">Passport Records</div><div class="summary-value">{{ passportCount }}</div></div>
+      </div>
+    </div>
+
+    <div class="manage-grid">
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-list"></i>
+          <div>
+            <h4>Existing Identities</h4>
+            <p>Review and edit customer identity documents.</p>
+          </div>
+        </div>
+
+        <div *ngIf="identities.length; else noIdentity" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Document No</th>
+                <th>File</th>
+                <th>Verified</th>
+                <th>Status</th>
+                <th style="width: 110px;">Preview</th>
+                <th style="width: 70px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of identities">
+                <td>{{ getLabel(item.documentType) }}</td>
+                <td>{{ item.documentNo }}</td>
+                <td>{{ item.imageFileName | displayFileName }}</td>
+                <td>{{ item.verifiedFlag ? 'YES' : 'NO' }}</td>
+                <td><app-status-badge [status]="item.status"></app-status-badge></td>
+                <td>
+                  <button *ngIf="item.imageFileName" class="btn btn-sm btn-outline-primary" type="button" (click)="openDocument(item.imageFileName)">
+                    <i class="fa fa-eye"></i> Preview
+                  </button>
+                  <span *ngIf="!item.imageFileName" class="entity-thumb-empty">No file</span>
+                </td>
+                <td>
+                  <button class="action-btn edit" type="button" (click)="editIdentity(item)">
+                    <i class="fa fa-pencil"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noIdentity>
+          <div class="empty-mini">No identity document found for this customer.</div>
+        </ng-template>
+      </div>
+
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-edit"></i>
+          <div>
+            <h4>{{ editingId ? 'Update Identity' : 'Create Identity' }}</h4>
+            <p>Capture document, issue details and verification flag following playbook workflow.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Document Type <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-file-text-o"></i>
+              <select class="form-select" [(ngModel)]="form.documentType">
+                <option value="">Select Type</option>
+                <option *ngFor="let item of documentTypeOptions" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Document No <span class="text-danger">*</span></label>
+            <input class="form-control" [(ngModel)]="form.documentNo" placeholder="Document number">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Issue Date</label>
+            <input class="form-control" type="date" [(ngModel)]="form.issueDate">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Expiry Date</label>
+            <input class="form-control" type="date" [(ngModel)]="form.expiryDate">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Issue Country</label>
+            <select class="form-select" [(ngModel)]="form.issueCountry">
+              <option *ngFor="let item of countries" [value]="item.name">{{ item.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Document File</label>
+            <div class="image-upload-panel">
+              <div class="image-upload-preview" [class.has-image]="!!form.imageFileName">
+                <img *ngIf="form.imageFileName && isImageFile(form.imageFileName); else identityDocumentPlaceholder" [src]="getImageUrl(form.imageFileName)" alt="Identity preview">
+                <ng-template #identityDocumentPlaceholder>
+                  <ng-container *ngIf="form.imageFileName && isPdfFile(form.imageFileName); else identityPlaceholder">
+                    <iframe class="document-preview-frame" [src]="getImageUrl(form.imageFileName)" title="Identity document PDF preview"></iframe>
+                  </ng-container>
+                </ng-template>
+                <ng-template #identityPlaceholder>
+                  <div class="image-upload-placeholder">
+                    <i class="fa fa-file-text-o"></i>
+                    <span>No document file uploaded</span>
+                  </div>
+                </ng-template>
+              </div>
+              <input class="form-control" type="file" accept="image/*,.pdf,.doc,.docx" (change)="onDocumentImageSelected($event)">
+              <div class="image-upload-meta">
+                <span>{{ form.imageFileName ? (form.imageFileName | displayFileName) : 'No file selected' }}</span>
+                <strong *ngIf="uploadingImage"><i class="fa fa-spinner fa-spin"></i> Uploading...</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Record Status</label>
+            <select class="form-select" [(ngModel)]="form.status">
+              <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-12">
+            <div class="readonly-chip">
+              <input type="checkbox" [(ngModel)]="form.verifiedFlag">
+              Mark this document as verified
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions px-0 pb-0 border-0 mt-3">
+          <button class="btn btn-outline-secondary" type="button" (click)="resetForm()">Cancel Edit</button>
+          <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+            <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+            {{ editingId ? 'Update Identity' : 'Save Identity' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

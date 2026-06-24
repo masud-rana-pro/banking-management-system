@@ -1,0 +1,52 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/contracts/templates" currentLabel="Template View"></app-page-header>
+
+  <app-page-title title="Contract Template View" subtitle="Review reusable clauses, version, contract type and generation readiness from one view page">
+    <button class="btn btn-outline-secondary" routerLink="/contracts/templates"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <button *ngIf="can('CONTRACT_TEMPLATE_EDIT')" class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!item"><i class="fa fa-pencil"></i> Edit</button>
+    <button *ngIf="can('CONTRACT_GENERATE')" class="btn btn-outline-success" type="button" (click)="generate()" [disabled]="!item"><i class="fa fa-plus-circle"></i> Generate</button>
+    <button *ngIf="item?.status !== 'ARCHIVED' && can('CONTRACT_TEMPLATE_EDIT')" class="btn btn-outline-danger" type="button" (click)="toggleArchive()" [disabled]="!item"><i class="fa fa-archive"></i> Archive</button>
+    <button *ngIf="item?.status === 'ARCHIVED' && can('CONTRACT_TEMPLATE_EDIT')" class="btn btn-outline-success" type="button" (click)="toggleArchive()" [disabled]="!item"><i class="fa fa-undo"></i> Restore</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading template view...</div>
+
+  <div *ngIf="!loading && item as template">
+    <div class="hero-strip">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-file-text-o"></i></div>
+        <div>
+          <h3>{{ template.templateCode }} | {{ template.templateName }}</h3>
+          <p>{{ getLabel(template.contractType) }} | Version {{ template.versionNo }} | Generated {{ template.generatedContractCount }} time(s)</p>
+        </div>
+      </div>
+      <app-status-badge [status]="template.status"></app-status-badge>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="info-list">
+          <div class="info-row"><span>Template Code</span><strong>{{ template.templateCode }}</strong></div>
+          <div class="info-row"><span>Template Name</span><strong>{{ template.templateName }}</strong></div>
+          <div class="info-row"><span>Contract Type</span><strong>{{ getLabel(template.contractType) }}</strong></div>
+          <div class="info-row"><span>Version No</span><strong>{{ template.versionNo }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ getLabel(template.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-align-left"></i>
+          <div>
+            <h4>Template Body</h4>
+            <p>Generated contract text will be based on this clause set and placeholders.</p>
+          </div>
+        </div>
+        <div class="contract-text-box">{{ template.templateBody }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

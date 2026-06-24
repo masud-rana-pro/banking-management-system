@@ -1,0 +1,57 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container integration-module">
+  <app-page-header title="Integration Management" homeLabel="Home" homeRoute="/integrations/dashboard" currentLabel="Execution Log List"></app-page-header>
+
+  <app-page-title title="Execution Log List" subtitle="Review payloads, HTTP results, retry count and execution status across all providers">
+    <button *ngIf="can('INTEGRATION_PROVIDER_TEST')" class="btn btn-outline-primary" routerLink="/integrations/provider-test"><i class="fa fa-paper-plane"></i> Provider Test</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search provider / module / payload" [(ngModel)]="filters.keyword" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.executionStatus">
+        <option value="">All Execution Status</option>
+        <option value="SUCCESS">SUCCESS</option>
+        <option value="FAILED">FAILED</option>
+        <option value="RETRY_PENDING">RETRY PENDING</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="plug">
+      <input class="form-control" [(ngModel)]="filters.providerId" placeholder="Provider ID">
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No integration execution log found" emptyMessage="Provider tests and module-triggered executions will appear here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Provider</th>
+        <th>Reference</th>
+        <th>HTTP</th>
+        <th>Status</th>
+        <th>Retry</th>
+        <th class="text-center" style="width: 150px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.providerCode }}</strong><span>{{ item.providerName }}</span></div></td>
+        <td>{{ item.referenceModule || '-' }}{{ item.referenceId ? (' | ' + item.referenceId) : '' }}</td>
+        <td>{{ item.httpStatus || '-' }}</td>
+        <td><app-status-badge [status]="item.executionStatus"></app-status-badge></td>
+        <td>{{ item.retryCount }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="openView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn logs" type="button" title="Provider" (click)="openProvider(item)"><i class="fa fa-plug"></i></button>
+            <button *ngIf="can('INTEGRATION_PROVIDER_TEST')" class="action-btn retry" type="button" title="Retry" (click)="retry(item)"><i class="fa fa-refresh"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

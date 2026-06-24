@@ -1,0 +1,90 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/applications"
+    currentLabel="Installment Schedule">
+  </app-page-header>
+
+  <app-page-title
+    title="Installment Schedule"
+    subtitle="Review generated installment schedule, payment posture, charity late fee and remaining financing obligations">
+
+    <button class="btn btn-outline-secondary" [routerLink]="['/financing/applications', id]">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-success" [routerLink]="['/financing/applications', id, 'repayment']">
+      <i class="fa fa-credit-card"></i> Repayment
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading schedule...
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-bank"></i></div>
+        <div><div class="summary-label">Principal</div><div class="summary-value small">{{ totalPrincipal | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-percent"></i></div>
+        <div><div class="summary-label">Profit</div><div class="summary-value small">{{ totalProfit | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-heart"></i></div>
+        <div><div class="summary-label">Charity</div><div class="summary-value small">{{ totalCharity | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-check"></i></div>
+        <div><div class="summary-label">Paid</div><div class="summary-value small">{{ totalPaid | number:'1.2-2' }}</div></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Due Date</th>
+              <th>Principal</th>
+              <th>Profit</th>
+              <th>Charity</th>
+              <th>Paid Amount</th>
+              <th>Paid Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let schedule of schedules">
+              <td>{{ schedule.installmentNo }}</td>
+              <td>{{ schedule.dueDate }}</td>
+              <td>{{ schedule.principalAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.profitAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.charityAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.paidAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.paidDate || '-' }}</td>
+              <td><app-status-badge [status]="schedule.scheduleStatus"></app-status-badge></td>
+            </tr>
+            <tr *ngIf="!schedules.length">
+              <td colspan="8" class="text-center">No schedule found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

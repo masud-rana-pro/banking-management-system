@@ -1,0 +1,206 @@
+@import '../../styles/customer-common';
+
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+:host {
+  .customer-type-chart-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(108px, 1fr);
+    align-items: end;
+    overflow-x: auto;
+    overflow-y: hidden;
+    column-gap: 1rem;
+    width: max-content;
+    min-width: 100%;
+    padding-bottom: 0.5rem;
+  }
+
+  .customer-type-column {
+    min-width: 108px;
+  }
+
+  .customer-type-label {
+    min-height: 34px;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  .customer-line-chart-shell {
+    width: 100%;
+    min-height: 240px;
+    padding: 0.25rem 0 0.5rem;
+  }
+
+  .customer-line-chart {
+    width: 100%;
+    height: 240px;
+    overflow: visible;
+  }
+
+  .customer-line-axis {
+    stroke: rgba(148, 163, 184, 0.32);
+    stroke-width: 1.2;
+  }
+
+  .customer-line-area {
+    fill: url(#customerTrendFill);
+    opacity: 0.2;
+  }
+
+  .customer-line-path {
+    fill: none;
+    stroke: #0f8f87;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .customer-line-point {
+    fill: #ffffff;
+    stroke: #0f8f87;
+    stroke-width: 3;
+  }
+
+  .customer-line-value {
+    fill: #163046;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .customer-line-label {
+    fill: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .customer-spotlight-card {
+    width: 100%;
+    border: 1px solid rgba(15, 143, 135, 0.14);
+    border-radius: 1.3rem;
+    background: linear-gradient(145deg, rgba(239, 250, 249, 0.92), rgba(255, 255, 255, 0.98));
+    padding: 1.2rem;
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 1rem;
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .customer-spotlight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .customer-spotlight-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 1.2rem;
+    background: linear-gradient(135deg, #0f8f87, #64c7bf);
+    overflow: hidden;
+  }
+
+  .customer-spotlight-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .customer-spotlight-title {
+    color: #102a43;
+    font-size: 1.02rem;
+    font-weight: 800;
+  }
+
+  .customer-spotlight-subtitle,
+  .customer-spotlight-meta {
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .customer-spotlight-stats {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+
+  .customer-spotlight-stats span {
+    display: block;
+    color: #64748b;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.3rem;
+  }
+
+  .customer-spotlight-stats strong {
+    color: #102a43;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  .customer-heatmap {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .customer-heatmap-head,
+  .customer-heatmap-row {
+    display: grid;
+    grid-template-columns: 1.35fr repeat(3, 1fr);
+    gap: 0.7rem;
+    align-items: center;
+  }
+
+  .customer-heatmap-head {
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .customer-heatmap-label {
+    color: #102a43;
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .customer-heatmap-cell {
+    border: 0;
+    border-radius: 1rem;
+    min-height: 46px;
+    background: linear-gradient(135deg, #0f8f87, #64c7bf);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  @media (max-width: 991.98px) {
+    .customer-spotlight-card {
+      grid-template-columns: 1fr;
+    }
+
+    .customer-spotlight-avatar {
+      width: 72px;
+      height: 72px;
+    }
+
+    .customer-spotlight-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .customer-heatmap-head,
+    .customer-heatmap-row {
+      grid-template-columns: 1fr;
+    }
+  }
+}

@@ -1,0 +1,84 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/beneficiaries" currentLabel="Beneficiary Form"></app-page-header>
+
+  <app-page-title [title]="id ? 'Edit Beneficiary' : 'New Beneficiary'" subtitle="Create or update beneficiary profile for charity payout eligibility">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <div class="zakat-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-heartbeat"></i>
+        </div>
+        <div>
+          <h3>{{ id ? 'Update Beneficiary Profile' : 'New Beneficiary Profile' }}</h3>
+          <p>Maintain an eligible beneficiary record with clear contact details so charity approval and payout flows remain trustworthy.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        ELIGIBLE
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-users"></i>
+          <div>
+            <h4>Beneficiary Details</h4>
+            <p>Capture the beneficiary code, identity and communication details so later payout records remain clear and verifiable.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Beneficiary Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.beneficiaryCode" placeholder="Auto if blank">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Beneficiary Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <input class="form-control" [(ngModel)]="form.beneficiaryName">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Mobile</label>
+            <div class="input-with-icon">
+              <i class="fa fa-mobile"></i>
+              <input class="form-control" [(ngModel)]="form.mobile">
+            </div>
+          </div>
+          <div class="full-span">
+            <label class="form-label">Address</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-map-marker"></i>
+              <textarea class="form-control" [(ngModel)]="form.address"></textarea>
+            </div>
+          </div>
+          <div class="full-span">
+            <label class="form-label">Proof Document</label>
+            <input class="form-control" type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" (change)="onProofSelected($event)">
+            <div class="image-upload-meta mt-2">
+              <span>{{ form.proofDocumentName ? (form.proofDocumentName | displayFileName) : 'No proof document selected' }}</span>
+              <button *ngIf="form.proofDocumentName" class="btn btn-link btn-sm p-0" type="button" (click)="previewProof()">Preview</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="submit()" [disabled]="loading"><i class="fa fa-save"></i> Save Beneficiary</button>
+    </div>
+  </div>
+</div>
+</div>

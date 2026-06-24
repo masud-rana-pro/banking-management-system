@@ -1,0 +1,144 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container deposit-scheme-module">
+
+  <app-page-header
+    title="Deposit Scheme Management"
+    homeLabel="Home"
+    homeRoute="/deposit-schemes/dashboard"
+    currentLabel="Scheme List">
+  </app-page-header>
+
+  <app-page-title
+    title="Scheme List"
+    subtitle="Manage scheme masters, archive or restore them and jump into enrollment, schedule or profit views">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" routerLink="/deposit-schemes/enrollments/list">
+      <i class="fa fa-users"></i> Enrollment List
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEME_ENROLLMENT_CREATE')" class="btn btn-outline-success" routerLink="/deposit-schemes/enrollments/new">
+      <i class="fa fa-plus-circle"></i> New Enrollment
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/calculations/simulator">
+      <i class="fa fa-calculator"></i> Calculation Simulator
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEME_CREATE')" class="btn btn-primary" routerLink="/deposit-schemes/new">
+      <i class="fa fa-plus"></i> New Scheme
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-tags"></i></div>
+      <div><div class="summary-label">Total Schemes</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-archive"></i></div>
+      <div><div class="summary-label">Archived</div><div class="summary-value">{{ archivedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-users"></i></div>
+      <div><div class="summary-label">Enrollments</div><div class="summary-value">{{ totalEnrollmentCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search scheme code / name / type" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="tags">
+      <select class="form-select" [(ngModel)]="filters.schemeType">
+        <option value="">All Scheme Type</option>
+        <option value="MONTHLY_SAVINGS">MONTHLY SAVINGS</option>
+        <option value="HAJJ_SAVINGS">HAJJ SAVINGS</option>
+        <option value="EDUCATION_SAVINGS">EDUCATION SAVINGS</option>
+        <option value="MARRIAGE_SAVINGS">MARRIAGE SAVINGS</option>
+        <option value="PENSION_SAVINGS">PENSION SAVINGS</option>
+        <option value="GENERAL_SAVINGS">GENERAL SAVINGS</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No scheme found" emptyMessage="Create a deposit scheme to start enrollment and schedule management.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Scheme</th>
+        <th>Type</th>
+        <th>Tenure</th>
+        <th>Installment</th>
+        <th>Profit</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 320px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.schemeCode }}</strong>
+            <span>{{ item.schemeName }}</span>
+            <span>
+              Tenure: {{ item.tenureMonths }} months |
+              Profit: {{ item.profitRatio | number:'1.2-4' }}% {{ getLabel(item.profitFrequency) }} |
+              Status: {{ item.status }}
+            </span>
+          </div>
+        </td>
+        <td>{{ getLabel(item.schemeType) }}</td>
+        <td>{{ item.tenureMonths }} Months</td>
+        <td>{{ item.minimumInstallment | number:'1.2-2' }}</td>
+        <td>{{ item.profitRatio | number:'1.2-4' }}% / {{ getLabel(item.profitFrequency) }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('DEPOSIT_SCHEME_EDIT')" class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn profit" type="button" title="Calculate" (click)="onCalculate(item)"><i class="fa fa-calculator"></i></button>
+            <button *ngIf="can('DEPOSIT_SCHEME_ENROLLMENT_CREATE')" class="action-btn enroll" type="button" title="Enroll" (click)="onEnroll(item)"><i class="fa fa-user-plus"></i></button>
+            <button class="action-btn schedule" type="button" title="View Schedule" (click)="onSchedule(item)"><i class="fa fa-calendar"></i></button>
+            <button class="action-btn profit" type="button" title="View Profit" (click)="onProfit(item)"><i class="fa fa-line-chart"></i></button>
+            <button *ngIf="item.status !== 'ARCHIVED'" class="action-btn archive" type="button" title="Archive" (click)="toggleArchive(item)"><i class="fa fa-archive"></i></button>
+            <button *ngIf="item.status === 'ARCHIVED'" class="action-btn restore" type="button" title="Restore" (click)="toggleArchive(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

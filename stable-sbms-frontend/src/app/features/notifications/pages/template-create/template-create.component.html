@@ -1,0 +1,74 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 notification-module">
+  <app-page-header title="Notification & Alerts" homeLabel="Home" homeRoute="/notifications/dashboard" [currentLabel]="isEdit ? 'Edit Template' : 'New Template'"></app-page-header>
+
+  <app-page-title [title]="isEdit ? 'Edit Template' : 'New Template'" subtitle="Define centrally managed message body and subject for event-driven alerts">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading template form...
+  </div>
+
+  <div *ngIf="!loading" class="notification-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-bell-o"></i>
+        </div>
+        <div>
+          <h3>{{ isEdit ? 'Update Alert Template' : 'New Alert Template' }}</h3>
+          <p>Define template identity, channel, subject and message body for reusable event-driven notification flow.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        ACTIVE
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-id-card-o"></i>
+          <div>
+            <h4>Template Identity</h4>
+            <p>Choose a clear code, channel and display name so operations teams can reuse the template safely.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div><label class="form-label">Template Code</label><div class="input-with-icon"><i class="fa fa-barcode"></i><input class="form-control" [(ngModel)]="form.templateCode" placeholder="Auto-generated if blank"></div></div>
+          <div><label class="form-label">Channel Type</label><div class="input-with-icon"><i class="fa fa-rss"></i><select class="form-select" [(ngModel)]="form.channelType"><option value="">Select Channel</option><option value="EMAIL">EMAIL</option><option value="SMS">SMS</option><option value="PUSH">PUSH</option></select></div></div>
+          <div><label class="form-label">Template Name</label><div class="input-with-icon"><i class="fa fa-tag"></i><input class="form-control" [(ngModel)]="form.templateName" placeholder="Enter template name"></div></div>
+          <div><label class="form-label">Subject Text</label><div class="input-with-icon"><i class="fa fa-header"></i><input class="form-control" [(ngModel)]="form.subjectText" placeholder="Subject for email/push if needed"></div></div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-commenting-o"></i>
+          <div>
+            <h4>Message Body</h4>
+            <p>Write reusable notification content with placeholders so alerts remain consistent across system events.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span"><label class="form-label">Body Text</label><div class="input-with-icon textarea-wrap"><i class="fa fa-file-text-o"></i><textarea class="form-control" [(ngModel)]="form.bodyText" placeholder="Write reusable notification body with placeholders if needed"></textarea></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="submit()" [disabled]="saving">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : (isEdit ? 'fa-save' : 'fa-plus')"></i>
+        {{ isEdit ? 'Update Template' : 'Create Template' }}
+      </button>
+    </div>
+  </div>
+</div>
+</div>

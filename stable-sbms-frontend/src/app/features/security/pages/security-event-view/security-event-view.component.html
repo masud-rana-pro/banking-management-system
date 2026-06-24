@@ -1,0 +1,63 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Security Event View"></app-page-header>
+
+  <app-page-title title="Security Event View" subtitle="Review full event context, actor, device footprint and reference linkage">
+    <button class="btn btn-primary" type="button" (click)="openList()"><i class="fa fa-list"></i> Event List</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading security event detail...
+  </div>
+
+  <div *ngIf="!loading && item as data" class="details-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-shield"></i>
+        <div>
+          <h4>Event Detail</h4>
+          <p>Event code, severity and timing detail for security review.</p>
+        </div>
+      </div>
+
+      <div class="info-list">
+        <div class="info-row"><span>Event Code</span><strong>{{ data.eventCode }}</strong></div>
+        <div class="info-row"><span>Event Name</span><strong>{{ data.eventName }}</strong></div>
+        <div class="info-row"><span>Severity</span><strong>{{ getLabel(data.severityLevel) }}</strong></div>
+        <div class="info-row"><span>Suspicious</span><strong>{{ data.suspicious ? 'Yes' : 'No' }}</strong></div>
+        <div class="info-row"><span>Event Time</span><strong>{{ data.eventTime || '-' }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ data.status }}</strong></div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-user-secret"></i>
+        <div>
+          <h4>Actor & Reference</h4>
+          <p>User, device and reference information captured with the event.</p>
+        </div>
+      </div>
+
+      <div class="info-list">
+        <div class="entity-inline-profile mb-3">
+          <img *ngIf="getUserImageUrl(data.username); else securityEventViewUserFallback" class="entity-avatar-lg" [src]="getUserImageUrl(data.username)" [alt]="data.fullName || data.username || 'System'">
+          <ng-template #securityEventViewUserFallback>
+            <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+          </ng-template>
+          <div class="item-name">
+            <strong>{{ data.fullName || data.username || 'System' }}</strong>
+            <span>{{ data.username || 'System Actor' }}</span>
+          </div>
+        </div>
+        <div class="info-row"><span>User</span><strong>{{ data.fullName || data.username || 'System' }}</strong></div>
+        <div class="info-row"><span>IP Address</span><strong>{{ data.ipAddress || '-' }}</strong></div>
+        <div class="info-row"><span>Device</span><strong>{{ data.deviceInfo || '-' }}</strong></div>
+        <div class="info-row"><span>Reference Module</span><strong>{{ data.referenceModule || '-' }}</strong></div>
+        <div class="info-row"><span>Reference ID</span><strong>{{ data.referenceId || '-' }}</strong></div>
+        <div class="info-row"><span>Remarks</span><strong>{{ data.remarks || '-' }}</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

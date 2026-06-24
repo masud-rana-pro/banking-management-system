@@ -1,0 +1,371 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container deposit-scheme-module">
+
+  <app-page-header
+    title="Deposit Scheme Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Scheme Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Scheme Dashboard"
+    subtitle="Monitor scheme mix, enrollment demand, due installments, maturity pressure and early withdrawal risk">
+
+    <button *ngIf="can('DEPOSIT_SCHEMES_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openSchemeList()" title="Open deposit scheme list">
+      <i class="fa fa-list"></i> Scheme List
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEMES_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openEnrollments()" title="Open enrollment list">
+      <i class="fa fa-users"></i> Enrollment List
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEME_ENROLLMENT_CREATE')" class="btn btn-outline-success" type="button" (click)="openNewEnrollment()" title="Create new scheme enrollment">
+      <i class="fa fa-plus-circle"></i> New Enrollment
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEME_CREATE')" class="btn btn-primary" type="button" (click)="openNewScheme()" title="Create new deposit scheme">
+      <i class="fa fa-plus"></i> New Scheme
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading scheme dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-tags"></i>
+              Savings Schemes
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Balance scheme growth with installment collection and maturity workload</h3>
+          <p class="dashboard-subtitle">
+            Keep active enrollments rising while preventing due-installment pressure, early withdrawal risk and maturity bottlenecks.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Total Schemes</span>
+              <div class="dashboard-hero-metric-value">{{ data.totalSchemes }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.recentSchemes.length }} recent scheme masters in view</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Active Enrollments</span>
+              <div class="dashboard-hero-metric-value">{{ data.activeEnrollments }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.recentEnrollments.length }} recent enrollments visible below</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Due Installments</span>
+              <div class="dashboard-hero-metric-value">{{ data.dueInstallments }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.earlyWithdrawalRequests }} early withdrawal requests under watch</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Portfolio Posture</span>
+              <h3 class="dashboard-title">Enrollment momentum versus exit and maturity pressure</h3>
+              <p class="dashboard-subtitle">Use this panel to understand whether the savings portfolio is compounding or facing churn.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.activeEnrollments }}</div>
+          <div class="dashboard-focus-note">live enrollments currently contributing recurring scheme volume into the portfolio</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Matured</span>
+              <strong class="dashboard-mini-value">{{ data.maturedSchemes }}</strong>
+              <span class="dashboard-mini-note">nearing payout or closure</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Early Exit</span>
+              <strong class="dashboard-mini-value">{{ data.earlyWithdrawalRequests }}</strong>
+              <span class="dashboard-mini-note">needs retention attention</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Due</span>
+              <strong class="dashboard-mini-value">{{ data.dueInstallments }}</strong>
+              <span class="dashboard-mini-note">collection effort required</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Enrollments</span>
+              <strong class="dashboard-mini-value">{{ data.recentEnrollments.length }}</strong>
+              <span class="dashboard-mini-note">recent account acquisition</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Due Installments</span>
+          <strong class="dashboard-chip-value">{{ data.dueInstallments }}</strong>
+          <span class="dashboard-chip-note">collection workload in the current cycle</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Early Withdrawal</span>
+          <strong class="dashboard-chip-value">{{ data.earlyWithdrawalRequests }}</strong>
+          <span class="dashboard-chip-note">retention-sensitive requests</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Matured Schemes</span>
+          <strong class="dashboard-chip-value">{{ data.maturedSchemes }}</strong>
+          <span class="dashboard-chip-note">plans approaching close-out</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Recent Enrollments</span>
+          <strong class="dashboard-chip-value">{{ data.recentEnrollments.length }}</strong>
+          <span class="dashboard-chip-note">new participation visible in the feed</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card">
+          <div class="summary-icon primary"><i class="fa fa-tags"></i></div>
+          <div><div class="summary-label">Total Schemes</div><div class="summary-value">{{ data.totalSchemes }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon success"><i class="fa fa-users"></i></div>
+          <div><div class="summary-label">Active Enrollments</div><div class="summary-value">{{ data.activeEnrollments }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon warning"><i class="fa fa-calendar"></i></div>
+          <div><div class="summary-label">Due Installments</div><div class="summary-value">{{ data.dueInstallments }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon danger"><i class="fa fa-sign-out"></i></div>
+          <div><div class="summary-label">Early Withdrawal</div><div class="summary-value">{{ data.earlyWithdrawalRequests }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon info"><i class="fa fa-flag-checkered"></i></div>
+          <div><div class="summary-label">Matured Schemes</div><div class="summary-value">{{ data.maturedSchemes }}</div></div>
+        </div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Scheme Portfolio Bands</h4>
+              <p class="dashboard-subtitle">Watch the balance between growth, collection, maturity and early exit pressure.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let band of schemeBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ band.label }}</span>
+                <span class="dashboard-summary-band-value">{{ band.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+              </div>
+              <small>{{ band.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Portfolio Donut</h4>
+              <p class="dashboard-subtitle">A pie-style view of active, due, early withdrawal and matured scheme positions.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="schemeGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.totalSchemes }}</div>
+                    <div class="dashboard-donut-label">scheme masters actively available across the portfolio</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let legend of schemeLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ legend.label }}</span>
+                    <span class="dashboard-legend-note">{{ legend.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ legend.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Scheme Type Bar Chart</h4>
+              <p class="dashboard-subtitle">A statistical chart showing which scheme types dominate the current recent master list.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="typeColumns.length; else noTypeBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of typeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of typeColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noTypeBars>
+            <div class="empty-mini">No scheme type distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Enrollment Status Bar Chart</h4>
+              <p class="dashboard-subtitle">Compare active, matured and early-withdrawal signals across recent enrollment activity.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-users"></i></span>
+          </div>
+
+          <div *ngIf="enrollmentColumns.length; else noEnrollmentBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of enrollmentAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of enrollmentColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noEnrollmentBars>
+            <div class="empty-mini">No enrollment status distribution available.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <div class="details-grid">
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-tags"></i>
+            <div>
+              <h4>Recent Schemes</h4>
+              <p>Latest defined scheme masters with enrollment indicators.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Scheme</th>
+                  <th>Type</th>
+                  <th>Tenure</th>
+                  <th>Status</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let scheme of data.recentSchemes">
+                  <td>
+                    <strong>{{ scheme.schemeCode }}</strong><br>
+                    <span>{{ scheme.schemeName }}</span>
+                  </td>
+                  <td>{{ formatLabel(scheme.schemeType) }}</td>
+                  <td>{{ scheme.tenureMonths }} Months</td>
+                  <td><app-status-badge [status]="scheme.status"></app-status-badge></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="viewScheme(scheme)" title="Open scheme details">
+                      <i class="fa fa-eye"></i> View
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!data.recentSchemes.length">
+                  <td colspan="5" class="text-center">No scheme found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-users"></i>
+            <div>
+              <h4>Recent Enrollments</h4>
+              <p>New and matured enrollments with schedule entry points.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Enrollment</th>
+                  <th>Customer</th>
+                  <th>Status</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let enrollment of data.recentEnrollments">
+                  <td>
+                    <strong>{{ enrollment.enrollmentNo }}</strong><br>
+                    <span>{{ enrollment.schemeCode }} | {{ enrollment.linkedAccountNumber }}</span>
+                  </td>
+                  <td>
+                    <div class="entity-inline-profile">
+                      <img *ngIf="getCustomerImageUrl(enrollment.customerId); else schemeDashboardEnrollmentFallback" class="entity-avatar" [src]="getCustomerImageUrl(enrollment.customerId)" [alt]="enrollment.customerName">
+                      <ng-template #schemeDashboardEnrollmentFallback>
+                        <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                      </ng-template>
+                      <div>
+                        <strong>{{ enrollment.customerName }}</strong><br>
+                        <span>{{ enrollment.customerCode }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td><app-status-badge [status]="enrollment.enrollmentStatus"></app-status-badge></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="viewEnrollment(enrollment)" title="Open enrollment schedule">
+                      <i class="fa fa-calendar"></i> Schedule
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!data.recentEnrollments.length">
+                  <td colspan="4" class="text-center">No enrollment found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+</div>

@@ -1,0 +1,156 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container deposit-scheme-module">
+
+  <app-page-header
+    title="Deposit Scheme Management"
+    homeLabel="Home"
+    homeRoute="/deposit-schemes/list"
+    currentLabel="Scheme View">
+  </app-page-header>
+
+  <app-page-title
+    title="Scheme View"
+    subtitle="Review scheme definition, active enrollments, maturity footprint and linked schedule or profit flows">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEME_EDIT')" class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!item">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button *ngIf="can('CALCULATION_ENGINE_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openCalculator()" [disabled]="!item">
+      <i class="fa fa-calculator"></i> Calculate
+    </button>
+
+    <button *ngIf="can('DEPOSIT_SCHEME_ENROLLMENT_CREATE')" class="btn btn-outline-success" type="button" (click)="enroll()" [disabled]="!item">
+      <i class="fa fa-user-plus"></i> Enroll
+    </button>
+
+    <button *ngIf="item?.status !== 'ARCHIVED' && can('DEPOSIT_SCHEME_EDIT')" class="btn btn-outline-danger" type="button" (click)="toggleArchive()" [disabled]="!item">
+      <i class="fa fa-archive"></i> Archive
+    </button>
+
+    <button *ngIf="item?.status === 'ARCHIVED' && can('DEPOSIT_SCHEME_EDIT')" class="btn btn-outline-success" type="button" (click)="toggleArchive()" [disabled]="!item">
+      <i class="fa fa-undo"></i> Restore
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading scheme view...
+  </div>
+
+  <div *ngIf="!loading && item as scheme">
+    <div class="hero-strip">
+      <div>
+        <h3>{{ scheme.schemeCode }} | {{ scheme.schemeName }}</h3>
+        <p>{{ getLabel(scheme.schemeType) }} | {{ scheme.tenureMonths }} Months | {{ scheme.minimumInstallment | number:'1.2-2' }} minimum installment</p>
+      </div>
+      <app-status-badge [status]="scheme.status"></app-status-badge>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-clock-o"></i></div>
+        <div><div class="summary-label">Tenure</div><div class="summary-value">{{ scheme.tenureMonths }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Minimum Installment</div><div class="summary-value small">{{ scheme.minimumInstallment | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-percent"></i></div>
+        <div><div class="summary-label">Profit Ratio</div><div class="summary-value small">{{ scheme.profitRatio | number:'1.2-4' }}%</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-users"></i></div>
+        <div><div class="summary-label">Active Enrollments</div><div class="summary-value">{{ scheme.activeEnrollmentCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-flag-checkered"></i></div>
+        <div><div class="summary-label">Matured</div><div class="summary-value">{{ scheme.maturedEnrollmentCount }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Scheme Detail</h4>
+            <p>Master parameters that drive enrollment, schedule and profit distribution.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Scheme Code</span><strong>{{ scheme.schemeCode }}</strong></div>
+          <div class="info-row"><span>Scheme Name</span><strong>{{ scheme.schemeName }}</strong></div>
+          <div class="info-row"><span>Scheme Type</span><strong>{{ getLabel(scheme.schemeType) }}</strong></div>
+          <div class="info-row"><span>Tenure</span><strong>{{ scheme.tenureMonths }} Months</strong></div>
+          <div class="info-row"><span>Minimum Installment</span><strong>{{ scheme.minimumInstallment | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Profit Ratio</span><strong>{{ scheme.profitRatio | number:'1.2-4' }}%</strong></div>
+          <div class="info-row"><span>Profit Frequency</span><strong>{{ getLabel(scheme.profitFrequency) }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ getLabel(scheme.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-users"></i>
+          <div>
+            <h4>Active Enrollments</h4>
+            <p>Open schedule, profit distribution and maturity or early withdrawal status from here.</p>
+          </div>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Enrollment</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let enrollment of enrollments">
+                <td>
+                  <strong>{{ enrollment.enrollmentNo }}</strong><br>
+                  <span>{{ enrollment.linkedAccountNumber }}</span>
+                </td>
+                <td>
+                  <div class="entity-inline-profile">
+                    <img *ngIf="getCustomerImageUrl(enrollment.customerId); else schemeViewEnrollmentFallback" class="entity-avatar" [src]="getCustomerImageUrl(enrollment.customerId)" [alt]="enrollment.customerName">
+                    <ng-template #schemeViewEnrollmentFallback>
+                      <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div class="item-name">
+                      <strong>{{ enrollment.customerName }}</strong>
+                      <span>{{ enrollment.customerCode }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><app-status-badge [status]="enrollment.enrollmentStatus"></app-status-badge></td>
+                <td class="text-center">
+                  <div class="table-actions">
+                    <button class="action-btn schedule" type="button" title="Schedule" (click)="openSchedule(enrollment)"><i class="fa fa-calendar"></i></button>
+                    <button class="action-btn profit" type="button" title="Profit" (click)="openProfit(enrollment)"><i class="fa fa-line-chart"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="!enrollments.length">
+                <td colspan="4" class="text-center">No enrollment found for this scheme.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

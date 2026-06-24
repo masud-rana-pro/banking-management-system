@@ -1,0 +1,337 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Zakat Dashboard" subtitle="Monitor zakat due accounts, calculated value, charity fund health and payout flow from one charitable control surface">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" title="Print zakat dashboard"><i class="fa fa-print"></i> Print</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openProfiles()" title="Open zakat profiles"><i class="fa fa-list"></i> Profiles</button>
+    <button class="btn btn-outline-success" type="button" (click)="openCalcRun()" title="Run zakat calculation"><i class="fa fa-calculator"></i> Run Zakat</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openCharityFund()" title="Open charity fund"><i class="fa fa-bank"></i> Charity Fund</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openBeneficiaries()" title="Open beneficiary list"><i class="fa fa-users"></i> Beneficiaries</button>
+    <button class="btn btn-primary" type="button" (click)="openPayouts()" title="Open payout list"><span class="taka-icon" aria-hidden="true">&#2547;</span> Payouts</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading zakat dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-bank"></i>
+              Zakat Control
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Balance zakat obligations, charity fund health and beneficiary support responsibly</h3>
+          <p class="dashboard-subtitle">
+            Watch due accounts, calculated amount, fund balance and payout outflow so charitable operations stay transparent and timely.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Zakat Due Accounts</span>
+              <div class="dashboard-hero-metric-value">{{ data.zakatDueAccounts }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.upcomingZakatReminders }} reminders still need follow-up</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Calculated Total</span>
+              <div class="dashboard-hero-metric-value">{{ data.totalZakatCalculated | number:'1.0-0' }}</div>
+              <div class="dashboard-hero-metric-note">current assessed zakat across the visible portfolio</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Fund Balance</span>
+              <div class="dashboard-hero-metric-value">{{ data.charityFundBalance | number:'1.0-0' }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.beneficiaryPayoutTotal | number:'1.0-0' }} already moved out as payout</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Charity Readiness</span>
+              <h3 class="dashboard-title">Available fund versus beneficiary outflow pressure</h3>
+              <p class="dashboard-subtitle">A quick checkpoint on whether the fund position remains healthy for upcoming disbursement needs.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.charityFundBalance | number:'1.0-0' }}</div>
+          <div class="dashboard-focus-note">current charity fund balance available for beneficiary support and approved payout workflows</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Payout Total</span>
+              <strong class="dashboard-mini-value">{{ data.beneficiaryPayoutTotal | number:'1.0-0' }}</strong>
+              <span class="dashboard-mini-note">already disbursed</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Due Accounts</span>
+              <strong class="dashboard-mini-value">{{ data.zakatDueAccounts }}</strong>
+              <span class="dashboard-mini-note">accounts needing attention</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Profiles</span>
+              <strong class="dashboard-mini-value">{{ data.recentProfiles.length }}</strong>
+              <span class="dashboard-mini-note">profile rows in feed</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Payouts</span>
+              <strong class="dashboard-mini-value">{{ data.recentPayouts.length }}</strong>
+              <span class="dashboard-mini-note">beneficiary disbursements shown</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Due Accounts</span>
+          <strong class="dashboard-chip-value">{{ data.zakatDueAccounts }}</strong>
+          <span class="dashboard-chip-note">accounts needing zakat action</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Reminder Load</span>
+          <strong class="dashboard-chip-value">{{ data.upcomingZakatReminders }}</strong>
+          <span class="dashboard-chip-note">customers approaching reminder threshold</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Fund Movements</span>
+          <strong class="dashboard-chip-value">{{ data.recentFundMovements.length }}</strong>
+          <span class="dashboard-chip-note">recent credits and debits in view</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Recent Payouts</span>
+          <strong class="dashboard-chip-value">{{ data.recentPayouts.length }}</strong>
+          <span class="dashboard-chip-note">visible beneficiary disbursement count</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-bell"></i></div><div><div class="summary-label">Zakat Due Accounts</div><div class="summary-value">{{ data.zakatDueAccounts }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-calculator"></i></div><div><div class="summary-label">Total Zakat Calculated</div><div class="summary-value small">{{ data.totalZakatCalculated | number:'1.2-2' }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-bank"></i></div><div><div class="summary-label">Charity Fund Balance</div><div class="summary-value small">{{ data.charityFundBalance | number:'1.2-2' }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><span class="taka-icon" aria-hidden="true">&#2547;</span></div><div><div class="summary-label">Payout Total</div><div class="summary-value small">{{ data.beneficiaryPayoutTotal | number:'1.2-2' }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-clock-o"></i></div><div><div class="summary-label">Upcoming Reminders</div><div class="summary-value">{{ data.upcomingZakatReminders }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Zakat and Fund Bands</h4>
+              <p class="dashboard-subtitle">Compare assessed zakat, available fund, payout outflow and reminder pressure at a glance.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+          <div class="dashboard-stack">
+            <div *ngFor="let band of zakatBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ band.label }}</span>
+                <span class="dashboard-summary-band-value">{{ band.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+              </div>
+              <small>{{ band.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Zakat Workload Donut</h4>
+              <p class="dashboard-subtitle">A pie-style split across due accounts, reminders, recent profiles and recent payouts.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="zakatGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.zakatDueAccounts }}</div>
+                    <div class="dashboard-donut-label">due zakat accounts currently visible in the working portfolio</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-legend">
+              <div *ngFor="let legend of zakatLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ legend.label }}</span>
+                    <span class="dashboard-legend-note">{{ legend.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ legend.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Profile Status Bar Chart</h4>
+              <p class="dashboard-subtitle">A statistical view of recent zakat profile calculation status mix.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+          <div *ngIf="statusColumns.length; else noStatusBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of statusAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of statusColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noStatusBars>
+            <div class="empty-mini">No profile status distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Fund Movement Bar Chart</h4>
+              <p class="dashboard-subtitle">Compare recent charity fund movement categories across deduction, donation and payout activity.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-exchange"></i></span>
+          </div>
+          <div *ngIf="fundColumns.length; else noFundBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of fundAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of fundColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noFundBars>
+            <div class="empty-mini">No fund movement distribution available.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="card-heading">
+            <i class="fa fa-user-circle"></i>
+            <div>
+              <h4>Recent Profiles</h4>
+              <p>Latest customer zakat profiles and calculation status.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Year</th>
+                  <th>Status</th>
+                  <th>Zakat</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentProfiles">
+                  <td>
+                    <div class="entity-inline-profile">
+                      <img *ngIf="getCustomerImageUrl(item.customerId); else zakatDashboardCustomerFallback" class="entity-avatar" [src]="getCustomerImageUrl(item.customerId)" [alt]="item.customerName">
+                      <ng-template #zakatDashboardCustomerFallback>
+                        <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                      </ng-template>
+                      <div>{{ item.customerCode }} - {{ item.customerName }}</div>
+                    </div>
+                  </td>
+                  <td>{{ item.zakatYear }}</td>
+                  <td><app-status-badge [status]="item.calculationStatus"></app-status-badge></td>
+                  <td>
+                    {{ item.zakatAmount | number:'1.2-2' }}
+                    <div><small>{{ item.proofDocumentName ? 'Proof attached' : 'No proof' }}</small></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="card-heading">
+            <i class="fa fa-exchange"></i>
+            <div>
+              <h4>Recent Fund Movements</h4>
+              <p>Credits from deduction and debits from payout flow.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Source</th>
+                  <th>Credit</th>
+                  <th>Debit</th>
+                  <th>Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentFundMovements">
+                  <td>{{ item.fundDate }}</td>
+                  <td>{{ getLabel(item.sourceType) }}</td>
+                  <td>{{ item.creditAmount | number:'1.2-2' }}</td>
+                  <td>{{ item.debitAmount | number:'1.2-2' }}</td>
+                  <td>{{ item.balanceAfter | number:'1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-handshake-o"></i>
+          <div>
+            <h4>Recent Payouts</h4>
+            <p>Beneficiary payout trail for charity fund usage.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Beneficiary</th>
+                <th>Date</th>
+                <th>Approved By</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of data.recentPayouts">
+                <td>{{ item.beneficiaryCode }} - {{ item.beneficiaryName }}</td>
+                <td>{{ item.payoutDate }}</td>
+                <td>{{ item.approvedBy }}</td>
+                <td>{{ item.amount | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

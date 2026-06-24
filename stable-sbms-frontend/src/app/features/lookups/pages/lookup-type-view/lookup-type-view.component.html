@@ -1,0 +1,64 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container lookup-module">
+  <app-page-header title="Lookup / Config" homeLabel="Home" homeRoute="/lookups/dashboard" currentLabel="Lookup Type View"></app-page-header>
+
+  <app-page-title title="Lookup Type View" subtitle="Review lookup category metadata, display status and child values in one place">
+    <button class="btn btn-outline-primary" type="button" (click)="edit()"><i class="fa fa-pencil"></i> Edit</button>
+    <button class="btn btn-primary" type="button" (click)="back()"><i class="fa fa-list"></i> Lookup Types</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading lookup type detail...
+  </div>
+
+  <div *ngIf="!loading && item as data">
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-folder-open"></i>
+          <div>
+            <h4>Type Information</h4>
+            <p>Master metadata and status used by dependent module dropdowns.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Type Code</span><strong>{{ data.typeCode }}</strong></div>
+          <div class="info-row"><span>Type Name</span><strong>{{ data.typeName }}</strong></div>
+          <div class="info-row"><span>Description</span><strong>{{ data.description || '-' }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ data.status }}</strong></div>
+          <div class="info-row"><span>Active Values</span><strong>{{ data.activeValueCount }}</strong></div>
+          <div class="info-row"><span>Total Values</span><strong>{{ data.totalValueCount }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-list-ul"></i>
+          <div>
+            <h4>Child Values</h4>
+            <p>Configured display order, labels and status flags under this type.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Value Code</th>
+                <th>Label</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let value of values">
+                <td>{{ value.valueCode }}</td>
+                <td>{{ value.valueLabel }}</td>
+                <td><app-status-badge [status]="value.status"></app-status-badge></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

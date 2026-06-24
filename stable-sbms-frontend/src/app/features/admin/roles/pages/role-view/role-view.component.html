@@ -1,0 +1,83 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container role-module">
+  <app-page-header title="Role Management" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="View Role"></app-page-header>
+
+  <app-page-title title="Role Details" subtitle="Review role metadata, assigned user count, permission matrix and audit info">
+    <button class="btn btn-outline-secondary" (click)="onBack()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-primary" (click)="onEdit()" *ngIf="role && access.hasPermission('ROLE_EDIT')"><i class="fa fa-pencil"></i> Edit</button>
+    <button class="btn btn-primary" (click)="onMap()" *ngIf="role && access.hasPermission('ROLE_MAP_PERMISSIONS')"><i class="fa fa-key"></i> Map Permissions</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading role detail...
+  </div>
+
+  <div *ngIf="role && !loading">
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-shield"></i>
+          <div>
+            <h4>Role Information</h4>
+            <p>Role code, display name, status and assignment footprint.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Role Code</span><strong>{{ role.code }}</strong></div>
+          <div class="info-row"><span>Role Name</span><strong>{{ role.name }}</strong></div>
+          <div class="info-row"><span>Description</span><strong>{{ role.description || '-' }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ role.status }}</strong></div>
+          <div class="info-row"><span>Assigned Users</span><strong>{{ role.assignedUserCount || 0 }}</strong></div>
+          <div class="info-row"><span>Permission Count</span><strong>{{ role.permissionCount || 0 }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-clock-o"></i>
+          <div>
+            <h4>Audit Information</h4>
+            <p>Created/updated timestamps and actors for the selected role.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Created At</span><strong>{{ role.createdAt || '-' }}</strong></div>
+          <div class="info-row"><span>Created By</span><strong>{{ role.createdBy || '-' }}</strong></div>
+          <div class="info-row"><span>Updated At</span><strong>{{ role.updatedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Updated By</span><strong>{{ role.updatedBy || '-' }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-key"></i>
+        <div>
+          <h4>Mapped Permission Matrix</h4>
+          <p>Current module and action permissions granted to this role.</p>
+        </div>
+      </div>
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Action</th>
+              <th>Permission</th>
+              <th>Allowed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let permission of role.permissions || []">
+              <td>{{ permission.moduleName }}</td>
+              <td>{{ permission.actionName }}</td>
+              <td>{{ permission.permissionCode }}</td>
+              <td>{{ permission.allowed ? 'YES' : 'NO' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

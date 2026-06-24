@@ -1,0 +1,112 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container shariah-module">
+  <app-page-header title="Shariah Review" homeLabel="Home" homeRoute="/shariah/dashboard" currentLabel="Annual Report"></app-page-header>
+
+  <app-page-title title="Annual Report View" subtitle="Annual board review summary for approved, rejected, returned and pending case reporting">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openDashboard()"><i class="fa fa-dashboard"></i> Dashboard</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading annual report...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-clock-o"></i></div><div><div class="summary-label">Pending</div><div class="summary-value">{{ data.pendingCases }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Approved</div><div class="summary-value">{{ data.approvedCases }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-times-circle"></i></div><div><div class="summary-label">Rejected</div><div class="summary-value">{{ data.rejectedCases }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon info"><i class="fa fa-reply"></i></div><div><div class="summary-label">Returned</div><div class="summary-value">{{ data.correctionRequests }}</div></div></div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-sitemap"></i>
+          <div>
+            <h4>Module Coverage</h4>
+            <p>Approved annual report module-wise case participation.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Total Cases</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of data.moduleBreakdown">
+                <td>{{ getLabel(item.referenceModule) }}</td>
+                <td>{{ item.totalCases }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Recent Decision Trail</h4>
+            <p>Decision traceability prepared for audit and annual governance report.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Case</th>
+                <th>Decision</th>
+                <th>By</th>
+                <th>At</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of data.recentDecisions">
+                <td>{{ item.caseNo }}</td>
+                <td>{{ getLabel(item.decision) }}</td>
+                <td>{{ item.decisionBy }}</td>
+                <td>{{ item.decisionAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-folder-open"></i>
+        <div>
+          <h4>Case Register</h4>
+          <p>All Shariah review cases included in the annual report scope.</p>
+        </div>
+      </div>
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Case</th>
+              <th>Reference</th>
+              <th>Submitted By</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of cases">
+              <td>{{ item.caseNo }}</td>
+              <td>{{ getLabel(item.referenceModule) }} / {{ item.referenceId }}</td>
+              <td>{{ item.submittedBy }}</td>
+              <td><app-status-badge [status]="item.caseStatus"></app-status-badge></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

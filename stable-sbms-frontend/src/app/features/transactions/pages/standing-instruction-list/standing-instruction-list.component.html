@@ -1,0 +1,51 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container transaction-module">
+  <app-page-header title="Transactions" homeLabel="Home" homeRoute="/transactions/dashboard" currentLabel="Standing Instructions"></app-page-header>
+
+  <app-page-title title="Standing Instruction List" subtitle="Track scheduled transfer setup, linked accounts, frequency and execution readiness">
+    <button class="btn btn-primary" routerLink="/transactions/standing-instructions/new"><i class="fa fa-plus"></i> New Instruction</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search code / account / customer" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No instruction found" emptyMessage="Created standing instructions will appear here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Instruction</th>
+        <th>From / To</th>
+        <th>Schedule</th>
+        <th>Branch</th>
+        <th>Status</th>
+        <th class="text-center print-hide" style="width: 120px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.instructionCode }}</strong><span>{{ item.transferMode }}</span></div></td>
+        <td><div class="item-name"><strong>{{ item.fromAccountNumber }} -> {{ item.toAccountNumber }}</strong><span>{{ item.fromCustomerName }} to {{ item.toCustomerName }}</span></div></td>
+        <td><div class="item-name"><strong>{{ item.scheduleDate }}</strong><span>{{ item.frequency }}</span></div></td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td><app-status-badge [status]="item.instructionStatus"></app-status-badge></td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn account" type="button" title="From Account" (click)="openAccount(item.fromAccountId)"><i class="fa fa-sign-out"></i></button>
+            <button class="action-btn deposit" type="button" title="To Account" (click)="openAccount(item.toAccountId)"><i class="fa fa-sign-in"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

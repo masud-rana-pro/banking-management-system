@@ -1,0 +1,119 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/dashboard"
+    currentLabel="Reconciliation List">
+  </app-page-header>
+
+  <app-page-title
+    title="Reconciliation List"
+    subtitle="View ATM/CDM reconciliation entry, system amount, physical amount and variance tracking">
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button *ngIf="can('ATM_RECONCILIATION_CREATE')" class="btn btn-primary" routerLink="/atm/reconciliation/new">
+      <i class="fa fa-plus"></i> New Reconciliation
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-list"></i></div>
+      <div><div class="summary-label">Total Records</div><div class="summary-value">{{ totalAll }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Matched</div><div class="summary-value">{{ matchedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-exclamation-triangle"></i></div>
+      <div><div class="summary-label">Variance Found</div><div class="summary-value">{{ varianceCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-calculator"></i></div>
+      <div><div class="summary-label">Total Variance</div><div class="summary-value">{{ totalVariance }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search terminal / approver" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let item of statusOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No reconciliation found" emptyMessage="Try adjusting filters or create a new reconciliation.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Terminal</th>
+        <th>System Amount</th>
+        <th>Physical Amount</th>
+        <th>Variance</th>
+        <th>Approved By</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 130px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.terminalName }}</strong>
+            <span>{{ item.terminalCode }}</span>
+          </div>
+        </td>
+        <td>{{ item.systemAmount }}</td>
+        <td>{{ item.physicalAmount }}</td>
+        <td>{{ item.varianceAmount }}</td>
+        <td>
+          <div class="entity-inline-profile" *ngIf="item.approvedBy; else noApprovedBy">
+            <img *ngIf="getUserImageUrl(item.approvedBy); else reconciliationListUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.approvedBy)" [alt]="getUserDisplay(item.approvedBy)">
+            <ng-template #reconciliationListUserFallback>
+              <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user-check"></i></span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ getUserDisplay(item.approvedBy) }}</strong>
+            </div>
+          </div>
+          <ng-template #noApprovedBy>
+            <span>-</span>
+          </ng-template>
+        </td>
+        <td>{{ item.reconDate }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <button class="action-btn view" type="button" (click)="onView(item)">
+            <i class="fa fa-eye"></i>
+          </button>
+          <button class="action-btn open ms-1" type="button" (click)="onViewTerminal(item)" title="View Terminal">
+            <i class="fa fa-credit-card"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

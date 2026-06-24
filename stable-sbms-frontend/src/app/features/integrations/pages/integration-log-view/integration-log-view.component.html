@@ -1,0 +1,67 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container integration-module">
+  <app-page-header title="Integration Management" homeLabel="Home" homeRoute="/integrations/dashboard" currentLabel="Execution Log View"></app-page-header>
+
+  <app-page-title title="Execution Log View" subtitle="Inspect request payload, response payload, HTTP status and retry trail for a specific execution">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openProvider()" [disabled]="!item"><i class="fa fa-plug"></i> Provider</button>
+    <button *ngIf="can('INTEGRATION_PROVIDER_TEST')" class="btn btn-primary" type="button" (click)="retry()" [disabled]="!item"><i class="fa fa-refresh"></i> Retry</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading integration log...
+  </div>
+
+  <div *ngIf="!loading && item as log">
+    <div class="hero-strip">
+      <div>
+        <h3>{{ log.providerCode }} | {{ log.providerName }}</h3>
+        <p>{{ log.referenceModule || '-' }}{{ log.referenceId ? (' | ' + log.referenceId) : '' }} | HTTP {{ log.httpStatus || '-' }}</p>
+      </div>
+      <app-status-badge [status]="log.executionStatus"></app-status-badge>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Execution Detail</h4>
+            <p>Provider, reference, status and retry metadata stored for monitoring and audit.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Provider</span><strong>{{ log.providerCode }} - {{ log.providerName }}</strong></div>
+          <div class="info-row"><span>Provider Type</span><strong>{{ getLabel(log.providerType) }}</strong></div>
+          <div class="info-row"><span>Reference</span><strong>{{ log.referenceModule || '-' }}{{ log.referenceId ? (' | ' + log.referenceId) : '' }}</strong></div>
+          <div class="info-row"><span>HTTP Status</span><strong>{{ log.httpStatus || '-' }}</strong></div>
+          <div class="info-row"><span>Execution Status</span><strong>{{ getLabel(log.executionStatus) }}</strong></div>
+          <div class="info-row"><span>Retry Count</span><strong>{{ log.retryCount }}</strong></div>
+          <div class="info-row"><span>Executed At</span><strong>{{ log.executedAt || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-file-code-o"></i>
+          <div>
+            <h4>Payload Snapshot</h4>
+            <p>Stored request and response payloads for retry analysis and provider traceability.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div>
+            <span>Request Payload</span>
+            <div class="payload-box mt-2">{{ log.requestPayload || '-' }}</div>
+          </div>
+          <div>
+            <span>Response Payload</span>
+            <div class="payload-box mt-2">{{ log.responsePayload || '-' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

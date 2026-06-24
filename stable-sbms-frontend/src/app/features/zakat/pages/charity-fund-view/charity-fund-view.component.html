@@ -1,0 +1,48 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/dashboard" currentLabel="Charity Fund"></app-page-header>
+
+  <app-page-title title="Charity Fund Ledger" subtitle="Track zakat deduction credits, late fee routing, payouts and running fund balance">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button class="btn btn-primary" type="button" (click)="openPayout()"><span class="taka-icon" aria-hidden="true">&#2547;</span> Payout</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-bank"></i></div><div><div class="summary-label">Current Balance</div><div class="summary-value small">{{ currentBalance | number:'1.2-2' }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon success"><i class="fa fa-exchange"></i></div><div><div class="summary-label">Ledger Rows</div><div class="summary-value">{{ items.length }}</div></div></div>
+  </div>
+
+  <app-data-table [loading]="loading" [empty]="!loading && items.length === 0" emptyTitle="No charity fund movement found" emptyMessage="Zakat deductions and payouts will build the charity fund ledger here.">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Source</th>
+        <th>Reference</th>
+        <th>Credit</th>
+        <th>Debit</th>
+        <th>Balance After</th>
+        <th>Remarks</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items">
+        <td>{{ item.fundDate }}</td>
+        <td>{{ getLabel(item.sourceType) }}</td>
+        <td>{{ item.referenceId || '-' }}</td>
+        <td>{{ item.creditAmount | number:'1.2-2' }}</td>
+        <td>{{ item.debitAmount | number:'1.2-2' }}</td>
+        <td>{{ item.balanceAfter | number:'1.2-2' }}</td>
+        <td>{{ item.remarks || '-' }}</td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

@@ -1,0 +1,146 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2">
+
+  <app-page-header
+    title="KYC Management"
+    homeLabel="Home"
+    homeRoute="/kyc/list"
+    [currentLabel]="id ? 'Edit KYC Profile' : 'New KYC Profile'">
+  </app-page-header>
+
+  <app-page-title
+    [title]="id ? 'Edit KYC Profile' : 'Create KYC Profile'"
+    subtitle="Capture customer risk level, source of funds declaration and KYC review notes">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading KYC profile...
+  </div>
+
+  <div *ngIf="!loading" class="form-shell">
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-search"></i>
+          <div>
+            <h4>Select Customer</h4>
+            <p>Link this KYC profile with an existing customer from customer management.</p>
+          </div>
+        </div>
+
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label">Search Customer</label>
+            <div class="input-with-icon">
+              <i class="fa fa-search"></i>
+              <input class="form-control" [(ngModel)]="keyword" placeholder="Search customer" (keyup.enter)="onDropdownSearch()">
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <label class="form-label">Customer</label>
+            <select class="form-select" [(ngModel)]="form.customerId">
+              <option [ngValue]="null">Select Customer</option>
+              <option *ngFor="let item of dropdownItems" [ngValue]="item.id">{{ item.displayName }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <div class="form-actions utility-actions px-0 py-0 border-0 justify-content-start">
+              <button class="btn btn-outline-primary" type="button" [disabled]="dropdownLoading" (click)="onDropdownSearch()">
+                <i class="fa" [ngClass]="dropdownLoading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
+                Search Dropdown
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="readonly-chip mt-3">
+          <i class="fa fa-user"></i>
+          {{ selectedCustomerLabel }}
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-shield"></i>
+          <div>
+            <h4>Risk & Review Setup</h4>
+            <p>Capture review status, risk level and compliance notes as required by the playbook.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Risk Level</label>
+            <select class="form-select" [(ngModel)]="form.riskLevel">
+              <option value="">Select Risk Level</option>
+              <option *ngFor="let item of riskLevelOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Review Status</label>
+            <select class="form-select" [(ngModel)]="form.reviewStatus">
+              <option *ngFor="let item of reviewStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Record Status</label>
+            <select class="form-select" [(ngModel)]="form.status">
+              <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Source Of Funds Note</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="form.sourceOfFundsNote" placeholder="Explain source of funds declaration for this KYC profile"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Remarks</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="form.remarks" placeholder="Any initial KYC remarks or handover note"></textarea>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="pepFlag" [(ngModel)]="form.pepFlag">
+              <label class="form-check-label" for="pepFlag">PEP Flag</label>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="sanctionFlag" [(ngModel)]="form.sanctionFlag">
+              <label class="form-check-label" for="sanctionFlag">Sanction Flag</label>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="amlFlag" [(ngModel)]="form.amlFlag">
+              <label class="form-check-label" for="amlFlag">AML Flag</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">Cancel</button>
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ id ? 'Update Profile' : 'Create Profile' }}
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

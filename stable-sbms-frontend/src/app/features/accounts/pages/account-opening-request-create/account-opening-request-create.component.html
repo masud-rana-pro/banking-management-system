@@ -1,0 +1,130 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/opening-requests"
+    currentLabel="{{ id ? 'Edit Opening Request' : 'New Opening Request' }}">
+  </app-page-header>
+
+  <app-page-title
+    [title]="id ? 'Edit Opening Request' : 'New Opening Request'"
+    subtitle="Create or update account opening request, branch, deposit amount and workflow notes">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/accounts/opening-requests">
+      <i class="fa fa-list"></i> Request List
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading opening request form...
+  </div>
+
+  <div *ngIf="!loading" class="form-shell">
+    <div class="form-body">
+      <div class="form-hero">
+        <div class="hero-left">
+          <div class="hero-icon"><i class="fa fa-file-text-o"></i></div>
+          <div>
+            <h3>{{ id ? 'Opening Request Update' : 'New Account Opening Request' }}</h3>
+            <p>Prepare request draft, then submit for verification and approval</p>
+          </div>
+        </div>
+        <div class="hero-status">
+          <span class="status-dot"></span>
+          {{ form.requestStatus || 'DRAFT' }}
+        </div>
+      </div>
+
+      <div class="form-section mt-3">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Applicant Image</label>
+            <div class="image-upload-panel">
+              <div class="image-upload-preview" [class.has-image]="!!applicantImagePreviewUrl">
+                <img *ngIf="applicantImagePreviewUrl; else applicantImagePlaceholder" [src]="applicantImagePreviewUrl" alt="Applicant preview">
+                <ng-template #applicantImagePlaceholder>
+                  <div class="image-upload-placeholder">
+                    <i class="fa fa-user-circle-o"></i>
+                    <span>No applicant image uploaded</span>
+                  </div>
+                </ng-template>
+              </div>
+              <input class="form-control" type="file" accept="image/*" (change)="onApplicantImageSelected($event)">
+              <div class="image-upload-meta">
+                <span>{{ form.applicantImageName ? (form.applicantImageName | displayFileName) : 'No file selected' }}</span>
+                <strong *ngIf="uploadingImage"><i class="fa fa-spinner fa-spin"></i> Uploading...</strong>
+              </div>
+              <button *ngIf="form.applicantImageName" class="btn btn-sm btn-outline-primary" type="button" (click)="openApplicantPreview()">
+                <i class="fa fa-eye"></i> Preview Uploaded File
+              </button>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Customer</label>
+            <select class="form-select" [(ngModel)]="form.customerId">
+              <option [ngValue]="null">Select Customer</option>
+              <option *ngFor="let item of customers" [ngValue]="item.id">{{ item.displayName }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Account Type</label>
+            <select class="form-select" [(ngModel)]="form.accountTypeId">
+              <option [ngValue]="null">Select Account Type</option>
+              <option *ngFor="let item of accountTypes" [ngValue]="item.id">{{ item.displayName }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Branch</label>
+            <select class="form-select" [(ngModel)]="form.branchId">
+              <option [ngValue]="null">Select Branch</option>
+              <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Requested Date</label>
+            <input class="form-control" type="date" [(ngModel)]="form.requestedDate">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Initial Deposit Amount</label>
+            <input class="form-control" type="number" min="0" [(ngModel)]="form.initialDepositAmount">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Request Status</label>
+            <select class="form-select" [(ngModel)]="form.requestStatus">
+              <option *ngFor="let item of requestStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Record Status</label>
+            <select class="form-select" [(ngModel)]="form.status">
+              <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Remarks</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="form.remarks" placeholder="Branch note, deposit clarification or reviewer note"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()">Cancel</button>
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ id ? 'Update Request' : 'Create Request' }}
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

@@ -1,0 +1,83 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container report-module">
+  <app-page-header title="Reporting & Regulatory" homeLabel="Home" homeRoute="/reports/dashboard" currentLabel="Export History"></app-page-header>
+
+  <app-page-title title="Export History" subtitle="Review generated report files, filters, run status and recent export activity">
+    <button class="btn btn-primary" type="button" (click)="openDashboard()"><i class="fa fa-line-chart"></i> Dashboard</button>
+  </app-page-title>
+
+  <app-filter-bar title="Report Filter" subtitle="Select report type, status and search scope before viewing export history." (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search report / user / file" [(ngModel)]="filters.keyword" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="file-text-o">
+      <select class="form-select" [(ngModel)]="filters.reportType">
+        <option value="">All Report Types</option>
+        <option value="OPERATIONAL">Operational</option>
+        <option value="REGULATORY">Regulatory</option>
+        <option value="FINANCING">Financing</option>
+        <option value="PROFIT">Profit</option>
+        <option value="PAR">PAR</option>
+        <option value="SHARIAH_AUDIT">Shariah Audit</option>
+        <option value="BRANCH">Branch</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.requestStatus">
+        <option value="">All Status</option>
+        <option value="REQUESTED">Requested</option>
+        <option value="GENERATED">Generated</option>
+        <option value="EXPORTED">Exported</option>
+        <option value="FAILED">Failed</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No export history found" emptyMessage="Run a report to create export logs.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Report</th>
+        <th>Requested By</th>
+        <th>Date Range</th>
+        <th>Status</th>
+        <th>Generated File</th>
+        <th>Requested At</th>
+        <th class="text-center" style="width: 150px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.reportName }}</strong>
+            <span>{{ item.reportCode }} | {{ getLabel(item.queryKey) }}</span>
+          </div>
+        </td>
+        <td>{{ item.requestedBy }}</td>
+        <td>{{ item.dateFrom || '-' }} to {{ item.dateTo || '-' }}</td>
+        <td><app-status-badge [status]="item.requestStatus"></app-status-badge></td>
+        <td>{{ item.generatedFile?.originalFileName || '-' }}</td>
+        <td>{{ item.requestedAt || '-' }}</td>
+        <td class="text-center">
+          <button class="action-btn view" type="button" title="Open Report" (click)="openReport(item)">
+            <i class="fa fa-eye"></i>
+          </button>
+          <button class="action-btn view" type="button" title="Preview File" (click)="previewFile(item)" [disabled]="loading">
+            <i class="fa fa-file-text-o"></i>
+          </button>
+          <button class="action-btn edit" type="button" title="Print File" (click)="printFile(item)" [disabled]="loading">
+            <i class="fa fa-print"></i>
+          </button>
+          <button class="action-btn download" type="button" title="Download File" (click)="downloadFile(item)" [disabled]="loading">
+            <i class="fa fa-download"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

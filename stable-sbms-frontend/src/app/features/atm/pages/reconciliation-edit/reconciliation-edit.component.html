@@ -1,0 +1,163 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/reconciliations"
+    currentLabel="Reconciliation Form">
+  </app-page-header>
+
+  <app-page-title
+    title="Create Reconciliation"
+    subtitle="Capture ATM/CDM system cash, physical cash and variance approval reference">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="form-shell">
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-balance-scale"></i></div>
+        <div>
+          <h3>ATM/CDM Reconciliation Entry</h3>
+          <p>Compare system amount with physical amount and track variance.</p>
+        </div>
+      </div>
+      <div class="hero-status">{{ previewStatus }}</div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-credit-card"></i>
+          <div>
+            <h4>Terminal Mapping</h4>
+            <p>Select the terminal for reconciliation.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Terminal <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-desktop"></i>
+              <select class="form-select" [(ngModel)]="form.terminalId">
+                <option [ngValue]="null">Select Terminal</option>
+                <option *ngFor="let item of terminals" [ngValue]="item.id">
+                  {{ item.terminalCode }} - {{ item.terminalName }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Selected Terminal</label>
+            <div class="readonly-chip">
+              <i class="fa fa-info-circle"></i>
+              {{ selectedTerminalLabel }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+          <div>
+            <h4>Reconciliation Values</h4>
+            <p>Enter system and physical cash amount.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Recon Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.reconDate">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">System Amount <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-calculator"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.systemAmount">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Physical Amount <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.physicalAmount">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Variance Preview</label>
+            <div class="readonly-chip amount">
+              <i class="fa fa-line-chart"></i>
+              {{ varianceAmount }}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Status Preview</label>
+            <div class="readonly-chip">
+              <i class="fa fa-check-circle"></i>
+              {{ previewStatus }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-user"></i>
+          <div>
+            <h4>Approval & Remarks</h4>
+            <p>Optional approval reference and reconciliation note.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Approved By</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <select class="form-select" [(ngModel)]="form.approvedBy">
+                <option [ngValue]="null">Select User</option>
+                <option *ngFor="let item of users" [ngValue]="item.id">
+                  {{ item.fullName }} ({{ item.username }})
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">Remarks</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="form.remarks" placeholder="Optional reconciliation remarks"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        Save Reconciliation
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

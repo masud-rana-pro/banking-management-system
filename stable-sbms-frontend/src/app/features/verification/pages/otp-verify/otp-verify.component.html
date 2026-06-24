@@ -1,0 +1,64 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 verification-module">
+  <app-page-header title="Verification" homeLabel="Home" homeRoute="/verification/dashboard" currentLabel="Verify OTP"></app-page-header>
+
+  <app-page-title title="OTP Verify" subtitle="Validate OTP, update verified flags and inspect the final provider response">
+    <button class="btn btn-outline-primary" type="button" (click)="openLogs()"><i class="fa fa-list-alt"></i> Logs</button>
+  </app-page-title>
+
+  <div class="auth-box">
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-shield"></i>
+        <div>
+          <h4>Verify One-Time Password</h4>
+          <p>Provide request id and OTP code exactly as received by the target contact.</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div>
+          <label class="form-label">Request Id</label>
+          <input class="form-control" type="number" [(ngModel)]="form.requestId">
+        </div>
+        <div>
+          <label class="form-label">OTP Code</label>
+          <input class="form-control" maxlength="6" [(ngModel)]="form.otpCode" placeholder="Enter 6 digit OTP">
+        </div>
+        <div>
+          <label class="form-label">IP Address</label>
+          <input class="form-control" [(ngModel)]="form.ipAddress" placeholder="Optional audit IP">
+        </div>
+        <div>
+          <label class="form-label">Device Info</label>
+          <input class="form-control" [(ngModel)]="form.deviceInfo" placeholder="Console / Browser / Device">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="button" [disabled]="loading" (click)="submit()">
+          <i class="fa" [ngClass]="loading ? 'fa-spinner fa-spin' : 'fa-check-circle'"></i>
+          Verify OTP
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-card" *ngIf="result as item">
+      <div class="card-heading">
+        <i class="fa fa-info-circle"></i>
+        <div>
+          <h4>Verification Result</h4>
+          <p>Updated request status and verification trace after a successful OTP check.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Request</span><strong>#{{ item.id }}</strong></div>
+        <div class="info-row"><span>Contact</span><strong>{{ item.contactValueMasked }}</strong></div>
+        <div class="info-row"><span>Purpose</span><strong>{{ getLabel(item.purpose) }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ getLabel(item.requestStatus) }}</strong></div>
+        <div class="info-row"><span>Verified Flag</span><strong>{{ item.contactVerified ? 'YES' : 'NO' }}</strong></div>
+      </div>
+      <div class="otp-preview mt-3">{{ item.providerResponse || 'No provider response available.' }}</div>
+    </div>
+  </div>
+</div>
+</div>

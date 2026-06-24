@@ -1,0 +1,159 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/customers/dashboard"
+    currentLabel="Status Action">
+  </app-page-header>
+
+  <app-page-title
+    title="Customer Status Action"
+    subtitle="Activate, block, archive or restore customer profile after checking address and identity readiness">
+
+    <button class="btn btn-outline-secondary" routerLink="/customers/list">
+      <i class="fa fa-list"></i> Customer List
+    </button>
+
+  </app-page-title>
+
+  <div class="form-shell">
+    <div class="form-body">
+      <div class="form-section mb-0">
+        <div class="section-heading">
+          <i class="fa fa-search"></i>
+          <div>
+            <h4>Select Customer</h4>
+            <p>Open a customer directly from dropdown search or use action buttons from the list/view page.</p>
+          </div>
+        </div>
+
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label">Search Keyword</label>
+            <div class="input-with-icon">
+              <i class="fa fa-search"></i>
+              <input class="form-control" [(ngModel)]="keyword" placeholder="Search customer" (keyup.enter)="onDropdownSearch()">
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <label class="form-label">Customer</label>
+            <select class="form-select" [ngModel]="customerId" (ngModelChange)="onCustomerSelect($event)">
+              <option [ngValue]="null">Select Customer</option>
+              <option *ngFor="let item of dropdownItems" [ngValue]="item.id">{{ item.displayName }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <div class="form-actions px-0 py-0 border-0 justify-content-start">
+              <button class="btn btn-outline-primary" type="button" [disabled]="dropdownLoading" (click)="onDropdownSearch()">
+                <i class="fa" [ngClass]="dropdownLoading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
+                Search Dropdown
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading customer status workflow...
+  </div>
+
+  <div *ngIf="!loading && customer as item" class="manage-shell">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="entity-inline-profile">
+          <div class="entity-avatar">
+            <img *ngIf="item.profileImageName; else customerStatusAvatarFallback" [src]="getImageUrl(item.profileImageName)" alt="Customer image">
+            <ng-template #customerStatusAvatarFallback><i class="fa fa-user"></i></ng-template>
+          </div>
+          <div><div class="summary-label">Customer</div><div class="summary-value small">{{ item.customerCode }}</div><div class="summary-hint">{{ item.fullName }}</div></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-map-marker"></i></div>
+        <div><div class="summary-label">Addresses</div><div class="summary-value">{{ addresses.length }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-id-card"></i></div>
+        <div><div class="summary-label">Identity Docs</div><div class="summary-value">{{ identities.length }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+        <div><div class="summary-label">Customer Status</div><div class="summary-value small">{{ getLabel(item.customerStatus) }}</div></div>
+      </div>
+    </div>
+
+    <div class="manage-grid">
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Readiness Summary</h4>
+            <p>Activation requires at least one identity document according to backend rule.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Record Status</span><strong>{{ getLabel(item.status) }}</strong></div>
+          <div class="info-row"><span>Customer Status</span><strong>{{ getLabel(item.customerStatus) }}</strong></div>
+          <div class="info-row"><span>Address Records</span><strong>{{ addresses.length }}</strong></div>
+          <div class="info-row"><span>Identity Records</span><strong>{{ identities.length }}</strong></div>
+          <div class="info-row"><span>Activation Rule</span><strong>{{ identities.length ? 'Ready for activation' : 'Identity required first' }}</strong></div>
+        </div>
+
+        <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+          <button class="btn btn-outline-primary" type="button" (click)="openCustomer()">View Customer</button>
+          <button class="btn btn-outline-primary" type="button" (click)="manageAddress()">Manage Address</button>
+          <button class="btn btn-outline-primary" type="button" (click)="manageIdentity()">Manage Identity</button>
+          <button class="btn btn-outline-primary" type="button" (click)="openKyc()">Open KYC</button>
+          <button class="btn btn-outline-primary" type="button" (click)="openAccountRequest()">New Account Request</button>
+        </div>
+      </div>
+
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-exchange"></i>
+          <div>
+            <h4>Status Actions</h4>
+            <p>Perform playbook-required lifecycle actions from one focused screen.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="state-card">
+            <h5>Activate</h5>
+            <p>Moves customer to active lifecycle if minimum identity validation is met.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-success" type="button" [disabled]="item.status === 'ARCHIVED'" (click)="activate()">Activate Customer</button>
+            </div>
+          </div>
+
+          <div class="state-card">
+            <h5>Block</h5>
+            <p>Restrict customer from further operation until issue is resolved.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button class="btn btn-danger" type="button" [disabled]="item.status === 'ARCHIVED'" (click)="block()">Block Customer</button>
+            </div>
+          </div>
+
+          <div class="state-card">
+            <h5>Archive / Restore</h5>
+            <p>Archive for soft-delete behavior and restore when profile is needed again.</p>
+            <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+              <button *ngIf="item.status !== 'ARCHIVED'" class="btn btn-outline-danger" type="button" (click)="archive()">Archive</button>
+              <button *ngIf="item.status === 'ARCHIVED'" class="btn btn-outline-success" type="button" (click)="restore()">Restore</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

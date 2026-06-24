@@ -1,0 +1,77 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container shariah-module">
+  <app-page-header title="Shariah Review" homeLabel="Home" homeRoute="/shariah/cases" currentLabel="Case Review"></app-page-header>
+
+  <app-page-title title="Case Review" subtitle="Prepare checklist, record board remarks and complete approve, reject or correction workflow">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> View Case</button>
+    <button class="btn btn-outline-primary" type="button" (click)="saveChecklist()" [disabled]="loading || !can('SHARIAH_CHECKLIST_SAVE')" [title]="getActionTitle('Save Checklist', 'SHARIAH_CHECKLIST_SAVE')"><i class="fa fa-save"></i> Save Checklist</button>
+    <button class="btn btn-outline-success" type="button" (click)="approve()" [disabled]="loading || !can('SHARIAH_APPROVE')" [title]="getActionTitle('Approve', 'SHARIAH_APPROVE')"><i class="fa fa-check"></i> Approve</button>
+    <button class="btn btn-outline-danger" type="button" (click)="reject()" [disabled]="loading || !can('SHARIAH_REJECT')" [title]="getActionTitle('Reject', 'SHARIAH_REJECT')"><i class="fa fa-times"></i> Reject</button>
+    <button class="btn btn-warning" type="button" (click)="returnCase()" [disabled]="loading || !can('SHARIAH_RETURN')" [title]="getActionTitle('Return', 'SHARIAH_RETURN')"><i class="fa fa-reply"></i> Return</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading Shariah review form...
+  </div>
+
+  <div *ngIf="!loading && item as data">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-balance-scale"></i></div>
+        <div>
+          <h3>{{ data.caseNo }}</h3>
+          <p>{{ getLabel(data.referenceModule) }} / {{ data.referenceId }} | {{ data.submittedBy }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="data.caseStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-grid">
+        <div>
+          <label class="form-label">Reviewed / Decision By</label>
+          <input class="form-control" [(ngModel)]="form.reviewedBy" [readonly]="remarksLocked">
+        </div>
+        <div>
+          <label class="form-label">Reference Module</label>
+          <input class="form-control" [value]="getLabel(data.referenceModule)" readonly>
+        </div>
+        <div class="w-100" style="grid-column: 1 / -1;">
+          <label class="form-label">Remarks</label>
+          <textarea class="form-control" [(ngModel)]="form.remarks" [readonly]="remarksLocked"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-check-square-o"></i>
+        <div>
+          <h4>Checklist Preparation</h4>
+          <p>Activate relevant checklist items and keep notes for board traceability.</p>
+        </div>
+      </div>
+
+      <div class="checklist-grid">
+        <div class="checklist-row" *ngFor="let item of checklistItems">
+          <div class="checklist-head">
+            <div>
+              <div class="checklist-code">{{ item.itemCode }}</div>
+              <h5 class="checklist-title">{{ item.itemName }}</h5>
+              <div class="text-muted">{{ item.description || '-' }}</div>
+            </div>
+            <div class="form-check mt-1">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="item.selected" [id]="'item-' + item.id" [disabled]="checklistLocked">
+              <label class="form-check-label" [for]="'item-' + item.id">Selected</label>
+            </div>
+          </div>
+          <textarea class="form-control" [(ngModel)]="item.note" placeholder="Checklist note" [readonly]="checklistLocked"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

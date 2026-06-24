@@ -1,0 +1,28 @@
+<div class="sbms-page-header-wrapper">
+  <div class="sbms-page-header">
+    <div class="sbms-breadcrumb">
+
+      <span class="breadcrumb-context">{{ title | sbmsTranslate }}</span>
+
+      <span class="breadcrumb-sep">›</span>
+
+      <a class="breadcrumb-pill" [routerLink]="homeRoute">
+        <i class="bi bi-house-fill"></i>
+        {{ homeLabel | sbmsTranslate }}
+      </a>
+
+      <span class="breadcrumb-sep">›</span>
+
+      <ng-container *ngIf="currentRoute; else activeOnly">
+        <a class="breadcrumb-pill active" [routerLink]="currentRoute">
+          {{ currentLabel | sbmsTranslate }}
+        </a>
+      </ng-container>
+
+      <ng-template #activeOnly>
+        <span class="breadcrumb-pill active">{{ currentLabel | sbmsTranslate }}</span>
+      </ng-template>
+
+    </div>
+  </div>
+</div>

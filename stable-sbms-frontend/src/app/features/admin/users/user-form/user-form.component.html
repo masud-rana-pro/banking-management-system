@@ -1,0 +1,232 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+  <app-page-header title="User Management" homeLabel="Home" homeRoute="/admin/dashboard" [currentLabel]="isEdit ? 'Edit User' : 'Create User'"></app-page-header>
+
+  <app-page-title [title]="isEdit ? 'Edit User' : 'Create User'" subtitle="Create or update system users with branch binding, role assignment and security flags">
+    <button class="btn btn-outline-secondary" type="button" (click)="onCancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading user form...
+  </div>
+
+  <div class="user-form-shell" *ngIf="!loading">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-user-plus"></i>
+        </div>
+        <div>
+          <h3>{{ isEdit ? 'Update User Profile' : 'New User Setup' }}</h3>
+          <p>Bind user identity, branch context, assigned role and security flags before operational use.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.get('status')?.value || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-body">
+        <div class="form-section">
+          <div class="section-heading">
+            <i class="fa fa-id-card-o"></i>
+            <div>
+              <h4>Basic Identity</h4>
+              <p>Keep username, full name and staff identity aligned with HR or customer master records.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label class="form-label">Profile Image</label>
+              <div class="image-upload-panel">
+                <div class="image-upload-preview" [class.has-image]="!!profileImagePreviewUrl">
+                  <img *ngIf="profileImagePreviewUrl; else userImagePlaceholder" [src]="profileImagePreviewUrl" alt="User profile preview">
+                  <ng-template #userImagePlaceholder>
+                    <div class="image-upload-placeholder">
+                      <i class="fa fa-user-circle-o"></i>
+                      <span>No profile image uploaded</span>
+                    </div>
+                  </ng-template>
+                </div>
+                <input class="form-control" type="file" accept="image/*" (change)="onProfileImageSelected($event)">
+                <div class="image-upload-meta">
+                  <span>{{ form.get('profileImageName')?.value || 'No file selected' }}</span>
+                  <strong *ngIf="uploadingImage"><i class="fa fa-spinner fa-spin"></i> Uploading...</strong>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Username</label>
+              <div class="input-with-icon">
+                <i class="fa fa-user"></i>
+                <input class="form-control" formControlName="username" placeholder="e.g. branch.manager01">
+              </div>
+              <small class="text-danger" *ngIf="hasError('username','required')">Username is required.</small>
+            </div>
+
+            <div>
+              <label class="form-label">Full Name</label>
+              <div class="input-with-icon">
+                <i class="fa fa-user-circle-o"></i>
+                <input class="form-control" formControlName="fullName" placeholder="e.g. Branch Manager Dhaka">
+              </div>
+              <small class="text-danger" *ngIf="hasError('fullName','required')">Full name is required.</small>
+            </div>
+
+            <div>
+              <label class="form-label">Email</label>
+              <div class="input-with-icon">
+                <i class="fa fa-envelope-o"></i>
+                <input class="form-control" formControlName="email" placeholder="user@bank.local">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Mobile</label>
+              <div class="input-with-icon">
+                <i class="fa fa-mobile"></i>
+                <input class="form-control" formControlName="mobile" placeholder="01XXXXXXXXX">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Employee No</label>
+              <div class="input-with-icon">
+                <i class="fa fa-id-badge"></i>
+                <input class="form-control" formControlName="employeeNo" placeholder="EMP-1001">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Designation</label>
+              <div class="input-with-icon">
+                <i class="fa fa-briefcase"></i>
+                <input class="form-control" formControlName="designation" placeholder="Branch Operations Officer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-heading">
+            <i class="fa fa-sitemap"></i>
+            <div>
+              <h4>Branch & Role Mapping</h4>
+              <p>Assign the correct branch context, business role and operating user type before activation.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label class="form-label">Branch</label>
+              <div class="input-with-icon">
+                <i class="fa fa-bank"></i>
+                <select class="form-select" formControlName="branchId">
+                  <option [ngValue]="null">Select Branch</option>
+                  <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Role</label>
+              <div class="input-with-icon">
+                <i class="fa fa-shield"></i>
+                <select class="form-select" formControlName="roleId">
+                  <option [ngValue]="null">Select Role</option>
+                  <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.code }} - {{ role.name }}</option>
+                </select>
+              </div>
+              <small class="text-danger" *ngIf="hasError('roleId','required')">Role is required.</small>
+            </div>
+
+            <div>
+              <label class="form-label">Status</label>
+              <div class="input-with-icon">
+                <i class="fa fa-check-circle"></i>
+                <select class="form-select" formControlName="status">
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                  <option value="LOCKED">LOCKED</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">User Type</label>
+              <div class="input-with-icon">
+                <i class="fa fa-users"></i>
+                <select class="form-select" formControlName="userType">
+                  <option value="STAFF">STAFF</option>
+                  <option value="CUSTOMER">CUSTOMER</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section last">
+          <div class="section-heading">
+            <i class="fa fa-lock"></i>
+            <div>
+              <h4>Security Controls</h4>
+              <p>Set temporary password for new users or maintain verification flags for existing accounts.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div *ngIf="!isEdit">
+              <label class="form-label">Password</label>
+              <div class="input-with-icon">
+                <i class="fa fa-key"></i>
+                <input type="password" class="form-control" formControlName="password" placeholder="temporary password">
+              </div>
+            </div>
+
+            <div *ngIf="!isEdit">
+              <label class="form-label">Confirm Password</label>
+              <div class="input-with-icon">
+                <i class="fa fa-unlock-alt"></i>
+                <input type="password" class="form-control" formControlName="confirmPassword" placeholder="confirm password">
+              </div>
+            </div>
+
+            <div *ngIf="isEdit">
+              <label class="form-label">Email Verified</label>
+              <label class="toggle-card">
+                <input id="emailVerified" class="form-check-input" type="checkbox" formControlName="emailVerified">
+                <span>Email is verified</span>
+              </label>
+            </div>
+
+            <div *ngIf="isEdit">
+              <label class="form-label">Mobile Verified</label>
+              <label class="toggle-card">
+                <input id="mobileVerified" class="form-check-input" type="checkbox" formControlName="mobileVerified">
+                <span>Mobile is verified</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline-secondary" type="button" (click)="onCancel()">
+          <i class="fa fa-times"></i> Cancel
+        </button>
+
+        <button class="btn btn-primary" type="submit" [disabled]="saving">
+          <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+          {{ isEdit ? 'Update User' : 'Save User' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

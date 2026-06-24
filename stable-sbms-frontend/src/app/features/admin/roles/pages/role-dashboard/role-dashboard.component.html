@@ -1,0 +1,280 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container role-module">
+  <app-page-header title="Role Management" homeLabel="Home" homeRoute="/dashboard" currentLabel="Role Dashboard"></app-page-header>
+
+  <app-page-title title="Role Dashboard" subtitle="Track role setup, permission spread, governance pressure and recent access changes from one control surface">
+    <button class="btn btn-outline-primary" type="button" title="Open role list" (click)="open('/admin/roles')"><i class="fa fa-list"></i> Role List</button>
+    <button class="btn btn-primary" type="button" title="Create role" (click)="open('/admin/roles/new')" *ngIf="access.hasPermission('ROLE_CREATE')"><i class="fa fa-plus"></i> New Role</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading role dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-shield"></i>
+              Access Control
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Role matrix, permission density and admin governance at a glance</h3>
+          <p class="dashboard-subtitle">
+            Keep role architecture clean, limit overpowered access and watch which roles are carrying most of the permission load.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Total Roles</span>
+              <div class="dashboard-hero-metric-value">{{ data.totalRoles }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.activeRoles }} currently active in the access model</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Permission Heavy</span>
+              <div class="dashboard-hero-metric-value">{{ data.permissionHeavyRoles }}</div>
+              <div class="dashboard-hero-metric-note">elevated roles needing tighter review and OTP controls</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Recent Role Activity</span>
+              <div class="dashboard-hero-metric-value">{{ data.recentRoles.length }}</div>
+              <div class="dashboard-hero-metric-note">roles recently updated or used in admin operations</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Governance Readiness</span>
+              <h3 class="dashboard-title">Control high-risk access before it spreads</h3>
+              <p class="dashboard-subtitle">Use this panel to monitor inactive roles, permission-heavy groups and mapping density.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.activeRoles - data.permissionHeavyRoles }}</div>
+          <div class="dashboard-focus-note">active roles currently sitting outside the heavy-access risk zone</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Inactive</span>
+              <strong class="dashboard-mini-value">{{ data.inactiveRoles }}</strong>
+              <span class="dashboard-mini-note">roles out of daily circulation</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Heavy Access</span>
+              <strong class="dashboard-mini-value">{{ data.permissionHeavyRoles }}</strong>
+              <span class="dashboard-mini-note">review these first in the map page</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Roles</span>
+              <strong class="dashboard-mini-value">{{ data.recentRoles.length }}</strong>
+              <span class="dashboard-mini-note">latest governance changes tracked</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Coverage</span>
+              <strong class="dashboard-mini-value">{{ data.activeRoles }}</strong>
+              <span class="dashboard-mini-note">active entries available for assignment</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Activation Coverage</span>
+          <strong class="dashboard-chip-value">{{ data.activeRoles }}</strong>
+          <span class="dashboard-chip-note">roles currently available for RBAC assignment</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Dormant Roles</span>
+          <strong class="dashboard-chip-value">{{ data.inactiveRoles }}</strong>
+          <span class="dashboard-chip-note">entries to review before restoring or deleting</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Permission Density</span>
+          <strong class="dashboard-chip-value">{{ data.permissionHeavyRoles }}</strong>
+          <span class="dashboard-chip-note">high-power roles likely to need tighter approval rules</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Recent Governance</span>
+          <strong class="dashboard-chip-value">{{ data.recentRoles.length }}</strong>
+          <span class="dashboard-chip-note">recently edited roles with visible assignment footprint</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card" data-summary-hint="All registered role definitions"><div class="summary-icon primary"><i class="fa fa-shield"></i></div><div><div class="summary-label">Total Roles</div><div class="summary-value">{{ data.totalRoles }}</div></div></div>
+        <div class="summary-card" data-summary-hint="Ready for assignment and access control"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Active Roles</div><div class="summary-value">{{ data.activeRoles }}</div></div></div>
+        <div class="summary-card" data-summary-hint="Archived or inactive access roles"><div class="summary-icon danger"><i class="fa fa-archive"></i></div><div><div class="summary-label">Inactive Roles</div><div class="summary-value">{{ data.inactiveRoles }}</div></div></div>
+        <div class="summary-card" data-summary-hint="High-power roles needing extra review"><div class="summary-icon warning"><i class="fa fa-key"></i></div><div><div class="summary-label">Permission Heavy</div><div class="summary-value">{{ data.permissionHeavyRoles }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Role Health Mix</h4>
+              <p class="dashboard-subtitle">Balance active coverage against inactive role buildup and heavy-access concentration.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let item of roleHealthBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ item.label }}</span>
+                <span class="dashboard-summary-band-value">{{ item.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+              </div>
+              <small>{{ item.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Role Distribution Donut</h4>
+              <p class="dashboard-subtitle">A pie-style view of active, inactive, balanced and permission-heavy role population.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="roleStatusGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.totalRoles }}</div>
+                    <div class="dashboard-donut-label">role definitions currently registered in the admin catalog</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of roleHealthLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Permission Weight Bar Chart</h4>
+              <p class="dashboard-subtitle">A statistical role comparison chart to show where permission volume is most concentrated.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="permissionColumns.length; else noPermissionBars" class="dashboard-column-chart role-permission-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of permissionAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of permissionColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noPermissionBars>
+            <div class="empty-mini">No role permission density available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Recent Role Timeline</h4>
+              <p class="dashboard-subtitle">Latest role changes with assignment footprint and current lifecycle state.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-history"></i></span>
+          </div>
+
+          <div *ngIf="recentTimeline.length; else noRecentTimeline" class="dashboard-timeline-list">
+            <div *ngFor="let item of recentTimeline" class="dashboard-timeline-item">
+              <span class="dashboard-timeline-marker" [ngClass]="'tone-' + item.tone">
+                <i class="fa fa-user-secret"></i>
+              </span>
+              <span>
+                <span class="dashboard-timeline-title">{{ item.title }}</span>
+                <span class="dashboard-timeline-subtitle">{{ item.subtitle }}</span>
+                <span class="dashboard-timeline-meta">{{ item.meta }}</span>
+              </span>
+            </div>
+          </div>
+          <ng-template #noRecentTimeline>
+            <div class="empty-mini">No recent role changes found.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Governance Readout</h4>
+              <p class="dashboard-subtitle">Quick numeric signals for admin review, mapping density and heavy-access ratio.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-sliders"></i></span>
+          </div>
+
+          <div class="dashboard-info-stack">
+            <div *ngFor="let row of governanceRows" class="dashboard-info-row">
+              <span class="dashboard-info-label">{{ row.label }}</span>
+              <span class="dashboard-info-value">{{ row.value }}</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Recent Role Changes</h4>
+            <p>Latest role updates with assigned users and permission volume.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Users</th>
+                <th>Permissions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let role of data.recentRoles">
+                <td>{{ role.code }} / {{ role.name }}</td>
+                <td><app-status-badge [status]="role.status"></app-status-badge></td>
+                <td>{{ role.assignedUserCount || 0 }}</td>
+                <td>{{ role.permissionCount || 0 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

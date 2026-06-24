@@ -1,0 +1,150 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-logo">
+        <img src="assets/branding/sbms-logo-mark.png" alt="SBMS logo mark">
+      </div>
+      <div class="auth-brand-text">
+        <h1>Al-Barakah Shariah Bank PLC</h1>
+        <span>Shariah Banking Management System</span>
+      </div>
+    </div>
+
+    <div class="auth-divider">
+      <span>Secure Login</span>
+    </div>
+
+    <form *ngIf="!loginChallenge" (ngSubmit)="onLogin()" #loginForm="ngForm" class="auth-form" novalidate>
+      <div class="auth-field">
+        <label for="username">
+          <i class="bi bi-person"></i>
+          Username
+        </label>
+        <input
+          id="username"
+          type="text"
+          placeholder="Enter your username"
+          [(ngModel)]="credentials.username"
+          name="username"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="auth-field">
+        <label for="password">
+          <i class="bi bi-lock"></i>
+          Password
+        </label>
+        <div class="password-wrapper">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Enter your password"
+            [(ngModel)]="credentials.password"
+            name="password"
+            required
+            autocomplete="current-password"
+          />
+          <button type="button" class="pw-toggle" (click)="showPassword = !showPassword" title="Show or hide password">
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-meta">
+        <label class="remember-check">
+          <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe">
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-link" (click)="openForgotPassword($event)">Forgot password?</a>
+      </div>
+
+      <div class="auth-field">
+        <label for="otpChannelPreference">
+          <i class="bi bi-broadcast"></i>
+          OTP Delivery Channel
+        </label>
+        <input
+          id="otpChannelPreference"
+          type="text"
+          value="Email OTP"
+          name="otpChannelPreference"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+
+      <div class="auth-note">
+        <i class="bi bi-shield-check"></i>
+        Your assigned role and permissions will be loaded securely after authentication.
+      </div>
+
+      <div class="auth-error" *ngIf="errorMsg">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ errorMsg }}
+      </div>
+
+      <button type="submit" class="auth-submit" [disabled]="loading || !loginForm.valid" title="Sign in securely">
+        <span *ngIf="!loading">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Continue
+        </span>
+        <span *ngIf="loading" class="auth-spinner">
+          <span class="spinner-border spinner-border-sm"></span>
+          Validating credentials...
+        </span>
+      </button>
+    </form>
+
+    <form *ngIf="loginChallenge" (ngSubmit)="onVerifyOtp()" #otpForm="ngForm" class="auth-form" novalidate>
+      <div class="auth-note otp-note">
+        <i class="bi bi-shield-lock"></i>
+        <div>
+          <div class="note-title">Two-step verification required</div>
+          <div>{{ getOtpInstructionText() }}</div>
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label for="otpCode">
+          <i class="bi bi-key"></i>
+          Login OTP
+        </label>
+        <input
+          id="otpCode"
+          type="text"
+          placeholder="Enter the 6-digit OTP"
+          [(ngModel)]="otpCode"
+          name="otpCode"
+          required
+          autocomplete="one-time-code"
+        />
+      </div>
+
+      <div class="auth-meta otp-meta">
+        <button type="button" class="link-btn" (click)="backToCredentials()" title="Go back to credential entry">Back</button>
+        <button type="button" class="link-btn" (click)="resendOtp()" [disabled]="loading" title="Request a fresh OTP">Resend OTP</button>
+      </div>
+
+      <div class="auth-error" *ngIf="errorMsg">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ errorMsg }}
+      </div>
+
+      <button type="submit" class="auth-submit" [disabled]="loading || !otpForm.valid" title="Verify OTP and complete sign in">
+        <span *ngIf="!loading">
+          <i class="bi bi-shield-check me-2"></i>Verify OTP
+        </span>
+        <span *ngIf="loading" class="auth-spinner">
+          <span class="spinner-border spinner-border-sm"></span>
+          Verifying OTP...
+        </span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <i class="bi bi-shield-check text-success me-1"></i>
+      Secure Banking Access · Bangladesh Bank Authorized · v1.0.0
+    </div>
+  </div>
+</div>

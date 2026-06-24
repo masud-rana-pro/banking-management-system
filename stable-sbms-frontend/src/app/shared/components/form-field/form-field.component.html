@@ -1,0 +1,16 @@
+<div class="sbms-form-field">
+
+  <!-- Icon -->
+  <span class="field-icon" *ngIf="icon">
+    <i class="bi" [ngClass]="'bi-' + icon"></i>
+  </span>
+
+  <!-- Input/select -->
+  <div class="field-control">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Required star -->
+  <span class="required-star" *ngIf="required">*</span>
+
+</div>

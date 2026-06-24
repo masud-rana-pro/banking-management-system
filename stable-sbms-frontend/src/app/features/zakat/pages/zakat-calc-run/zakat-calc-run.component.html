@@ -1,0 +1,91 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/profiles" currentLabel="Zakat Calc Run"></app-page-header>
+
+  <app-page-title title="Zakat Calculation Run" subtitle="Create or update zakat profile, run yearly asset-based calculation and post deduction to charity fund">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading zakat calculation form...</div>
+
+  <div class="form-card zakat-calc-shell">
+    <div *ngIf="selectedCustomer" class="entity-inline-profile mb-3">
+      <img *ngIf="customerImageUrl; else zakatCalcCustomerFallback" class="entity-avatar-lg" [src]="customerImageUrl" [alt]="selectedCustomer.fullName">
+      <ng-template #zakatCalcCustomerFallback>
+        <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+      </ng-template>
+      <div>
+        <strong>{{ selectedCustomer.customerCode }} - {{ selectedCustomer.fullName }}</strong>
+        <div class="text-muted small">Profile: {{ customerImageUrl ? 'Image available' : 'No image uploaded' }}</div>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label">Customer</label>
+        <select class="form-select" [(ngModel)]="form.customerId" (ngModelChange)="syncSelectedCustomer()">
+          <option [ngValue]="null">Select customer</option>
+          <option *ngFor="let customer of customers" [ngValue]="customer.id">{{ customer.customerCode }} - {{ customer.fullName }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Zakat Year</label>
+        <input class="form-control" type="number" [(ngModel)]="form.zakatYear">
+      </div>
+      <div>
+        <label class="form-label">Nisab Amount</label>
+        <input class="form-control" type="number" [(ngModel)]="form.nisabAmount">
+      </div>
+      <div>
+        <label class="form-label">Eligible Asset Amount</label>
+        <input class="form-control" type="number" [(ngModel)]="form.eligibleAssetAmount">
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label class="form-label">Remarks</label>
+        <textarea class="form-control" [(ngModel)]="form.remarks"></textarea>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label class="form-label">Proof Document</label>
+        <input class="form-control" type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" (change)="onProofSelected($event)">
+        <div class="image-upload-meta mt-2">
+          <span>{{ form.proofDocumentName ? (form.proofDocumentName | displayFileName) : 'No proof document selected' }}</span>
+          <button *ngIf="form.proofDocumentName" class="btn btn-link btn-sm p-0" type="button" (click)="previewProof()">Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-primary" type="button" (click)="saveProfile()" [disabled]="loading"><i class="fa fa-save"></i> Save Profile</button>
+      <button class="btn btn-outline-success" type="button" (click)="runCalculation()" [disabled]="loading"><i class="fa fa-calculator"></i> Calculate</button>
+      <button class="btn btn-primary" type="button" (click)="openView()" [disabled]="!profileId"><i class="fa fa-eye"></i> View Profile</button>
+    </div>
+  </div>
+
+  <div *ngIf="profile as data" class="detail-card">
+    <div class="card-heading">
+      <i class="fa fa-line-chart"></i>
+      <div>
+        <h4>Calculation Snapshot</h4>
+        <p>Current saved profile and deduction result after calculation.</p>
+      </div>
+    </div>
+    <div class="info-list">
+      <div class="info-row">
+        <span>Customer</span>
+        <strong class="entity-inline-profile">
+          <img *ngIf="customerImageUrl; else zakatCalcSnapshotFallback" class="entity-avatar" [src]="customerImageUrl" [alt]="data.customerName">
+          <ng-template #zakatCalcSnapshotFallback>
+            <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <span>{{ data.customerCode }} - {{ data.customerName }}</span>
+        </strong>
+      </div>
+      <div class="info-row"><span>Calculation Status</span><strong>{{ getLabel(data.calculationStatus) }}</strong></div>
+      <div class="info-row"><span>Zakat Amount</span><strong>{{ data.zakatAmount | number:'1.2-2' }}</strong></div>
+      <div class="info-row"><span>Eligible Asset</span><strong>{{ data.eligibleAssetAmount | number:'1.2-2' }}</strong></div>
+      <div class="info-row"><span>Proof Document</span><strong>{{ data.proofDocumentName | displayFileName }}</strong></div>
+      <div class="info-row"><span>Updated At</span><strong>{{ data.updatedAt || '-' }}</strong></div>
+    </div>
+  </div>
+</div>
+</div>

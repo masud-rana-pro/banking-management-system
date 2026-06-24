@@ -1,0 +1,161 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/opening-requests"
+    currentLabel="Opening Request View">
+  </app-page-header>
+
+  <app-page-title
+    title="Opening Request View"
+    subtitle="Review request, customer, type, deposit amount, verification info and account creation outcome">
+
+    <button class="btn btn-outline-secondary" routerLink="/accounts/opening-requests">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" [disabled]="!item">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="previewDocument()" [disabled]="!item">
+      <i class="fa fa-eye"></i> Preview Form
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="downloadDocument()" [disabled]="!item">
+      <i class="fa fa-download"></i> Download PDF
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!item">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openType()" [disabled]="!item">
+      <i class="fa fa-tags"></i> View Type
+    </button>
+
+    <button *ngIf="item?.accountId" class="btn btn-outline-primary" type="button" (click)="openAccount()">
+      <i class="fa fa-bank"></i> View Account
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!item">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="review()" [disabled]="!item">
+      <i class="fa fa-search-plus"></i> Review
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading opening request...
+  </div>
+
+  <div *ngIf="!loading && item" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="entity-avatar">
+          <img *ngIf="resolvedImageName; else requestViewAvatarFallback" [src]="getResolvedImageUrl()" alt="Applicant image">
+          <ng-template #requestViewAvatarFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Account holder placeholder"></ng-template>
+        </div>
+        <div>
+          <h3>{{ item.requestNo }}</h3>
+          <p>{{ item.customerCode }} | {{ item.customerName }} | {{ getBranchName(item.branchId) }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="item.requestStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-tags"></i></div>
+        <div><div class="summary-label">Account Type</div><div class="summary-value small">{{ item.accountTypeCode }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Initial Deposit</div><div class="summary-value small">{{ item.initialDepositAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-user-secret"></i></div>
+        <div><div class="summary-label">Verified By</div><div class="summary-value small">{{ item.verifiedBy || '-' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-check-square-o"></i></div>
+        <div><div class="summary-label">Approved By</div><div class="summary-value small">{{ item.approvedBy || '-' }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Request Profile</h4>
+            <p>Request number, customer, product and branch linkage.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row">
+            <span>Applicant Image</span>
+            <strong>
+              <div class="entity-inline-profile" *ngIf="resolvedImageName; else noApplicantImage">
+                <div class="entity-thumb">
+                  <img [src]="getResolvedImageUrl()" alt="Applicant image">
+                </div>
+                <button class="btn btn-sm btn-outline-primary" type="button" (click)="openApplicantPreview(resolvedImageName)">
+                  <i class="fa fa-eye"></i> Preview
+                </button>
+              </div>
+              <ng-template #noApplicantImage>No image</ng-template>
+            </strong>
+          </div>
+          <div class="info-row"><span>Request No</span><strong>{{ item.requestNo }}</strong></div>
+          <div class="info-row"><span>Customer</span><strong>{{ item.customerName }}</strong></div>
+          <div class="info-row"><span>Customer Code</span><strong>{{ item.customerCode }}</strong></div>
+          <div class="info-row"><span>Account Type</span><strong>{{ item.accountTypeName }}</strong></div>
+          <div class="info-row"><span>Branch</span><strong>{{ getBranchName(item.branchId) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-check-square-o"></i>
+          <div>
+            <h4>Workflow Details</h4>
+            <p>Verification, approval and linked account outcome.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Requested Date</span><strong>{{ item.requestedDate || '-' }}</strong></div>
+          <div class="info-row"><span>Request Status</span><strong>{{ getLabel(item.requestStatus) }}</strong></div>
+          <div class="info-row"><span>Verified At</span><strong>{{ item.verifiedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Approved At</span><strong>{{ item.approvedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Linked Account</span><strong>{{ item.accountId ? ('#' + item.accountId) : '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Remarks</h4>
+            <p>Branch or reviewer notes saved with the request.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Remarks</span><strong>{{ item.remarks || '-' }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ item.status }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ item.createdAt || '-' }}</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

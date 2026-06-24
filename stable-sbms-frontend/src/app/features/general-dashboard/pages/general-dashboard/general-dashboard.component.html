@@ -1,0 +1,425 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module general-dashboard-page">
+  <app-page-header title="General Dashboard" homeLabel="Home" homeRoute="/dashboard" currentLabel="Overview"></app-page-header>
+
+  <app-page-title title="Admin Overview Dashboard" [subtitle]="roleLabel + ' | ' + activeBranchLabel">
+    <button class="btn btn-outline-primary" type="button" title="Reload dashboard data" (click)="loadDashboard()">
+      <i class="fa fa-refresh"></i> Refresh
+    </button>
+    <button class="btn btn-primary" type="button" title="Open reporting dashboard" (click)="open('/reports/dashboard')">
+      <i class="bi bi-file-earmark-bar-graph"></i> Reports
+    </button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading" class="dashboard-workspace industrial-dashboard">
+    <section class="welcome-panel">
+      <div class="welcome-copy">
+        <span class="welcome-kicker">Executive Banking Console</span>
+        <h2>Welcome, {{ sessionName }}</h2>
+        <p>{{ activeBranchLabel }} operational overview for deposit, financing, profitability and risk control.</p>
+      </div>
+
+      <div class="welcome-meta">
+        <span><i class="bi bi-calendar3"></i> {{ todayLabel }}</span>
+        <span><i class="bi bi-shield-check"></i> {{ roleLabel }}</span>
+        <span><i class="bi bi-broadcast-pin"></i> System Online</span>
+      </div>
+
+      <div class="welcome-side">
+        <div class="welcome-kpi" *ngIf="analyticsCards[0]">
+          <span>{{ analyticsCards[0].label }}</span>
+          <strong>{{ analyticsCards[0].value }}</strong>
+        </div>
+        <div class="welcome-kpi" *ngIf="analyticsCards[1]">
+          <span>{{ analyticsCards[1].label }}</span>
+          <strong>{{ analyticsCards[1].value }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-command">
+      <div>
+        <h2>Operational Analytics Workspace</h2>
+        <p>{{ windowLabel }} window | {{ trendRangeLabel }} | {{ activeBranchLabel }}</p>
+      </div>
+      <div class="command-actions">
+        <label class="branch-select">
+          <span>Branch Scope</span>
+          <select [disabled]="branchSelectionLocked" [ngModel]="selectedBranchId" (ngModelChange)="onBranchChange($event)">
+            <option [ngValue]="null">All Branches</option>
+            <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} | {{ branch.branchName }}</option>
+          </select>
+        </label>
+        <div class="window-tabs">
+          <button *ngFor="let option of windowOptions" type="button" [class.active]="selectedWindow === option.value" (click)="selectWindow(option.value)">
+            {{ option.label }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="executive-kpis">
+      <button class="metric-card" *ngFor="let card of analyticsCards | slice:0:6" type="button">
+        <span class="metric-icon" [ngClass]="'tone-' + card.tone"><i [class]="card.icon"></i></span>
+        <span class="metric-label">{{ card.label }}</span>
+        <strong>{{ card.value }}</strong>
+        <small>{{ card.detail }}</small>
+      </button>
+    </section>
+
+    <section class="dashboard-grid main-grid">
+      <div class="dashboard-card chart-card business-overview">
+        <div class="card-head">
+          <div>
+            <h3>Deposit, Financing & Profit Trend</h3>
+            <p>Book balance, posted profit and financing disbursement across the selected banking scope.</p>
+          </div>
+          <div class="legend">
+            <span><i class="dot balance"></i> Balance</span>
+            <span><i class="dot profit"></i> Profit</span>
+            <span><i class="dot disbursed"></i> Financing</span>
+          </div>
+        </div>
+        <svg class="line-chart" viewBox="0 0 620 260" preserveAspectRatio="xMidYMid meet">
+          <g class="axis-notes">
+            <text x="6" y="28">Amount</text>
+            <text x="552" y="255">Period</text>
+        </g>
+        <g class="y-axis-labels">
+          <text *ngFor="let tick of heroFinanceAxisTicks" x="6" [attr.y]="tick.y + 3">{{ tick.label }}</text>
+        </g>
+        <g class="grid-lines">
+          <line *ngFor="let tick of heroFinanceAxisTicks" x1="34" x2="602" [attr.y1]="tick.y" [attr.y2]="tick.y"></line>
+        </g>
+          <path class="area balance-area" [attr.d]="areaPath('balance', heroFinanceMetricMax)"></path>
+          <path class="chart-line balance" [attr.d]="linePath('balance', heroFinanceMetricMax)"></path>
+          <path class="chart-line profit" [attr.d]="linePath('profit', heroFinanceMetricMax)"></path>
+          <path class="chart-line disbursed" [attr.d]="linePath('disbursed', heroFinanceMetricMax)"></path>
+          <g class="chart-points">
+            <circle *ngFor="let point of trendBuckets; let i = index" class="point balance" [attr.cx]="pointX(i, trendBuckets.length)" [attr.cy]="valueY(point.balance, heroFinanceMetricMax)" r="4"></circle>
+            <circle *ngFor="let point of trendBuckets; let i = index" class="point profit" [attr.cx]="pointX(i, trendBuckets.length)" [attr.cy]="valueY(point.profit, heroFinanceMetricMax)" r="3"></circle>
+          </g>
+          <g>
+            <text *ngFor="let point of trendBuckets; let i = index" class="axis-label" [attr.x]="pointX(i, trendBuckets.length)" y="246" text-anchor="middle">{{ trackLabel(i) ? point.label : '' }}</text>
+          </g>
+        </svg>
+        <div class="chart-summary-strip">
+          <div><span>Book Balance</span><strong>{{ latestTrendBalance | sbmsCurrency }}</strong></div>
+          <div><span>Financing Disbursed</span><strong>{{ totalTrendDisbursed | sbmsCurrency }}</strong></div>
+          <div><span>Net Profit</span><strong>{{ totalTrendProfit | sbmsCurrency }}</strong></div>
+        </div>
+      </div>
+
+      <div class="dashboard-card ratio-card">
+        <div class="card-head">
+          <div>
+            <h3>Deposit vs Financing Ratio</h3>
+            <p>Financing outflow against book balance.</p>
+          </div>
+        </div>
+        <div class="gauge-shell">
+          <div class="gauge" [style.--ratio.%]="financingRatioPercent">
+            <span>{{ latestTrendBalance > 0 ? ((totalTrendDisbursed / latestTrendBalance) * 100 | number:'1.0-1') : '0.0' }}%</span>
+          </div>
+          <div class="ratio-split">
+            <div><i class="dot balance"></i><span>Book Balance</span><strong>{{ analyticsCards[0]?.value || 'Tk 0' }}</strong></div>
+            <div><i class="dot disbursed"></i><span>Financing</span><strong>{{ totalTrendDisbursed | sbmsCurrency }}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card account-summary">
+        <div class="card-head">
+          <div>
+            <h3>Account Summary</h3>
+            <p>Balance mix by visible account status.</p>
+          </div>
+        </div>
+        <div class="donut-layout">
+          <div class="donut" [style.background]="portfolioRingGradient">
+            <span>{{ balanceMix.length }}</span>
+            <small>Segments</small>
+          </div>
+          <div class="mix-list">
+            <div class="mix-row" *ngFor="let row of balanceMix | slice:0:5">
+              <div><strong>{{ row.label }}</strong><small>{{ row.percentage | number:'1.0-1' }}%</small></div>
+              <span>{{ row.value | sbmsCurrency }}</span>
+            </div>
+            <div class="empty-mini" *ngIf="!balanceMix.length">Account balance mix will appear after account data is available.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-grid analytics-chart-grid">
+      <div class="dashboard-card">
+        <div class="card-head">
+          <div>
+            <h3>Cash Movement Analysis</h3>
+            <p>Cash inflow, withdrawal outflow and total transaction volume by period.</p>
+          </div>
+          <div class="legend">
+            <span><i class="dot inflow"></i> Inflow</span>
+            <span><i class="dot outflow"></i> Outflow</span>
+            <span><i class="dot volume"></i> Volume</span>
+          </div>
+        </div>
+        <svg class="bar-chart" viewBox="0 0 620 260" preserveAspectRatio="xMidYMid meet">
+          <g class="axis-notes">
+            <text x="6" y="28">Amount</text>
+            <text x="552" y="255">Period</text>
+          </g>
+        <g class="y-axis-labels">
+          <text *ngFor="let tick of cashAxisTicks" x="6" [attr.y]="tick.y + 3">{{ tick.label }}</text>
+        </g>
+        <g class="grid-lines">
+          <line *ngFor="let tick of cashAxisTicks" x1="34" x2="602" [attr.y1]="tick.y" [attr.y2]="tick.y"></line>
+        </g>
+          <ng-container *ngFor="let point of trendBuckets; let i = index">
+            <rect class="bar inflow" [attr.x]="groupedBarX(i, trendBuckets.length, 0)" [attr.y]="barY(point.inflow, flowMetricMax)" [attr.width]="groupedBarWidth(trendBuckets.length)" [attr.height]="groupedBarHeight(point.inflow, flowMetricMax)" rx="5"></rect>
+            <rect class="bar outflow" [attr.x]="groupedBarX(i, trendBuckets.length, 1)" [attr.y]="barY(point.outflow, flowMetricMax)" [attr.width]="groupedBarWidth(trendBuckets.length)" [attr.height]="groupedBarHeight(point.outflow, flowMetricMax)" rx="5"></rect>
+            <rect class="bar volume" [attr.x]="groupedBarX(i, trendBuckets.length, 2)" [attr.y]="barY(point.volume, flowMetricMax)" [attr.width]="groupedBarWidth(trendBuckets.length)" [attr.height]="groupedBarHeight(point.volume, flowMetricMax)" rx="5"></rect>
+            <text class="axis-label" [attr.x]="pointX(i, trendBuckets.length)" y="246" text-anchor="middle">{{ trackLabel(i) ? point.label : '' }}</text>
+          </ng-container>
+        </svg>
+        <div class="chart-summary-strip compact">
+          <div><span>Total Inflow</span><strong>{{ totalTrendInflow | sbmsCurrency }}</strong></div>
+          <div><span>Total Outflow</span><strong>{{ totalTrendOutflow | sbmsCurrency }}</strong></div>
+          <div><span>Net Movement</span><strong>{{ totalTrendNet | sbmsCurrency }}</strong></div>
+        </div>
+      </div>
+
+        <div class="dashboard-card">
+          <div class="card-head">
+            <div>
+              <h3>Account Portfolio Mix</h3>
+              <p>Account portfolio value distribution by active banking segment.</p>
+            </div>
+          </div>
+          <div class="portfolio-bars" *ngIf="balanceMix.length; else emptyPortfolioMix">
+            <div class="portfolio-row" *ngFor="let row of balanceMix | slice:0:6">
+              <div class="portfolio-row-head">
+                <span><i [ngClass]="'tone-' + row.tone"></i>{{ row.label }}</span>
+                <strong>{{ row.value | sbmsCurrency }}</strong>
+              </div>
+              <div class="portfolio-track" [attr.aria-label]="row.label + ' ' + (row.percentage | number:'1.0-1') + '%'">
+                <em [ngClass]="'fill-' + row.tone" [style.width.%]="row.percentage"></em>
+              </div>
+              <small>{{ row.percentage | number:'1.0-1' }}% of visible portfolio balance</small>
+            </div>
+          </div>
+          <ng-template #emptyPortfolioMix>
+            <div class="empty-mini">Account portfolio distribution will appear after account data is available.</div>
+          </ng-template>
+        </div>
+
+      <div class="dashboard-card">
+        <div class="card-head">
+          <div>
+            <h3>Income vs Expense</h3>
+            <p>Income, expense and net result for the selected reporting window.</p>
+          </div>
+          <div class="legend">
+            <span><i class="dot inflow"></i> Income</span>
+            <span><i class="dot outflow"></i> Expense</span>
+            <span><i class="dot volume"></i> Net Profit</span>
+          </div>
+        </div>
+        <div class="income-bars" *ngIf="profitabilitySnapshot as profit; else noProfit">
+          <svg class="profit-line-chart" viewBox="0 0 620 220" preserveAspectRatio="xMidYMid meet">
+          <g class="grid-lines">
+            <line *ngFor="let tick of profitAxisTicks" x1="34" x2="602" [attr.y1]="tick.y" [attr.y2]="tick.y"></line>
+          </g>
+          <g class="y-axis-labels">
+            <text *ngFor="let tick of profitAxisTicks" x="6" [attr.y]="tick.y + 3">{{ tick.label }}</text>
+          </g>
+            <path class="area profit-area" [attr.d]="areaPath('profit', profitMetricMax)"></path>
+            <path class="chart-line profit-overview" [attr.d]="linePath('profit', profitMetricMax)"></path>
+            <circle *ngFor="let point of trendBuckets; let i = index" class="point profit" [attr.cx]="pointX(i, trendBuckets.length)" [attr.cy]="valueY(point.profit, profitMetricMax)" r="4"></circle>
+            <text *ngFor="let point of trendBuckets; let i = index" class="axis-label" [attr.x]="pointX(i, trendBuckets.length)" y="212" text-anchor="middle">{{ trackLabel(i) ? point.label : '' }}</text>
+          </svg>
+          <div class="profit-overview-number">
+            <span>Net Profit</span>
+            <strong>{{ profit.ledgerNet | sbmsCurrency }}</strong>
+            <small>Income {{ profit.ledgerIncome | sbmsCurrency }} vs expense {{ profit.ledgerExpense | sbmsCurrency }}</small>
+          </div>
+          <div class="income-row">
+            <span>Management Income</span>
+            <i><em class="fill-green" [style.width.%]="incomeBarPercent(profit, profit.managementIncome)"></em></i>
+            <strong>{{ profit.managementIncome | sbmsCurrency }}</strong>
+          </div>
+          <div class="income-row">
+            <span>Management Expense</span>
+            <i><em class="fill-red" [style.width.%]="incomeBarPercent(profit, profit.managementExpense)"></em></i>
+            <strong>{{ profit.managementExpense | sbmsCurrency }}</strong>
+          </div>
+          <div class="income-row">
+            <span>Ledger Income</span>
+            <i><em class="fill-blue" [style.width.%]="incomeBarPercent(profit, profit.ledgerIncome)"></em></i>
+            <strong>{{ profit.ledgerIncome | sbmsCurrency }}</strong>
+          </div>
+          <div class="income-row">
+            <span>Ledger Expense</span>
+            <i><em class="fill-amber" [style.width.%]="incomeBarPercent(profit, profit.ledgerExpense)"></em></i>
+            <strong>{{ profit.ledgerExpense | sbmsCurrency }}</strong>
+          </div>
+        </div>
+        <ng-template #noProfit><div class="empty-mini">Profitability data is loading or unavailable.</div></ng-template>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-head">
+          <div>
+            <h3>Top Branches by Result</h3>
+            <p>Branch ranking by positive net profit contribution.</p>
+          </div>
+        </div>
+        <div class="branch-ranking" *ngIf="branchProfitBars.length; else noBranchRank">
+        <button class="ranking-row" *ngFor="let bar of branchProfitBars | slice:0:5" type="button" (click)="onBranchChange(bar.branchId)">
+          <span><b>{{ bar.label }}</b><small>{{ bar.helper }}</small></span>
+          <i><em [ngClass]="'fill-' + bar.tone" [style.width.%]="bar.percentage"></em></i>
+          <strong>{{ bar.value | sbmsCurrency }}</strong>
+        </button>
+        </div>
+        <ng-template #noBranchRank><div class="empty-mini">Branch result ranking will appear after ledger data is available.</div></ng-template>
+      </div>
+    </section>
+
+    <section class="dashboard-card key-metrics-section">
+      <div class="card-head">
+        <div>
+          <h3>Key Metrics</h3>
+          <p>Control ratios and risk indicators for the selected {{ windowLabel }} window.</p>
+        </div>
+        <div class="legend">
+          <span><i class="dot balance"></i> Healthy</span>
+          <span><i class="dot profit"></i> Activity</span>
+          <span><i class="dot outflow"></i> Attention</span>
+        </div>
+      </div>
+      <div class="key-metrics-grid">
+        <div class="key-metric" *ngFor="let metric of keyMetricTiles">
+          <div class="key-metric-head">
+            <span>{{ metric.label }}</span>
+            <strong>{{ metric.value }}</strong>
+          </div>
+          <div class="metric-chart-frame">
+            <div class="metric-y-axis">
+              <span>High</span>
+              <span>Low</span>
+            </div>
+            <div class="spark-bars" aria-hidden="true">
+              <i *ngFor="let bar of metric.sparkline" [ngClass]="'fill-' + metric.tone" [style.height.%]="bar"></i>
+            </div>
+            <div class="metric-x-axis">
+              <span>{{ trendBuckets[0]?.label || 'Start' }}</span>
+              <span>{{ trendBuckets[trendBuckets.length - 1]?.label || 'End' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <section class="dashboard-grid bottom-grid">
+    <div class="dashboard-card">
+        <div class="card-head">
+          <div>
+            <h3>Recent Transactions</h3>
+            <p>Latest posted activity in selected branch scope.</p>
+          </div>
+          <button class="link-button" type="button" (click)="open('/transactions/list')">View All</button>
+        </div>
+        <div class="transaction-list">
+          <button class="transaction-row" *ngFor="let row of recentTransactionRows" type="button" (click)="open('/transactions/list')">
+            <span class="transaction-icon" [class.credit]="row.direction === 'credit'" [class.debit]="row.direction === 'debit'"><i [class]="row.icon"></i></span>
+            <div><strong>{{ row.title }}</strong><small>{{ row.subtitle }}</small></div>
+            <span class="status-pill" [class.debit]="row.direction === 'debit'">{{ row.badge }}</span>
+            <b>{{ row.amount | sbmsCurrency }}</b>
+          </button>
+          <div class="empty-mini" *ngIf="!recentTransactionRows.length">Recent transactions will appear here after posting activity.</div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-head">
+          <div>
+            <h3>Alerts & Notifications</h3>
+            <p>Operational signals that need follow-up.</p>
+          </div>
+          <button class="link-button" type="button" (click)="open('/workflow/pending')">View All</button>
+        </div>
+        <div class="alert-list">
+          <button class="alert-row" *ngFor="let item of activityItems | slice:0:5" type="button" (click)="open(item.route)">
+            <span>{{ item.tag }}</span>
+            <div><strong>{{ item.title }}</strong><small>{{ item.subtitle }}</small></div>
+            <i class="bi bi-arrow-up-right"></i>
+          </button>
+        </div>
+    </div>
+
+    <div class="dashboard-card risk-card">
+      <div class="card-head">
+        <div>
+          <h3>Risk & Compliance Snapshot</h3>
+          <p>KYC, security, workflow and reversal queues that need control action.</p>
+        </div>
+        <button class="link-button" type="button" (click)="open('/security/dashboard')">Review</button>
+      </div>
+      <div class="risk-snapshot-grid">
+        <button class="risk-snapshot-item" *ngFor="let item of riskSnapshotItems" type="button" (click)="open(item.route)">
+          <span class="risk-icon" [ngClass]="'tone-' + item.tone"><i [class]="item.icon"></i></span>
+          <div>
+            <strong>{{ item.value }}</strong>
+            <span>{{ item.label }}</span>
+            <small>{{ item.helper }}</small>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="dashboard-card control-summary-card">
+      <div class="card-head">
+        <div>
+          <h3>Control Queue Overview</h3>
+          <p>Summary from the same risk, workflow, KYC and security data.</p>
+        </div>
+        <button class="link-button" type="button" (click)="open('/workflow/pending')">Open Queue</button>
+      </div>
+      <div class="risk-control-panel">
+        <span class="panel-kicker">Control Position</span>
+        <strong>{{ riskTotalOpen() }}</strong>
+        <small>Total open control items in current scope</small>
+        <div class="risk-control-meter">
+          <span><b>{{ riskControlPercent() }}%</b> categories clear</span>
+          <i><em [style.width.%]="riskControlPercent()"></em></i>
+        </div>
+        <div class="risk-priority" *ngIf="riskHighestItem() as topRisk">
+          <span>Highest Attention</span>
+          <b>{{ topRisk.label }}</b>
+          <small>{{ topRisk.value }} item{{ topRisk.value === 1 ? '' : 's' }} waiting</small>
+        </div>
+        <button class="risk-summary-action" type="button" (click)="open('/workflow/pending')">
+          Open Control Queue <i class="fa fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </section>
+
+    <section class="dashboard-card launchpad-card">
+      <div class="card-head">
+        <div>
+          <h3>Action Launchpad</h3>
+          <p>Fast navigation to role-permitted operational workspaces.</p>
+        </div>
+      </div>
+      <div class="launchpad-grid">
+        <button class="launchpad-item" *ngFor="let link of filteredQuickLinks | slice:0:8" type="button" (click)="open(link.route)">
+          <i [class]="link.icon"></i>
+          <div><strong>{{ link.label }}</strong><small>{{ link.description }}</small></div>
+        </button>
+      </div>
+    </section>
+  </div>
+</div>

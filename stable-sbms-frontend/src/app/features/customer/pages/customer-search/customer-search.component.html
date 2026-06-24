@@ -1,0 +1,116 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/customers/dashboard"
+    currentLabel="Customer Search">
+  </app-page-header>
+
+  <app-page-title
+    title="Customer Search"
+    subtitle="Search customer profile by code, name, mobile or email and jump to the next action faster">
+
+    <button class="btn btn-outline-secondary" routerLink="/customers/list">
+      <i class="fa fa-list"></i> Customer List
+    </button>
+
+  </app-page-title>
+
+  <div class="form-shell">
+    <div class="form-body">
+      <div class="form-section mb-0">
+        <div class="section-heading">
+          <i class="fa fa-search"></i>
+          <div>
+            <h4>Search Input</h4>
+            <p>Use customer code, full name, mobile, email or occupation keyword.</p>
+          </div>
+        </div>
+
+        <div class="row g-3 align-items-end">
+          <div class="col-md-9">
+            <label class="form-label">Keyword</label>
+            <div class="input-with-icon">
+              <i class="fa fa-search"></i>
+              <input class="form-control" [(ngModel)]="keyword" placeholder="Search customer..." (keyup.enter)="onSearch()">
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="form-actions px-0 py-0 border-0 justify-content-start">
+              <button class="btn btn-outline-secondary" type="button" (click)="onReset()">Reset</button>
+              <button class="btn btn-primary" type="button" (click)="onSearch()">
+                <i class="fa fa-search"></i> Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="searched" class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-users"></i></div>
+      <div><div class="summary-label">Matched Result</div><div class="summary-value">{{ results.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+      <div><div class="summary-label">Pending KYC</div><div class="summary-value">{{ pendingCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-ban"></i></div>
+      <div><div class="summary-label">Blocked</div><div class="summary-value">{{ blockedCount }}</div></div>
+    </div>
+  </div>
+
+  <app-data-table [loading]="loading" [empty]="searched && !loading && results.length === 0" emptyTitle="No customer found" emptyMessage="Try another keyword to locate the customer profile.">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Customer</th>
+        <th>Type</th>
+        <th>Branch</th>
+        <th>Mobile</th>
+        <th>KYC Status</th>
+        <th class="text-center" style="width: 120px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of results; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>
+          <div class="entity-inline-profile">
+            <div class="entity-avatar">
+              <img *ngIf="item.profileImageName; else customerSearchFallback" [src]="getImageUrl(item.profileImageName)" alt="Customer image">
+              <ng-template #customerSearchFallback><i class="fa fa-user"></i></ng-template>
+            </div>
+            <div class="item-name">
+              <strong>{{ item.fullName }}</strong>
+              <span>{{ item.customerCode }} / {{ item.email || item.mobile }}</span>
+            </div>
+          </div>
+        </td>
+        <td>{{ getLabel(item.customerType) }}</td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td>{{ item.mobile }}</td>
+        <td><app-status-badge [status]="item.customerStatus"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions justify-content-center">
+            <button class="action-btn view" type="button" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn search" type="button" (click)="onStatus(item)"><i class="fa fa-exchange"></i></button>
+            <button class="action-btn manage" type="button" (click)="onManageIdentity(item)"><i class="fa fa-id-card"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+</div>
+</div>

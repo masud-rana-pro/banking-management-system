@@ -1,0 +1,89 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container user-module">
+  <app-page-header title="User Management" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="View User"></app-page-header>
+
+  <app-page-title title="User Details" subtitle="Review user profile, mapped role, branch assignment and security history">
+    <button class="btn btn-outline-secondary" (click)="onBack()" title="Back to user list"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-primary" (click)="onEdit()" *ngIf="user && access.hasPermission('USER_EDIT')" title="Edit this user"><i class="fa fa-pencil"></i> Edit</button>
+    <button class="btn btn-primary" (click)="onAssignRole()" *ngIf="user && access.hasPermission('USER_ASSIGN_ROLE')" title="Assign or change role"><i class="fa fa-users"></i> Assign Role</button>
+    <button class="btn btn-outline-primary" (click)="onResetPassword()" *ngIf="user && access.hasPermission('USER_RESET_PASSWORD')" title="Reset user password"><i class="fa fa-key"></i> Reset Password</button>
+    <button class="btn btn-outline-primary" (click)="onLockUnlock()" *ngIf="user && access.hasAnyPermission(['USER_LOCK','USER_UNLOCK'])" title="Lock or unlock this user"><i class="fa fa-lock"></i> Lock / Unlock</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading user detail...
+  </div>
+
+  <div *ngIf="user && !loading">
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <div class="entity-avatar">
+            <img *ngIf="user.profileImageName; else userViewAvatarFallback" [src]="getImageUrl(user.profileImageName)" alt="User image">
+            <ng-template #userViewAvatarFallback><i class="fa fa-user"></i></ng-template>
+          </div>
+          <div>
+            <h4>User Profile</h4>
+            <p>Core user identity, branch and assigned role.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>User Code</span><strong>{{ user.userCode || '-' }}</strong></div>
+          <div class="info-row"><span>Username</span><strong>{{ user.username }}</strong></div>
+          <div class="info-row"><span>Full Name</span><strong>{{ user.fullName }}</strong></div>
+          <div class="info-row"><span>Email</span><strong>{{ user.email | maskValue:3:10 }}</strong></div>
+          <div class="info-row"><span>Mobile</span><strong>{{ user.mobile | maskValue:3:2 }}</strong></div>
+          <div class="info-row"><span>Employee No</span><strong>{{ user.employeeNo || '-' }}</strong></div>
+          <div class="info-row"><span>Designation</span><strong>{{ user.designation || '-' }}</strong></div>
+          <div class="info-row"><span>Branch</span><strong>{{ user.branchName || 'Unassigned Branch' }}</strong></div>
+          <div class="info-row"><span>Current Role</span><strong>{{ user.roleName || 'Unassigned' }}</strong></div>
+          <div class="info-row"><span>Mapped Roles</span><strong>{{ (user.mappedRoles || []).join(', ') || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-shield"></i>
+          <div>
+            <h4>Security Summary</h4>
+            <p>Verification state, lock state and login counters.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Status</span><strong>{{ user.status }}</strong></div>
+          <div class="info-row"><span>Active</span><strong>{{ user.active ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Locked</span><strong>{{ user.locked ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Email Verified</span><strong>{{ user.emailVerified ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Mobile Verified</span><strong>{{ user.mobileVerified ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Failed Login Count</span><strong>{{ user.failedLoginCount || 0 }}</strong></div>
+          <div class="info-row"><span>Last Login</span><strong>{{ user.lastLoginAt ? (user.lastLoginAt | date:'medium') : '-' }}</strong></div>
+          <div class="info-row"><span>Password Changed</span><strong>{{ user.passwordChangedAt ? (user.passwordChangedAt | date:'medium') : '-' }}</strong></div>
+          <div class="info-row"><span>History Entries</span><strong>{{ user.historyCount || 0 }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-history"></i>
+        <div>
+          <h4>Login / Security History</h4>
+          <p>Recent role assignment and session-related user history.</p>
+        </div>
+      </div>
+      <div class="history-list">
+        <div class="history-item" *ngFor="let item of history">
+          <div class="history-top">
+            <span>{{ item.eventType | readableCode }}</span>
+            <span>{{ (item.createdAt || item.loginTime) ? ((item.createdAt || item.loginTime) | date:'medium') : '-' }}</span>
+          </div>
+          <div class="history-meta">Role: {{ item.roleCode ? (item.roleCode | readableCode) : '-' }} {{ item.roleName || '' }}</div>
+          <div class="history-meta">Status: {{ item.status ? (item.status | readableCode) : '-' }} | IP: {{ item.ipAddress || '-' }}</div>
+          <div class="history-meta">Device: {{ item.deviceInfo || '-' }}</div>
+          <div class="history-meta">Remarks: {{ item.remarks || '-' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

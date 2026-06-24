@@ -1,0 +1,492 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Security Dashboard" subtitle="Track login risk, suspicious activity, investigation flow and audit pressure from one security control surface">
+    <button class="btn btn-outline-primary" type="button" (click)="open('/security/events')" title="Open security events"><i class="fa fa-shield"></i> Events</button>
+    <button class="btn btn-outline-primary" type="button" (click)="open('/security/audit-logs')" title="Open audit logs"><i class="fa fa-history"></i> Audit Logs</button>
+    <button class="btn btn-primary" type="button" (click)="open('/security/investigation-cases')" title="Open investigation cases"><i class="fa fa-search"></i> Investigations</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading security dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-shield"></i>
+              Threat Posture
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Keep authentication abuse, suspicious behavior and unresolved cases visible</h3>
+          <p class="dashboard-subtitle">
+            This dashboard helps operations and compliance teams see whether threat signals are growing faster than control response.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Failed Logins</span>
+              <div class="dashboard-hero-metric-value">{{ data.failedLoginsToday }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.lockedUsers }} users are currently locked</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Suspicious Activity</span>
+              <div class="dashboard-hero-metric-value">{{ data.suspiciousTxnCount }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.amlFlagsToday }} AML flags registered today</div>
+            </div>
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Open Cases</span>
+              <div class="dashboard-hero-metric-value">{{ data.openInvestigationCases }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.auditEventsToday }} audit events recorded today</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Response Capacity</span>
+              <h3 class="dashboard-title">Security signal load versus investigation follow-through</h3>
+              <p class="dashboard-subtitle">A fast gauge for whether threat intake is rising faster than the case team can absorb.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.openInvestigationCases }}</div>
+          <div class="dashboard-focus-note">cases are still open and need analyst attention or closure work</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Locked Users</span>
+              <strong class="dashboard-mini-value">{{ data.lockedUsers }}</strong>
+              <span class="dashboard-mini-note">held by lock policy</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">AML Flags</span>
+              <strong class="dashboard-mini-value">{{ data.amlFlagsToday }}</strong>
+              <span class="dashboard-mini-note">todayâ€™s AML pressure</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Security Events</span>
+              <strong class="dashboard-mini-value">{{ data.recentSecurityEvents.length }}</strong>
+              <span class="dashboard-mini-note">recent high-risk feed</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Audit Logs</span>
+              <strong class="dashboard-mini-value">{{ data.recentAuditLogs.length }}</strong>
+              <span class="dashboard-mini-note">latest audit trail rows</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Failed Logins</span>
+          <strong class="dashboard-chip-value">{{ data.failedLoginsToday }}</strong>
+          <span class="dashboard-chip-note">todayâ€™s authentication failures</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Suspicious Transactions</span>
+          <strong class="dashboard-chip-value">{{ data.suspiciousTxnCount }}</strong>
+          <span class="dashboard-chip-note">requires analyst scrutiny</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Open Cases</span>
+          <strong class="dashboard-chip-value">{{ data.openInvestigationCases }}</strong>
+          <span class="dashboard-chip-note">pending investigation workload</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">AML Flags</span>
+          <strong class="dashboard-chip-value">{{ data.amlFlagsToday }}</strong>
+          <span class="dashboard-chip-note">watchlist indicator for today</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-sign-in"></i></div><div><div class="summary-label">Failed Logins Today</div><div class="summary-value">{{ data.failedLoginsToday }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-lock"></i></div><div><div class="summary-label">Locked Users</div><div class="summary-value">{{ data.lockedUsers }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-exclamation-triangle"></i></div><div><div class="summary-label">Suspicious Txn</div><div class="summary-value">{{ data.suspiciousTxnCount }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon info"><i class="fa fa-file-text-o"></i></div><div><div class="summary-label">Audit Events Today</div><div class="summary-value">{{ data.auditEventsToday }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon success"><i class="fa fa-folder-open-o"></i></div><div><div class="summary-label">Open Cases</div><div class="summary-value">{{ data.openInvestigationCases }}</div></div></div>
+        <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-flag"></i></div><div><div class="summary-label">AML Flags Today</div><div class="summary-value">{{ data.amlFlagsToday }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Security Pressure Bands</h4>
+              <p class="dashboard-subtitle">Compare threat intake, lock controls, case queue and AML pressure at a glance.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+          <div class="dashboard-stack">
+            <div *ngFor="let band of securityBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ band.label }}</span>
+                <span class="dashboard-summary-band-value">{{ band.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+              </div>
+              <small>{{ band.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Threat Posture Donut</h4>
+              <p class="dashboard-subtitle">A pie-style split across login failure, locked users, suspicious activity and open investigations.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="securityGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.openInvestigationCases }}</div>
+                    <div class="dashboard-donut-label">open investigation cases currently requiring review or closure action</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-legend">
+              <div *ngFor="let legend of securityLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ legend.label }}</span>
+                    <span class="dashboard-legend-note">{{ legend.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ legend.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Severity Distribution</h4>
+              <p class="dashboard-subtitle">See which severity levels are dominating the recent security event feed.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+          <div *ngIf="severityColumns.length; else noSeverityBars" class="dashboard-column-chart security-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of severityAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of severityColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noSeverityBars>
+            <div class="empty-mini">No severity distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Investigation Case Mix</h4>
+              <p class="dashboard-subtitle">Compare which investigation case types are most visible in the recent case queue.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-search"></i></span>
+          </div>
+          <div *ngIf="caseColumns.length; else noCaseBars" class="dashboard-column-chart security-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of caseAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <button *ngFor="let chart of caseColumns" type="button" class="dashboard-column dashboard-column-button" (click)="selectSpotlightCaseByType(chart.label)">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </button>
+          </div>
+          <ng-template #noCaseBars>
+            <div class="empty-mini">No investigation case distribution available.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <section class="dashboard-analytics-grid mt-3">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Incident Activity Trend</h4>
+              <p class="dashboard-subtitle">A seven-day movement line showing how events, cases and audit actions are clustering through the week.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+          <div *ngIf="securityTrendPoints.length; else noSecurityTrend" class="security-line-chart-shell">
+            <svg class="security-line-chart" viewBox="0 0 620 220" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="securityTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#0f9f96"></stop>
+                  <stop offset="100%" stop-color="#0f9f96" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <line x1="38" y1="188" x2="592" y2="188" class="security-line-axis"></line>
+              <line x1="38" y1="42" x2="38" y2="188" class="security-line-axis"></line>
+              <path *ngIf="securityTrendAreaPath" [attr.d]="securityTrendAreaPath" class="security-line-area"></path>
+              <path *ngIf="securityTrendPath" [attr.d]="securityTrendPath" class="security-line-path"></path>
+              <g *ngFor="let point of securityTrendPoints">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5.5" class="security-line-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 12" text-anchor="middle" class="security-line-value">{{ point.value }}</text>
+                <text [attr.x]="point.x" y="208" text-anchor="middle" class="security-line-label">{{ point.label }}</text>
+              </g>
+            </svg>
+          </div>
+          <ng-template #noSecurityTrend>
+            <div class="empty-mini">No incident activity trend available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Module Exposure Profile</h4>
+              <p class="dashboard-subtitle">A comparative column view showing which modules are generating the most security-visible operational load.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-columns"></i></span>
+          </div>
+          <div *ngIf="moduleColumns.length; else noModuleBars" class="dashboard-column-chart security-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of moduleAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let chart of moduleColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ chart.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noModuleBars>
+            <div class="empty-mini">No module exposure profile available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel security-spotlight-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Investigation Spotlight</h4>
+              <p class="dashboard-subtitle">Real assignee context from the most immediate case currently visible in the security investigation flow.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-user-secret"></i></span>
+          </div>
+          <div *ngIf="spotlightCase as item; else noSpotlightCase" class="security-spotlight-card">
+            <div class="security-spotlight-head">
+              <img *ngIf="getSpotlightImageUrl(); else spotlightActorFallback" class="security-spotlight-avatar" [src]="getSpotlightImageUrl()" [alt]="item.assignedFullName || item.assignedUsername || item.openedBy">
+              <ng-template #spotlightActorFallback>
+                <span class="security-spotlight-avatar security-spotlight-fallback"><i class="fa fa-user-secret"></i></span>
+              </ng-template>
+              <div class="security-spotlight-copy">
+                <h5>{{ item.caseNo }}</h5>
+                <div class="security-spotlight-meta">{{ getLabel(item.caseType) }} | {{ getLabel(item.caseStatus) }}</div>
+                <div class="security-spotlight-meta">{{ item.referenceModule }} / {{ item.referenceId }}</div>
+              </div>
+            </div>
+
+            <div class="security-spotlight-grid">
+              <div class="security-spotlight-metric">
+                <span>Assignee</span>
+                <strong>{{ item.assignedFullName || item.assignedUsername || '-' }}</strong>
+              </div>
+              <div class="security-spotlight-metric">
+                <span>Opened By</span>
+                <strong>{{ item.openedBy }}</strong>
+              </div>
+              <div class="security-spotlight-metric">
+                <span>Status</span>
+                <strong>{{ getLabel(item.caseStatus) }}</strong>
+              </div>
+              <div class="security-spotlight-metric">
+                <span>Evidence</span>
+                <strong>{{ item.evidenceFileName ? 'Attached' : 'Pending' }}</strong>
+              </div>
+            </div>
+          </div>
+          <ng-template #noSpotlightCase>
+            <div class="empty-mini">No investigation spotlight available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Control Heatmap</h4>
+              <p class="dashboard-subtitle">See how events, cases and audit activity are clustering across the modules carrying the heaviest security workload.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+          </div>
+          <div class="security-heatmap" *ngIf="controlHeatRows.length; else noControlHeat">
+            <div class="security-heatmap-head">
+              <span>Module</span>
+              <span>Events</span>
+              <span>Cases</span>
+              <span>Audits</span>
+            </div>
+            <div class="security-heatmap-row" *ngFor="let row of controlHeatRows">
+              <span class="security-heatmap-label">{{ row.label }}</span>
+              <button
+                *ngFor="let cell of row.cells"
+                type="button"
+                class="security-heatmap-cell"
+                [style.opacity]="cell.intensity"
+                [attr.title]="row.label + ' | ' + cell.label + ' : ' + cell.value">
+                {{ cell.value }}
+              </button>
+            </div>
+          </div>
+          <ng-template #noControlHeat>
+            <div class="empty-mini">No control heatmap available.</div>
+          </ng-template>
+        </article>
+      </section>
+
+      <div class="details-grid">
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-shield"></i>
+            <div>
+              <h4>Recent Security Events</h4>
+              <p>High-risk and operational security events with actor, device and severity visibility.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>User</th>
+                  <th>Severity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentSecurityEvents | slice:0:8">
+                  <td>{{ item.eventName }}<br><span>{{ item.eventCode }}</span></td>
+                  <td>
+                    <div class="entity-inline-profile">
+                      <img *ngIf="getUserImageUrl(item.username); else securityDashboardEventUserFallback" class="entity-avatar" [src]="getUserImageUrl(item.username)" [alt]="item.fullName || item.username || 'System'">
+                      <ng-template #securityDashboardEventUserFallback>
+                        <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+                      </ng-template>
+                      <div class="item-name">
+                        <strong>{{ item.fullName || item.username || 'System' }}</strong>
+                        <span>{{ item.username || 'System Actor' }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td><app-status-badge [status]="item.severityLevel"></app-status-badge></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-search"></i>
+            <div>
+              <h4>Recent Investigation Cases</h4>
+              <p>Active case queue with assignee and latest status for compliance follow-up.</p>
+            </div>
+          </div>
+
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Case</th>
+                  <th>Assignee</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentInvestigationCases | slice:0:8">
+                  <td>{{ item.caseNo }}<br><span>{{ getLabel(item.caseType) }}</span></td>
+                  <td>
+                    <div class="entity-inline-profile">
+                      <img *ngIf="getUserImageUrl(item.assignedUsername); else securityDashboardCaseUserFallback" class="entity-avatar" [src]="getUserImageUrl(item.assignedUsername)" [alt]="item.assignedFullName || item.assignedUsername || 'Unassigned'">
+                      <ng-template #securityDashboardCaseUserFallback>
+                        <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+                      </ng-template>
+                      <div class="item-name">
+                        <strong>{{ item.assignedFullName || item.assignedUsername || '-' }}</strong>
+                        <span>{{ item.assignedUsername || 'No assignee' }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <app-status-badge [status]="item.caseStatus"></app-status-badge>
+                    <div class="mt-1"><small>{{ item.evidenceFileName ? 'Evidence attached' : 'No evidence' }}</small></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Recent Audit Trail</h4>
+            <p>Latest sensitive actions captured with actor, module and payload diff references.</p>
+          </div>
+        </div>
+
+        <app-data-table [loading]="loading" [empty]="data.recentAuditLogs.length === 0" emptyTitle="No audit trail found" emptyMessage="Audit events will appear here when sensitive actions are logged.">
+          <thead>
+            <tr>
+              <th style="width: 60px;">#</th>
+              <th>Module</th>
+              <th>Action</th>
+              <th>Performed By</th>
+              <th>Performed At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of data.recentAuditLogs; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ item.moduleName }}</td>
+              <td>{{ item.actionName }}</td>
+              <td>
+                <div class="entity-inline-profile">
+                  <img *ngIf="getUserImageUrl(item.performedBy); else securityDashboardAuditUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.performedBy)" [alt]="item.performedBy">
+                  <ng-template #securityDashboardAuditUserFallback>
+                    <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+                  </ng-template>
+                  <div class="item-name">
+                    <strong>{{ item.performedBy }}</strong>
+                  </div>
+                </div>
+              </td>
+              <td>{{ item.performedAt || '-' }}</td>
+            </tr>
+          </tbody>
+        </app-data-table>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

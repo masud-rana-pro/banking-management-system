@@ -1,0 +1,88 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container verification-module">
+  <app-page-header title="Verification" homeLabel="Home" homeRoute="/verification/dashboard" currentLabel="Verification Logs"></app-page-header>
+
+  <app-page-title title="Verification Log List" subtitle="Review OTP requests, resend or expire pending tokens, inspect provider responses and export verification audit rows">
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button class="btn btn-outline-primary" type="button" (click)="openProviderTest()"><i class="fa fa-paper-plane"></i> Send OTP</button>
+    <button class="btn btn-primary" type="button" (click)="openVerify()"><i class="fa fa-shield"></i> Verify OTP</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search contact / name / purpose" [(ngModel)]="filters.keyword" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="send">
+      <select class="form-select" [(ngModel)]="filters.channelType">
+        <option value="">All Channels</option>
+        <option value="EMAIL">EMAIL</option>
+        <option value="SMS">SMS</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="PENDING">PENDING</option>
+        <option value="SENT">SENT</option>
+        <option value="VERIFIED">VERIFIED</option>
+        <option value="EXPIRED">EXPIRED</option>
+        <option value="FAILED">FAILED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No verification request found" emptyMessage="Use provider test, forgot password or customer contact actions to generate OTP traffic.">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Contact</th>
+      <th>Purpose</th>
+      <th>Channel</th>
+      <th>Status</th>
+      <th>Attempts</th>
+      <th>Verified Flag</th>
+      <th class="text-center" style="width: 220px;">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of items; let i = index">
+      <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+      <td>
+        <div class="entity-inline-profile">
+          <img *ngIf="getActorImageUrl(item); else verificationLogAvatarFallback" class="entity-avatar" [src]="getActorImageUrl(item)" [alt]="item.customerName || item.username || item.referenceModule || 'Verification'">
+          <ng-template #verificationLogAvatarFallback>
+            <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <div class="item-name">
+            <strong>{{ item.contactValueMasked }}</strong>
+            <span>{{ item.customerName || item.username || item.referenceModule || '-' }}</span>
+          </div>
+        </div>
+      </td>
+      <td>{{ getLabel(item.purpose) }}</td>
+      <td>{{ item.channelType }}</td>
+      <td><app-status-badge [status]="item.requestStatus"></app-status-badge></td>
+      <td>{{ item.attemptCount }} / {{ item.maxAttemptCount }}</td>
+      <td><app-status-badge [status]="item.contactVerified ? 'VERIFIED' : item.requestStatus"></app-status-badge></td>
+      <td class="text-center">
+        <div class="table-actions">
+          <button class="action-btn verify" type="button" title="Verify" (click)="openVerify(item)"><i class="fa fa-check"></i></button>
+          <button class="action-btn resend" type="button" title="Resend" (click)="resend(item)"><i class="fa fa-repeat"></i></button>
+          <button class="action-btn expire" type="button" title="Expire" (click)="expire(item)"><i class="fa fa-ban"></i></button>
+          <button class="action-btn fail" type="button" title="Mark Failed" (click)="markFailed(item)"><i class="fa fa-times"></i></button>
+          <button class="action-btn inspect" type="button" title="Inspect" (click)="inspect(item)"><i class="fa fa-file-text-o"></i></button>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

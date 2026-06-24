@@ -1,0 +1,532 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="KYC Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="KYC Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="KYC Dashboard"
+    subtitle="Track review pressure, branch-wise intake, risk exposure and decision flow from one executive compliance surface">
+
+    <button *ngIf="canAny(['KYC_VERIFY', 'KYC_APPROVE', 'KYC_REJECT', 'KYC_RETURN'])" class="btn btn-outline-primary" routerLink="/kyc/approval-queue" title="Open KYC approval queue">
+      <i class="fa fa-tasks"></i> Approval Queue
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/kyc/list" title="Open KYC profile list">
+      <i class="fa fa-list"></i> KYC List
+    </button>
+
+    <button *ngIf="can('KYC_CREATE')" class="btn btn-primary" routerLink="/kyc/new" title="Create new KYC profile">
+      <i class="fa fa-plus"></i> New KYC Profile
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading KYC dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-shield"></i>
+              Compliance Review
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Monitor onboarding risk before it becomes regulatory drag</h3>
+          <p class="dashboard-subtitle">
+            Keep pending reviews, resubmissions and high-risk customer exposure under control while maintaining branch throughput.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Profiles Tracked</span>
+              <div class="dashboard-hero-metric-value">{{ profiles.length }}</div>
+              <div class="dashboard-hero-metric-note">{{ branchDistribution.length }} branches contributing visible KYC volume</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Pending Review</span>
+              <div class="dashboard-hero-metric-value">{{ summary.pendingKyc }}</div>
+              <div class="dashboard-hero-metric-note">{{ pendingQueue.length }} items currently in the short queue</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">High Risk</span>
+              <div class="dashboard-hero-metric-value">{{ summary.highRiskCount }}</div>
+              <div class="dashboard-hero-metric-note">{{ summary.resubmissionQueue }} profiles returned for correction</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Review Posture</span>
+              <h3 class="dashboard-title">Verified output versus backlog pressure</h3>
+              <p class="dashboard-subtitle">A quick checkpoint for whether the compliance team is clearing reviews fast enough.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ summary.verifiedKyc }}</div>
+          <div class="dashboard-focus-note">profiles already verified or approved through the KYC decision process</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Rejected</span>
+              <strong class="dashboard-mini-value">{{ summary.rejectedKyc }}</strong>
+              <span class="dashboard-mini-note">declined after review</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Resubmission</span>
+              <strong class="dashboard-mini-value">{{ summary.resubmissionQueue }}</strong>
+              <span class="dashboard-mini-note">requires correction loop</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">High Risk</span>
+              <strong class="dashboard-mini-value">{{ summary.highRiskCustomers }}</strong>
+              <span class="dashboard-mini-note">needs enhanced diligence</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Decisions</span>
+              <strong class="dashboard-mini-value">{{ recentDecisions.length }}</strong>
+              <span class="dashboard-mini-note">latest verified or rejected outcomes</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Low Risk Book</span>
+          <strong class="dashboard-chip-value">{{ summary.lowRiskCount }}</strong>
+          <span class="dashboard-chip-note">routine monitoring profile</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Medium Risk Book</span>
+          <strong class="dashboard-chip-value">{{ summary.mediumRiskCount }}</strong>
+          <span class="dashboard-chip-note">watchlist for enhanced review</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">High Risk Book</span>
+          <strong class="dashboard-chip-value">{{ summary.highRiskCount }}</strong>
+          <span class="dashboard-chip-note">sensitive exposure requiring close attention</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Pending Queue</span>
+          <strong class="dashboard-chip-value">{{ pendingQueue.length }}</strong>
+          <span class="dashboard-chip-note">items immediately visible for review</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card">
+          <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+          <div><div class="summary-label">Pending KYC</div><div class="summary-value">{{ summary.pendingKyc }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+          <div><div class="summary-label">Verified KYC</div><div class="summary-value">{{ summary.verifiedKyc }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon danger"><i class="fa fa-ban"></i></div>
+          <div><div class="summary-label">Rejected KYC</div><div class="summary-value">{{ summary.rejectedKyc }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon info"><i class="fa fa-repeat"></i></div>
+          <div><div class="summary-label">Resubmission Queue</div><div class="summary-value">{{ summary.resubmissionQueue }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div>
+          <div><div class="summary-label">High Risk Customers</div><div class="summary-value">{{ summary.highRiskCustomers }}</div></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon primary"><i class="fa fa-folder-open"></i></div>
+          <div><div class="summary-label">Total Profiles</div><div class="summary-value">{{ profiles.length }}</div></div>
+        </div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Risk Exposure Bands</h4>
+              <p class="dashboard-subtitle">See how much of the KYC book sits in each risk and rework layer.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let item of riskBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ item.label }}</span>
+                <span class="dashboard-summary-band-value">{{ item.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+              </div>
+              <small>{{ item.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>KYC Status Distribution</h4>
+              <p class="dashboard-subtitle">A portfolio split of pending, verified, rejected and resubmission states in the current KYC book.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="kycStatusGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ profiles.length }}</div>
+                    <div class="dashboard-donut-label">active KYC profiles currently tracked across the institution</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of statusLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Risk Type Distribution</h4>
+              <p class="dashboard-subtitle">Compare how the KYC portfolio is distributed across low, medium, high and rework layers.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="riskTypeColumns.length; else noRiskTypeBars" class="dashboard-column-chart kyc-risk-type-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of riskTypeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of riskTypeColumns" class="dashboard-column kyc-risk-type-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label kyc-risk-type-label" [title]="item.label">{{ item.label }}</span>
+            </div>
+          </div>
+          <ng-template #noRiskTypeBars>
+            <div class="empty-mini">No risk type distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Branch Intake</h4>
+              <p class="dashboard-subtitle">See which branches are contributing the strongest KYC workload into the compliance pipeline.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="branchColumns.length; else noBranchBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of branchAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of branchColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noBranchBars>
+            <div class="empty-mini">No branch distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Monthly KYC Flow</h4>
+              <p class="dashboard-subtitle">A rolling six-month view of KYC profile entries and review movement through the operating book.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+
+          <div *ngIf="kycTrendPoints.length; else noKycTrend" class="kyc-line-chart-shell">
+            <svg class="kyc-line-chart" viewBox="0 0 620 220" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="kycTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#12b3a6"></stop>
+                  <stop offset="100%" stop-color="#12b3a6" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <line x1="28" y1="188" x2="592" y2="188" class="kyc-line-axis"></line>
+              <line x1="28" y1="40" x2="28" y2="188" class="kyc-line-axis"></line>
+              <path *ngIf="kycTrendAreaPath" [attr.d]="kycTrendAreaPath" class="kyc-line-area"></path>
+              <path *ngIf="kycTrendPath" [attr.d]="kycTrendPath" class="kyc-line-path"></path>
+              <g *ngFor="let point of kycTrendPoints">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5.5" class="kyc-line-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 12" text-anchor="middle" class="kyc-line-value">{{ point.value }}</text>
+                <text [attr.x]="point.x" y="208" text-anchor="middle" class="kyc-line-label">{{ point.label }}</text>
+              </g>
+            </svg>
+          </div>
+          <ng-template #noKycTrend>
+            <div class="empty-mini">No monthly KYC flow trend available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Review Spotlight</h4>
+              <p class="dashboard-subtitle">Highlight a visible KYC record carrying the strongest compliance sensitivity in the current stack.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-user-circle-o"></i></span>
+          </div>
+
+          <button *ngIf="spotlightProfile as item; else noSpotlight" class="kyc-spotlight-card" type="button" (click)="openReview(item.id)">
+            <div class="kyc-spotlight-avatar">
+              <img *ngIf="hasCustomerImage(item.customerId); else kycSpotlightFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+              <ng-template #kycSpotlightFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Customer placeholder"></ng-template>
+            </div>
+            <div class="kyc-spotlight-body">
+              <div class="kyc-spotlight-title">{{ item.customerName }}</div>
+              <div class="kyc-spotlight-subtitle">{{ item.customerCode }} | {{ getLabel(item.reviewStatus) }}</div>
+              <div class="kyc-spotlight-meta">{{ getBranchName(item.branchId) }}</div>
+              <div class="kyc-spotlight-stats">
+                <div>
+                  <span>Risk Level</span>
+                  <strong>{{ getLabel(item.riskLevel) }}</strong>
+                </div>
+                <div>
+                  <span>Documents</span>
+                  <strong>{{ item.documentCount || 0 }}</strong>
+                </div>
+                <div>
+                  <span>Decisions</span>
+                  <strong>{{ item.decisionCount || 0 }}</strong>
+                </div>
+              </div>
+            </div>
+          </button>
+          <ng-template #noSpotlight>
+            <div class="empty-mini">No KYC spotlight available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Branch Risk Heatmap</h4>
+              <p class="dashboard-subtitle">See how low, medium and high risk records are distributed across the busiest KYC intake branches.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th"></i></span>
+          </div>
+
+          <div class="kyc-heatmap" *ngIf="branchRiskHeatRows.length; else noKycHeatmap">
+            <div class="kyc-heatmap-head">
+              <span>Branch</span>
+              <span>Low</span>
+              <span>Medium</span>
+              <span>High</span>
+            </div>
+            <div class="kyc-heatmap-row" *ngFor="let row of branchRiskHeatRows">
+              <span class="kyc-heatmap-label">{{ row.label }}</span>
+              <button
+                *ngFor="let cell of row.cells"
+                type="button"
+                class="kyc-heatmap-cell"
+                [style.opacity]="cell.intensity"
+                [title]="cell.label">
+                {{ cell.value }}
+              </button>
+            </div>
+          </div>
+          <ng-template #noKycHeatmap>
+            <div class="empty-mini">No branch risk heatmap available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Risk Control Snapshot</h4>
+              <p class="dashboard-subtitle">A compact board for the items compliance leads need to monitor first.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-shield"></i></span>
+          </div>
+
+          <div class="dashboard-info-stack">
+            <div *ngFor="let row of riskRows" class="dashboard-info-row">
+              <span class="dashboard-info-label">{{ row.label }}</span>
+              <span class="dashboard-info-value">{{ row.value }}</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="dashboard-grid">
+        <div class="card-panel">
+          <div class="panel-heading">
+            <i class="fa fa-tasks"></i>
+            <div>
+              <h4>Pending Queue</h4>
+              <p>Profiles waiting for KYC review workflow.</p>
+            </div>
+          </div>
+
+          <div *ngIf="pendingQueue.length; else noPending" class="queue-list">
+            <button class="queue-item" *ngFor="let item of pendingQueue" (click)="openReview(item.id)" [title]="'Review profile ' + item.customerCode">
+              <span class="entity-inline-profile">
+                <span class="entity-avatar">
+                  <img *ngIf="hasCustomerImage(item.customerId); else pendingQueueFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+                  <ng-template #pendingQueueFallback><i class="fa fa-user"></i></ng-template>
+                </span>
+                <span>{{ item.customerCode }} / {{ item.customerName }}</span>
+              </span>
+              <strong>{{ getLabel(item.reviewStatus) }}</strong>
+            </button>
+          </div>
+          <ng-template #noPending>
+            <div class="empty-mini">No pending KYC queue found.</div>
+          </ng-template>
+        </div>
+
+        <div class="card-panel">
+          <div class="panel-heading">
+            <i class="fa fa-shield"></i>
+            <div>
+              <h4>High Risk Customers</h4>
+              <p>Profiles needing stricter review attention.</p>
+            </div>
+          </div>
+
+          <div *ngIf="highRiskProfiles.length; else noHighRisk" class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of highRiskProfiles">
+                  <td>
+                    <div class="entity-inline-profile">
+                      <div class="entity-avatar">
+                        <img *ngIf="hasCustomerImage(item.customerId); else highRiskFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+                        <ng-template #highRiskFallback><i class="fa fa-user"></i></ng-template>
+                      </div>
+                      <span>{{ item.customerCode }} / {{ item.customerName }}</span>
+                    </div>
+                  </td>
+                  <td><app-status-badge [status]="item.reviewStatus"></app-status-badge></td>
+                  <td><button class="btn btn-sm btn-outline-primary" type="button" (click)="openReview(item.id)" title="Review high-risk profile">Review</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ng-template #noHighRisk>
+            <div class="empty-mini">No high risk customer found.</div>
+          </ng-template>
+        </div>
+
+        <div class="card-panel">
+          <div class="panel-heading">
+            <i class="fa fa-history"></i>
+            <div>
+              <h4>Recent Decisions</h4>
+              <p>Latest KYC verification and approval outcomes.</p>
+            </div>
+          </div>
+
+          <div *ngIf="recentDecisions.length; else noDecision" class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Review Status</th>
+                  <th>Reviewer</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of recentDecisions">
+                  <td>
+                    <div class="entity-inline-profile">
+                      <div class="entity-avatar">
+                        <img *ngIf="hasCustomerImage(item.customerId); else recentDecisionFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+                        <ng-template #recentDecisionFallback><i class="fa fa-user"></i></ng-template>
+                      </div>
+                      <button class="link-btn" type="button" (click)="openView(item.id)" [title]="'Open KYC view for ' + item.customerCode">
+                        {{ item.customerCode }} / {{ item.customerName }}
+                      </button>
+                    </div>
+                  </td>
+                  <td><app-status-badge [status]="item.reviewStatus"></app-status-badge></td>
+                  <td>{{ item.reviewedBy || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ng-template #noDecision>
+            <div class="empty-mini">No recent decision found.</div>
+          </ng-template>
+        </div>
+
+        <div class="card-panel">
+          <div class="panel-heading">
+            <i class="fa fa-repeat"></i>
+            <div>
+              <h4>Resubmission Queue</h4>
+              <p>Profiles sent back for correction and resubmission.</p>
+            </div>
+          </div>
+
+          <div *ngIf="sentBackProfiles.length; else noSentBack" class="queue-list">
+            <button class="queue-item" *ngFor="let item of sentBackProfiles" (click)="openReview(item.id)" [title]="'Review sent-back profile ' + item.customerCode">
+              <span class="entity-inline-profile">
+                <span class="entity-avatar">
+                  <img *ngIf="hasCustomerImage(item.customerId); else sentBackFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+                  <ng-template #sentBackFallback><i class="fa fa-user"></i></ng-template>
+                </span>
+                <span>{{ item.customerCode }} / {{ item.customerName }}</span>
+              </span>
+              <strong>{{ item.documentCount || 0 }} docs</strong>
+            </button>
+          </div>
+          <ng-template #noSentBack>
+            <div class="empty-mini">No resubmission queue found.</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+</div>

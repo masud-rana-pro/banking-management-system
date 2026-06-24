@@ -1,0 +1,128 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/dashboard" currentLabel="Profile List"></app-page-header>
+
+  <app-page-title title="Zakat Profile List" subtitle="Maintain yearly zakat profiles, run calculation and navigate to beneficiary or payout flow">
+    <div class="view-toggle-group">
+      <button class="btn" type="button" [ngClass]="viewMode === 'list' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('list')">
+        <i class="fa fa-list"></i> List View
+      </button>
+      <button class="btn" type="button" [ngClass]="viewMode === 'grid' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('grid')">
+        <i class="fa fa-th-large"></i> Grid View
+      </button>
+    </div>
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button class="btn btn-outline-primary" type="button" (click)="openFund()"><i class="fa fa-bank"></i> Charity Fund</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openBeneficiary()"><i class="fa fa-user-plus"></i> Add Beneficiary</button>
+    <button class="btn btn-outline-success" type="button" (click)="openPayout()"><span class="taka-icon" aria-hidden="true">&#2547;</span> Payout</button>
+    <button class="btn btn-primary" type="button" (click)="openCalc()"><i class="fa fa-calculator"></i> Calculate</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search customer / year" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="user">
+      <select class="form-select" [(ngModel)]="filters.customerId">
+        <option value="">All Customers</option>
+        <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.customerCode }} - {{ customer.fullName }}</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="calendar">
+      <input class="form-control" type="number" placeholder="Zakat Year" [(ngModel)]="filters.zakatYear">
+    </app-form-field>
+  </app-filter-bar>
+
+  <ng-container *ngIf="viewMode === 'list'; else zakatProfileGridView">
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No zakat profile found" emptyMessage="Create or calculate a zakat profile to start yearly deduction tracking.">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Customer</th>
+        <th>Year</th>
+        <th>Nisab</th>
+        <th>Eligible Asset</th>
+        <th>Zakat</th>
+        <th>Proof</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 240px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getCustomerImageUrl(item.customerId); else zakatProfileListFallback" class="entity-avatar" [src]="getCustomerImageUrl(item.customerId)" [alt]="item.customerName">
+            <ng-template #zakatProfileListFallback>
+              <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div class="item-name"><strong>{{ item.customerName }}</strong><span>{{ item.customerCode }}</span></div>
+          </div>
+        </td>
+        <td>{{ item.zakatYear }}</td>
+        <td>{{ item.nisabAmount | number:'1.2-2' }}</td>
+        <td>{{ item.eligibleAssetAmount | number:'1.2-2' }}</td>
+        <td>{{ item.zakatAmount | number:'1.2-2' }}</td>
+        <td>{{ item.proofDocumentName ? 'Available' : 'None' }}</td>
+        <td><app-status-badge [status]="item.calculationStatus"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="openView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn calculate" type="button" title="Calculate" (click)="openCalc(item)"><i class="fa fa-calculator"></i></button>
+            <button class="action-btn beneficiary" type="button" title="Add Beneficiary" (click)="openBeneficiary()"><i class="fa fa-user-plus"></i></button>
+            <button class="action-btn payout" type="button" title="Payout" (click)="openPayout(item)"><span class="taka-icon" aria-hidden="true">&#2547;</span></button>
+            <button class="action-btn report" type="button" title="Export Report" (click)="onExport('pdf')"><i class="fa fa-file-text-o"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+  </ng-container>
+
+  <ng-template #zakatProfileGridView>
+    <div class="grid-state" *ngIf="loading">
+      <i class="fa fa-spinner fa-spin"></i> Loading zakat profiles...
+    </div>
+    <div class="grid-state" *ngIf="!loading && total === 0">
+      <i class="fa fa-inbox"></i> No zakat profile found for the current filter.
+    </div>
+    <div class="entity-grid" *ngIf="!loading && total > 0">
+      <article class="entity-card" *ngFor="let item of items">
+        <span class="status-chip" [ngClass]="getProfileTone(item)">{{ getLabel(item.calculationStatus) }}</span>
+        <div class="entity-card-avatar">
+          <img *ngIf="getCustomerImageUrl(item.customerId); else zakatProfileGridFallback" [src]="getCustomerImageUrl(item.customerId)" [alt]="item.customerName">
+          <ng-template #zakatProfileGridFallback>
+            <span>{{ getCustomerInitial(item) }}</span>
+          </ng-template>
+        </div>
+        <h3>{{ item.customerName }}</h3>
+        <p>{{ item.customerCode }} Â· Zakat {{ item.zakatYear }}</p>
+        <div class="profile-pill-row">
+          <span class="meta-pill">{{ item.zakatYear }}</span>
+          <span class="meta-pill soft">{{ getLabel(item.calculationStatus) }}</span>
+        </div>
+        <div class="entity-card-meta">
+          <div><span>Nisab</span><strong>{{ item.nisabAmount | number:'1.2-2' }}</strong></div>
+          <div><span>Eligible Asset</span><strong>{{ item.eligibleAssetAmount | number:'1.2-2' }}</strong></div>
+          <div><span>Zakat Amount</span><strong>{{ item.zakatAmount | number:'1.2-2' }}</strong></div>
+          <div><span>Proof</span><strong>{{ item.proofDocumentName ? 'Available' : 'None' }}</strong></div>
+        </div>
+        <div class="entity-card-actions">
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="openView(item)">View</button>
+          <button class="btn btn-sm btn-outline-secondary" type="button" (click)="openCalc(item)">Calculate</button>
+          <button class="btn btn-sm btn-outline-success" type="button" (click)="openPayout(item)">Payout</button>
+        </div>
+      </article>
+    </div>
+  </ng-template>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

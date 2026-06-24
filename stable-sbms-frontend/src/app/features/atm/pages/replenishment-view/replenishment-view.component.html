@@ -1,0 +1,76 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/replenishments"
+    currentLabel="Replenishment Profile">
+  </app-page-header>
+
+  <app-page-title
+    title="Replenishment Profile"
+    subtitle="View ATM/CDM cash loading details, execution reference and amount summary">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button *ngIf="replenishment" class="btn btn-outline-secondary" type="button" (click)="previewReport()">
+      <i class="fa fa-eye"></i> Preview Report
+    </button>
+
+    <button *ngIf="replenishment" class="btn btn-outline-primary" type="button" (click)="downloadReport()">
+      <i class="fa fa-download"></i> Download PDF
+    </button>
+
+    <button *ngIf="replenishment" class="btn btn-outline-success" type="button" (click)="printReport()">
+      <i class="fa fa-print"></i> Print Report
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="viewTerminal()" [disabled]="!replenishment">
+      <i class="fa fa-credit-card"></i> View Terminal
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading replenishment profile...
+  </div>
+
+  <div *ngIf="!loading && replenishment as item" class="view-shell">
+    <div class="hero">
+      <div class="entity-inline-profile">
+        <img *ngIf="getUserImageUrl(item.performedBy); else replenishmentViewUserFallback" class="entity-avatar-lg" [src]="getUserImageUrl(item.performedBy)" [alt]="getUserDisplay(item.performedBy)">
+        <ng-template #replenishmentViewUserFallback>
+          <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+        </ng-template>
+        <div>
+        <h3>{{ item.terminalCode }} / {{ item.binNo }}</h3>
+        <p>{{ item.terminalName }} &bull; {{ item.replenishmentDate }}</p>
+        </div>
+      </div>
+      <app-status-badge [status]="item.status"></app-status-badge>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card"><span>Quantity</span><strong>{{ item.quantityAdded }}</strong></div>
+      <div class="summary-card"><span>Amount</span><strong>{{ item.amountAdded }}</strong></div>
+      <div class="summary-card"><span>Performed By</span><strong>{{ getUserDisplay(item.performedBy) }}</strong></div>
+      <div class="summary-card"><span>Denomination</span><strong>{{ item.denomination }}</strong></div>
+    </div>
+
+    <div class="detail-card">
+      <div class="info-row"><span>Terminal Code</span><strong>{{ item.terminalCode }}</strong></div>
+      <div class="info-row"><span>Terminal Name</span><strong>{{ item.terminalName }}</strong></div>
+      <div class="info-row"><span>Bin No</span><strong>{{ item.binNo }}</strong></div>
+      <div class="info-row"><span>Replenishment Date</span><strong>{{ item.replenishmentDate }}</strong></div>
+      <div class="info-row"><span>Status</span><strong>{{ item.status }}</strong></div>
+      <div class="info-row"><span>Remarks</span><strong>{{ item.remarks || '-' }}</strong></div>
+      <div class="info-row"><span>Created At</span><strong>{{ item.createdAt || '-' }}</strong></div>
+    </div>
+  </div>
+
+</div>
+</div>

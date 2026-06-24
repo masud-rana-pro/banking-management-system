@@ -1,0 +1,88 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Investigation Cases"></app-page-header>
+
+  <app-page-title title="Investigation Case List" subtitle="Manage suspicious cases, assignee lifecycle and closure remarks from one actionable queue">
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search case / module / assignee" [(ngModel)]="filters.keyword" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.caseStatus">
+        <option value="">All Status</option>
+        <option value="OPEN">Open</option>
+        <option value="ASSIGNED">Assigned</option>
+        <option value="UNDER_REVIEW">Under Review</option>
+        <option value="CLOSED">Closed</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="folder-open">
+      <select class="form-select" [(ngModel)]="filters.caseType">
+        <option value="">All Case Types</option>
+        <option value="FAILED_LOGIN">Failed Login</option>
+        <option value="SUSPICIOUS_TRANSACTION">Suspicious Transaction</option>
+        <option value="AML_FLAG">AML Flag</option>
+        <option value="SANCTION_HIT">Sanction Hit</option>
+        <option value="AUDIT_ANOMALY">Audit Anomaly</option>
+        <option value="OTHER">Other</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No investigation case found" emptyMessage="Create or seed cases to review lifecycle actions.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Case</th>
+        <th>Reference</th>
+        <th>Opened By</th>
+        <th>Assigned To</th>
+        <th>Evidence</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 120px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.caseNo }}</strong>
+            <span>{{ getLabel(item.caseType) }}</span>
+          </div>
+        </td>
+        <td>{{ item.referenceModule }} / {{ item.referenceId }}</td>
+        <td>{{ item.openedBy }}</td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getUserImageUrl(item.assignedUsername); else investigationListUserFallback" class="entity-avatar" [src]="getUserImageUrl(item.assignedUsername)" [alt]="item.assignedFullName || item.assignedUsername || 'Unassigned'">
+            <ng-template #investigationListUserFallback>
+              <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ item.assignedFullName || item.assignedUsername || '-' }}</strong>
+              <span>{{ item.assignedUsername || 'No assignee' }}</span>
+            </div>
+          </div>
+        </td>
+        <td>{{ item.evidenceFileName ? 'Available' : 'None' }}</td>
+        <td><app-status-badge [status]="item.caseStatus"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="openView(item)">
+              <i class="fa fa-eye"></i>
+            </button>
+            <button class="action-btn assign" type="button" (click)="openAction(item)">
+              <i class="fa fa-user-plus"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

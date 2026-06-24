@@ -1,0 +1,12 @@
+<div class="sbms-page-title-card">
+
+  <div class="sbms-page-title-left">
+    <h1 class="sbms-page-title">{{ title | sbmsTranslate }}</h1>
+    <p class="sbms-page-subtitle" *ngIf="subtitle">{{ subtitle | sbmsTranslate }}</p>
+  </div>
+
+  <div class="sbms-page-title-actions">
+    <ng-content></ng-content>
+  </div>
+
+</div>

@@ -1,0 +1,68 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/contracts/templates" currentLabel="Edit Template"></app-page-header>
+
+  <app-page-title title="Edit Contract Template" subtitle="Update template clauses and version number while preserving shared contract styling">
+    <button class="btn btn-outline-secondary" [routerLink]="['/contracts/templates', id]"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading template form...</div>
+
+  <div *ngIf="!loading" class="contract-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-pencil"></i>
+        </div>
+        <div>
+          <h3>Update Contract Template</h3>
+          <p>Revise clause wording and version info carefully so generated contracts stay consistent with the latest approved text.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        DRAFT
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-id-badge"></i>
+          <div>
+            <h4>Template Identity</h4>
+            <p>Maintain stable identity fields so historical versions and generated contracts remain easy to trace.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div><label class="form-label">Template Code</label><div class="input-with-icon"><i class="fa fa-barcode"></i><input class="form-control" [(ngModel)]="form.templateCode"></div></div>
+          <div><label class="form-label">Template Name</label><div class="input-with-icon"><i class="fa fa-tag"></i><input class="form-control" [(ngModel)]="form.templateName"></div></div>
+          <div><label class="form-label">Contract Type</label><div class="input-with-icon"><i class="fa fa-sitemap"></i><select class="form-select" [(ngModel)]="form.contractType"><option value="">Select contract type</option><option *ngFor="let option of contractTypes" [value]="option.value">{{ option.label }}</option></select></div></div>
+          <div><label class="form-label">Version No</label><div class="input-with-icon"><i class="fa fa-code-fork"></i><input class="form-control" type="number" [(ngModel)]="form.versionNo" min="1"></div></div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-file-text"></i>
+          <div>
+            <h4>Clause Body</h4>
+            <p>Update reusable agreement text carefully so all downstream generated contracts inherit the correct language.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span"><label class="form-label">Template Body</label><div class="input-with-icon textarea-wrap"><i class="fa fa-paragraph"></i><textarea class="form-control" [(ngModel)]="form.templateBody"></textarea></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" [routerLink]="['/contracts/templates', id]"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving || loading"><i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i> Update Template</button>
+    </div>
+  </div>
+</div>
+</div>

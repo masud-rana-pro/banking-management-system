@@ -1,0 +1,196 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container report-module monthly-closing-ops-page">
+  <app-page-header title="Reporting & Regulatory" homeLabel="Home" homeRoute="/dashboard" currentLabel="Monthly Closing Ops"></app-page-header>
+
+  <app-page-title title="Monthly Closing Operations" subtitle="Create, submit, approve, reject and reopen month-end closing runs branch by branch.">
+    <button class="btn btn-outline-secondary" type="button" (click)="loadRuns()"><i class="fa fa-refresh"></i> Refresh</button>
+    <button class="btn btn-outline-primary" type="button" routerLink="/reports/monthly-closing"><i class="fa fa-file-text-o"></i> View Report</button>
+  </app-page-title>
+
+  <div class="summary-row" *ngIf="summary as data">
+    <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-pencil-square-o"></i></div><div><div class="summary-label">Draft</div><div class="summary-value">{{ data.draftCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-paper-plane"></i></div><div><div class="summary-label">Submitted</div><div class="summary-value">{{ data.submittedCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Approved</div><div class="summary-value">{{ data.approvedCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-times-circle"></i></div><div><div class="summary-label">Rejected</div><div class="summary-value">{{ data.rejectedCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon info"><i class="fa fa-repeat"></i></div><div><div class="summary-label">Reopened</div><div class="summary-value">{{ data.reopenedCount }}</div></div></div>
+  </div>
+
+  <div class="ops-grid">
+    <section class="ops-panel">
+      <div class="panel-head">
+        <div>
+          <h3>Run Builder</h3>
+          <p>Branch manager or finance operations can prepare the month-end evidence pack here.</p>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" type="button" (click)="resetForm()">New</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="ops-form-field">
+          <label class="ops-label">Branch</label>
+          <app-form-field icon="building">
+            <select class="form-select" [(ngModel)]="form.branchId" [disabled]="!canChooseBranch">
+              <option [ngValue]="null">Select Branch</option>
+              <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchName }} ({{ branch.branchCode }})</option>
+            </select>
+          </app-form-field>
+        </div>
+
+        <div class="ops-form-field">
+          <label class="ops-label">Closing Month</label>
+          <app-form-field icon="calendar">
+            <input class="form-control" type="date" [(ngModel)]="form.closingMonth">
+          </app-form-field>
+        </div>
+      </div>
+
+      <div class="check-grid">
+        <label class="check-card"><input type="checkbox" [(ngModel)]="form.vaultClosedConfirmed"> <span>Vault closed confirmed</span></label>
+        <label class="check-card"><input type="checkbox" [(ngModel)]="form.profitPostedConfirmed"> <span>Profit posted confirmed</span></label>
+        <label class="check-card"><input type="checkbox" [(ngModel)]="form.reversalsReviewed"> <span>Reversals reviewed</span></label>
+        <label class="check-card"><input type="checkbox" [(ngModel)]="form.statementsGenerated"> <span>Statements generated</span></label>
+      </div>
+
+      <div class="ops-form-field ops-form-field-full">
+        <label class="ops-label">Operational Remarks</label>
+        <app-form-field icon="sticky-note-o">
+          <textarea class="form-control" rows="4" [(ngModel)]="form.remarks" placeholder="Closing checklist notes, branch observations, or operational comments"></textarea>
+        </app-form-field>
+      </div>
+
+      <div class="panel-actions">
+        <button class="btn btn-primary" type="button" (click)="saveRun()" [disabled]="saving || !canCreate" [title]="getActionTitle('Save Monthly Closing Run', 'MONTHLY_CLOSING_CREATE')">
+          <i class="fa fa-save"></i> Save / Refresh Snapshot
+        </button>
+        <button class="btn btn-outline-warning" type="button" (click)="submitRun()" [disabled]="processing || !selectedRun || !canSubmit" [title]="getActionTitle('Submit Monthly Closing Run', 'MONTHLY_CLOSING_SUBMIT')">
+          <i class="fa fa-paper-plane"></i> Submit
+        </button>
+      </div>
+    </section>
+
+    <section class="ops-panel">
+      <div class="panel-head">
+        <div>
+          <h3>Decision Desk</h3>
+          <p>Compliance or finance controller can approve, reject, or reopen selected run.</p>
+        </div>
+      </div>
+
+      <div *ngIf="selectedRun as item; else noSelection" class="selection-card">
+        <div class="selection-top">
+          <div>
+            <div class="selection-title">{{ item.branchName || 'Branch' }} Â· {{ item.closingRef }}</div>
+            <div class="selection-meta">{{ item.closingMonth | date:'MMM yyyy' }} Â· {{ item.branchCode }}</div>
+          </div>
+          <app-status-badge [status]="item.status"></app-status-badge>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-box"><span>Transactions</span><strong>{{ item.transactionAmount || 0 | number:'1.0-2' }}</strong></div>
+          <div class="metric-box"><span>Reversals</span><strong>{{ item.reversedCount || 0 }}</strong></div>
+          <div class="metric-box"><span>Vault Balance</span><strong>{{ item.vaultClosingBalance || 0 | number:'1.0-2' }}</strong></div>
+          <div class="metric-box"><span>Profit Posted</span><strong>{{ item.profitPosted || 0 | number:'1.0-2' }}</strong></div>
+        </div>
+
+        <div class="alert alert-success mt-3 mb-3" *ngIf="item.readyForSubmit; else pendingChecklist">
+          <i class="fa fa-check-circle"></i> Checklist complete. This run is ready for submit.
+        </div>
+        <ng-template #pendingChecklist>
+          <div class="alert alert-warning mt-3 mb-3">
+            <div class="fw-semibold mb-1">Submit readiness {{ item.checklistCompletedCount || 0 }}/{{ item.checklistTotalCount || 4 }} completed</div>
+            <div class="small mb-1">Progress: {{ item.checklistProgressPercent || 0 }}%</div>
+            <div class="small" *ngFor="let pending of selectedPendingItems">â€¢ {{ pending }}</div>
+          </div>
+        </ng-template>
+
+        <div class="ops-form-field ops-form-field-full">
+          <label class="ops-label">Decision Remarks</label>
+          <app-form-field icon="commenting-o">
+            <textarea class="form-control" rows="4" [(ngModel)]="decisionRemarks" placeholder="Required for reject or reopen; optional for approve"></textarea>
+          </app-form-field>
+        </div>
+
+        <div class="panel-actions">
+          <button class="btn btn-outline-success" type="button" (click)="approveRun()" [disabled]="processing || !canApprove" [title]="getActionTitle('Approve', 'MONTHLY_CLOSING_APPROVE')"><i class="fa fa-check"></i> Approve</button>
+          <button class="btn btn-outline-danger" type="button" (click)="rejectRun()" [disabled]="processing || !canReject" [title]="getActionTitle('Reject', 'MONTHLY_CLOSING_REJECT')"><i class="fa fa-times"></i> Reject</button>
+          <button class="btn btn-outline-primary" type="button" (click)="reopenRun()" [disabled]="processing || !canReopen" [title]="getActionTitle('Reopen', 'MONTHLY_CLOSING_REOPEN')"><i class="fa fa-repeat"></i> Reopen</button>
+        </div>
+      </div>
+
+      <ng-template #noSelection>
+        <div class="empty-selection">
+          <i class="fa fa-calendar-check-o"></i>
+          <p>Select a monthly closing run from the list to review or decide.</p>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+
+  <section class="ops-panel full">
+    <div class="panel-head">
+      <div>
+        <h3>Run Register</h3>
+        <p>Track every month-end run and open the one you want to continue.</p>
+      </div>
+    </div>
+
+    <app-filter-bar class="ops-filter-bar" title="Report Filter" subtitle="Select branch, status and closing month before viewing month-end runs." (search)="loadRuns()" (reset)="resetFilters()">
+      <app-form-field icon="building">
+        <select class="form-select" [(ngModel)]="filters.branchId" [disabled]="!canChooseBranch">
+          <option [ngValue]="null">All Branches</option>
+          <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchName }} ({{ branch.branchCode }})</option>
+        </select>
+      </app-form-field>
+      <app-form-field icon="flag">
+        <select class="form-select" [(ngModel)]="filters.status">
+          <option *ngFor="let status of statusOptions" [value]="status">{{ status || 'All Statuses' }}</option>
+        </select>
+      </app-form-field>
+      <app-form-field icon="calendar">
+        <input class="form-control" type="date" [(ngModel)]="filters.closingMonth">
+      </app-form-field>
+    </app-filter-bar>
+
+    <app-data-table [loading]="loading" [empty]="!loading && runs.length === 0" emptyTitle="No monthly closing runs found" emptyMessage="Create or refresh a run to start branch month-end workflow.">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Branch</th>
+            <th>Month</th>
+            <th>Status</th>
+            <th>Transaction Amount</th>
+            <th>Vault Balance</th>
+            <th>Readiness</th>
+            <th>Owner</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of runs">
+            <td>
+              <div class="fw-semibold">{{ item.closingRef }}</div>
+              <div class="text-muted small">{{ item.periodFrom }} to {{ item.periodTo }}</div>
+            </td>
+            <td>{{ item.branchName }}<div class="text-muted small">{{ item.branchCode }}</div></td>
+            <td>{{ item.closingMonth | date:'MMM yyyy' }}</td>
+            <td><app-status-badge [status]="item.status"></app-status-badge></td>
+            <td>{{ item.transactionAmount || 0 | number:'1.0-2' }}</td>
+            <td>{{ item.vaultClosingBalance || 0 | number:'1.0-2' }}</td>
+            <td>
+              <div class="fw-semibold" [class.text-success]="item.readyForSubmit" [class.text-warning]="!item.readyForSubmit">
+                {{ item.checklistCompletedCount || 0 }}/{{ item.checklistTotalCount || 4 }}
+              </div>
+              <div class="text-muted small">{{ item.readyForSubmit ? 'Ready to submit' : 'Pending checklist' }}</div>
+            </td>
+            <td>{{ item.submittedBy || item.createdBy || 'SYSTEM' }}</td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="selectRun(item)"><i class="fa fa-folder-open-o"></i> Open</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </app-data-table>
+  </section>
+</div>
+</div>

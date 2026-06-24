@@ -1,0 +1,10 @@
+@use '../../styles/transaction-common';
+
+:host {
+  display: block;
+}
+
+.form-actions {
+  justify-content: flex-end;
+  gap: 12px;
+}

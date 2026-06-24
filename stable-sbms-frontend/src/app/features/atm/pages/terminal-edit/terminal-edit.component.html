@@ -1,0 +1,228 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/terminals"
+    currentLabel="Terminal Form">
+  </app-page-header>
+
+  <app-page-title
+    [title]="id ? 'Edit Terminal' : 'Create Terminal'"
+    subtitle="Maintain ATM/CDM terminal profile, branch mapping, device identity and operational status">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="terminal-form-shell">
+
+    <div class="terminal-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-credit-card"></i>
+        </div>
+
+        <div>
+          <h3>{{ id ? 'Update Terminal Information' : 'New ATM/CDM Terminal Setup' }}</h3>
+          <p>Configure terminal identity, branch mapping, device information and operational status.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.status || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-box">
+      <i class="fa fa-spinner fa-spin"></i>
+      Loading terminal information...
+    </div>
+
+    <div *ngIf="!loading" class="form-body">
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Basic Information</h4>
+            <p>Terminal identity, type and branch mapping.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <label class="form-label">Terminal Code <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input
+                class="form-control"
+                [(ngModel)]="form.terminalCode"
+                placeholder="Example: ATM001">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Terminal Name <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-credit-card"></i>
+              <input
+                class="form-control"
+                [(ngModel)]="form.terminalName"
+                placeholder="Example: Dhaka Main ATM">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Terminal Type <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-desktop"></i>
+              <select class="form-select" [(ngModel)]="form.terminalType">
+                <option *ngFor="let t of terminalTypeOptions" [value]="t.value">
+                  {{ t.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Branch <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-bank"></i>
+              <select class="form-select" [(ngModel)]="form.branchId">
+                <option [ngValue]="null">Select Branch</option>
+                <option *ngFor="let branch of branches" [ngValue]="branch.id">
+                  {{ branch.branchCode }} - {{ branch.branchName }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Selected Branch</label>
+            <div class="readonly-chip">
+              <i class="fa fa-info-circle"></i>
+              {{ selectedBranchLabel }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Location Note</label>
+            <div class="input-with-icon">
+              <i class="fa fa-map-marker"></i>
+              <input
+                class="form-control"
+                [(ngModel)]="form.locationNote"
+                placeholder="Example: Main entrance / Branch lobby / Roadside booth">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-cogs"></i>
+          <div>
+            <h4>Device Information</h4>
+            <p>Technical and vendor details of the terminal.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <label class="form-label">IP Address</label>
+            <div class="input-with-icon">
+              <i class="fa fa-wifi"></i>
+              <input
+                class="form-control"
+                [(ngModel)]="form.ipAddress"
+                placeholder="Example: 192.168.1.10">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Serial No</label>
+            <div class="input-with-icon">
+              <i class="fa fa-hashtag"></i>
+              <input
+                class="form-control"
+                [(ngModel)]="form.serialNo"
+                placeholder="Example: SN-ATM-001">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Vendor Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-industry"></i>
+              <input
+                class="form-control"
+                [(ngModel)]="form.vendorName"
+                placeholder="Example: NCR / Diebold / GRG">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Install Date <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input
+                class="form-control"
+                type="date"
+                [(ngModel)]="form.installDate">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-toggle-on"></i>
+          <div>
+            <h4>Operational Status</h4>
+            <p>Control whether this terminal is active, under maintenance or archived.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <label class="form-label">Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="form.status">
+                <option *ngFor="let s of statusOptions" [value]="s.value">
+                  {{ s.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-actions" *ngIf="!loading">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ id ? 'Update Terminal' : 'Save Terminal' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>
+</div>

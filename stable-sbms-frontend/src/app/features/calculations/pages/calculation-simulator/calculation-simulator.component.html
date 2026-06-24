@@ -1,0 +1,219 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container calculation-module">
+
+  <app-page-header
+    title="Calculation Engine"
+    homeLabel="Home"
+    homeRoute="/calculations/dashboard"
+    currentLabel="Simulator">
+  </app-page-header>
+
+  <app-page-title
+    title="Calculation Simulator"
+    subtitle="Calculate Islamic financing, deposit or profit posting schedules with reproducible preview output before applying results to source modules">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openDashboard()">
+      <i class="fa fa-th-large"></i> Dashboard
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="previewSchedule()">
+      <i class="fa fa-calendar"></i> Preview Schedule
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="applyResult()" [disabled]="!result">
+      <i class="fa fa-check-circle"></i> Apply Result
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="runCalculation()" [disabled]="calculating">
+      <i class="fa" [ngClass]="calculating ? 'fa-spinner fa-spin' : 'fa-calculator'"></i> Calculate
+    </button>
+
+  </app-page-title>
+
+  <div class="hero-card">
+    <div class="hero-row">
+      <div>
+        <h3 class="hero-title">{{ context.sourceName || 'Manual Calculation Workspace' }}</h3>
+        <p class="hero-subtitle">Select formula driver, validate inputs and preview schedule output before you post or create records in the source module.</p>
+      </div>
+      <div class="formula-chip">
+        <i class="fa fa-sitemap"></i>
+        {{ getLabel(form.sourceModule) }}
+      </div>
+    </div>
+
+    <div *ngIf="context.sourceName || context.returnRoute" class="context-note">
+      This simulator can be launched from financing products, deposit schemes and profit schedules. Use <strong>Apply Result</strong> to return to the next operational step.
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="card-heading">
+      <i class="fa fa-sliders"></i>
+      <div>
+        <h4>Simulation Inputs</h4>
+        <p>Positive and business-valid inputs only. Product type decides which Islamic formula is applied.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label">Source Module</label>
+        <select class="form-select" [(ngModel)]="form.sourceModule">
+          <option *ngFor="let option of sourceOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Product Type</label>
+        <select class="form-select" [(ngModel)]="form.productType">
+          <option *ngFor="let option of productOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Principal / Cost / Installment / Balance</label>
+        <input class="form-control" type="number" min="0" step="0.01" [(ngModel)]="form.principalAmount">
+      </div>
+
+      <div>
+        <label class="form-label">Profit / Markup / Ratio (%)</label>
+        <input class="form-control" type="number" min="0" step="0.0001" [(ngModel)]="form.ratePercent">
+      </div>
+
+      <div>
+        <label class="form-label">Tenure (Months)</label>
+        <input class="form-control" type="number" min="1" step="1" [(ngModel)]="form.tenureMonths">
+      </div>
+
+      <div>
+        <label class="form-label">Frequency</label>
+        <select class="form-select" [(ngModel)]="form.frequency">
+          <option *ngFor="let option of frequencyOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Start Date</label>
+        <input class="form-control" type="date" [(ngModel)]="form.startDate">
+      </div>
+
+      <div>
+        <label class="form-label">Remarks</label>
+        <input class="form-control" [(ngModel)]="form.remarks" placeholder="Optional note for source workflow handoff">
+      </div>
+    </div>
+  </div>
+
+  <app-loading-spinner *ngIf="calculating"></app-loading-spinner>
+
+  <div *ngIf="result as simulation">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Total Principal</div><div class="summary-value small">{{ simulation.totalPrincipal | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-line-chart"></i></div>
+        <div><div class="summary-label">Total Profit</div><div class="summary-value small">{{ simulation.totalProfit | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-credit-card"></i></div>
+        <div><div class="summary-label">Total Payable</div><div class="summary-value small">{{ simulation.totalPayable | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-calendar"></i></div>
+        <div><div class="summary-label">Periodic Amount</div><div class="summary-value small">{{ simulation.periodicAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-balance-scale"></i></div>
+        <div><div class="summary-label">Residual Amount</div><div class="summary-value small">{{ simulation.residualAmount | number:'1.2-2' }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-calculator"></i>
+          <div>
+            <h4>Formula Summary</h4>
+            <p>Selected formula and source calculation assumptions for audit-friendly reproduction.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Formula</span><strong>{{ simulation.formulaName }}</strong></div>
+          <div class="info-row"><span>Product Type</span><strong>{{ getLabel(simulation.productType) }}</strong></div>
+          <div class="info-row"><span>Frequency</span><strong>{{ getLabel(simulation.frequency) }}</strong></div>
+          <div class="info-row"><span>Tenure</span><strong>{{ simulation.tenureMonths }} Months</strong></div>
+          <div class="info-row"><span>Start Date</span><strong>{{ simulation.startDate }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-list-check"></i>
+          <div>
+            <h4>Assumptions</h4>
+            <p>Use these notes before you apply the preview into financing, deposit or profit workflow steps.</p>
+          </div>
+        </div>
+
+        <ul class="assumption-list">
+          <li *ngFor="let assumption of simulation.assumptions">{{ assumption }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-card" id="calculation-schedule">
+      <div class="card-heading">
+        <i class="fa fa-table"></i>
+        <div>
+          <h4>Preview Schedule</h4>
+          <p>Calculation periods, component breakdown and outstanding balance projection.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap" *ngIf="simulation.schedule.length; else emptySchedule">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Due Date</th>
+              <th>Principal</th>
+              <th>Profit</th>
+              <th>Total</th>
+              <th>Outstanding</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of simulation.schedule">
+              <td>{{ item.periodNo }}</td>
+              <td>{{ item.dueDate }}</td>
+              <td>{{ item.principalComponent | number:'1.2-2' }}</td>
+              <td>{{ item.profitComponent | number:'1.2-2' }}</td>
+              <td>{{ item.totalAmount | number:'1.2-2' }}</td>
+              <td>{{ item.outstandingBalance | number:'1.2-2' }}</td>
+              <td>{{ item.note }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptySchedule>
+        <div class="empty-mini">No schedule rows were returned by the calculation engine.</div>
+      </ng-template>
+    </div>
+  </div>
+
+</div>
+</div>

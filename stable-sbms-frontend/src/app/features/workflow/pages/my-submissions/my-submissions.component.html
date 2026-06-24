@@ -1,0 +1,64 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container workflow-module">
+  <app-page-header title="Workflow Support" homeLabel="Home" homeRoute="/workflow/dashboard" currentLabel="My Submissions"></app-page-header>
+
+  <app-page-title title="My Submissions" subtitle="Track transitions submitted by a specific actor and follow their current workflow position">
+    <button class="btn btn-outline-secondary" type="button" (click)="print()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+  </app-page-title>
+
+  <div class="form-card">
+    <div class="card-heading">
+      <i class="fa fa-user"></i>
+      <div>
+        <h4>Actor Filter</h4>
+        <p>Enter the workflow actor name to review related submission history and current state.</p>
+      </div>
+    </div>
+    <div class="my-submission-controls">
+      <input class="form-control my-submission-input" [(ngModel)]="actor" placeholder="SYSTEM">
+      <button class="btn btn-primary" type="button" (click)="refresh()"><i class="fa fa-search"></i> Load</button>
+    </div>
+  </div>
+
+  <app-data-table [loading]="loading" [empty]="!loading && items.length === 0" emptyTitle="No submission found" emptyMessage="No workflow history matched the selected actor.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Module</th>
+        <th>Action</th>
+        <th>From</th>
+        <th>To</th>
+        <th class="text-center" style="width: 120px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.moduleName }} / {{ item.referenceId }}</td>
+        <td>{{ item.actionName }}</td>
+        <td>{{ item.fromStatus || '-' }}</td>
+        <td><app-status-badge [status]="item.toStatus || 'N/A'"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="openView(item)">
+              <i class="fa fa-eye"></i>
+            </button>
+            <button class="action-btn open" type="button" (click)="openSource(item)">
+              <i class="fa fa-external-link"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+</div>
+</div>

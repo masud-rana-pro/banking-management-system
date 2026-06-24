@@ -1,0 +1,56 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container statement-module">
+  <app-page-header title="Statement Management" homeLabel="Home" homeRoute="/statement/dashboard" currentLabel="Export Center"></app-page-header>
+
+  <app-page-title title="Export Center" subtitle="Review generated statement files, module references and open related request detail pages">
+    <button class="btn btn-outline-primary" routerLink="/statement/dashboard"><i class="fa fa-dashboard"></i> Dashboard</button>
+    <button class="btn btn-outline-primary" routerLink="/statement/customer/list"><i class="fa fa-user"></i> Customer Statements</button>
+    <button class="btn btn-primary" routerLink="/statement/branch/list"><i class="fa fa-building"></i> Branch Statements</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search file / reference" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="folder-open">
+      <select class="form-select" [(ngModel)]="filters.moduleName">
+        <option value="">All Modules</option>
+        <option value="CUSTOMER_STATEMENT">CUSTOMER STATEMENT</option>
+        <option value="BRANCH_STATEMENT">BRANCH STATEMENT</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No generated file found" emptyMessage="Generated customer and branch statement files will appear here.">
+    <thead>
+      <tr>
+        <th style="width:60px;">#</th>
+        <th>File</th>
+        <th>Module</th>
+        <th>Reference</th>
+        <th>Size</th>
+        <th>Created</th>
+        <th class="text-center print-hide" style="width:170px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.originalFileName }}</strong><span>{{ item.fileType }}</span></div></td>
+        <td>{{ item.moduleName }}</td>
+        <td>{{ item.referenceTable }} #{{ item.referenceId }}</td>
+        <td>{{ item.fileSize }}</td>
+        <td>{{ item.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="Open Related" (click)="openRelated(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn view" type="button" title="Preview File" (click)="previewFile(item)"><i class="fa fa-file-text-o"></i></button>
+            <button class="action-btn edit" type="button" title="Print File" (click)="printFile(item)"><i class="fa fa-print"></i></button>
+            <button class="action-btn download" type="button" title="Download File" (click)="downloadFile(item)"><i class="fa fa-download"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

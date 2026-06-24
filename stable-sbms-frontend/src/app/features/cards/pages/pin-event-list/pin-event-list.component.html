@@ -1,0 +1,98 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container card-module">
+
+  <app-page-header
+    title="Card Management"
+    homeLabel="Home"
+    homeRoute="/cards/list"
+    currentLabel="PIN Events">
+  </app-page-header>
+
+  <app-page-title
+    title="PIN Event List"
+    subtitle="Record PIN generation, PIN reset, PIN change and PIN security events for a card">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="openView()">
+      <i class="fa fa-arrow-left"></i> Card View
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openActivation()" [disabled]="!item">
+      <i class="fa fa-play"></i> Activation
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="save()" [disabled]="!item">
+      <i class="fa fa-plus"></i> Add PIN Event
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading PIN event list...
+  </div>
+
+  <div *ngIf="!loading && item" class="form-card">
+    <div class="card-heading">
+      <i class="fa fa-key"></i>
+      <div>
+        <h4>PIN Event Form</h4>
+        <p>Record PIN-related workflow event against the selected card.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label">Event Type</label>
+        <select class="form-select" [(ngModel)]="model.eventType">
+          <option *ngFor="let option of eventOptions" [ngValue]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Performed By</label>
+        <input class="form-control" [(ngModel)]="model.performedBy" placeholder="SYSTEM">
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading" class="info-card">
+    <div class="card-heading">
+      <i class="fa fa-list"></i>
+      <div>
+        <h4>PIN Event History</h4>
+        <p>Review saved PIN events for customer support and audit follow-up.</p>
+      </div>
+    </div>
+
+    <app-data-table [loading]="false" [empty]="pinEvents.length === 0" emptyTitle="No PIN event found" emptyMessage="PIN-related workflow activity will appear here.">
+      <thead>
+        <tr>
+          <th style="width: 60px;">#</th>
+          <th>Event</th>
+          <th>Performed By</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let event of pinEvents; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ getLabel(event.eventType) }}</td>
+          <td>
+            <div class="entity-inline-profile">
+              <img *ngIf="getUserImageUrl(event.performedBy); else pinEventUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(event.performedBy)" [alt]="event.performedBy || '-'">
+              <ng-template #pinEventUserFallback>
+                <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+              </ng-template>
+              <div class="item-name"><strong>{{ event.performedBy || '-' }}</strong></div>
+            </div>
+          </td>
+          <td>{{ event.eventDate | date:'yyyy-MM-dd HH:mm' }}</td>
+          <td><app-status-badge [status]="event.status"></app-status-badge></td>
+        </tr>
+      </tbody>
+    </app-data-table>
+  </div>
+
+</div>
+</div>

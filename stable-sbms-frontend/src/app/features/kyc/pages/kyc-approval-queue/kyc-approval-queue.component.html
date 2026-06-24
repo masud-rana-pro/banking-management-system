@@ -1,0 +1,93 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="KYC Management"
+    homeLabel="Home"
+    homeRoute="/kyc/dashboard"
+    currentLabel="Approval Queue">
+  </app-page-header>
+
+  <app-page-title
+    title="KYC Approval Queue"
+    subtitle="Work through submitted, under-review, verified and sent-back KYC profiles from one queue">
+
+    <button class="btn btn-outline-primary" routerLink="/kyc/dashboard">
+      <i class="fa fa-bar-chart"></i> Dashboard
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/kyc/list">
+      <i class="fa fa-list"></i> KYC List
+    </button>
+
+    <button class="btn btn-primary" routerLink="/kyc/new">
+      <i class="fa fa-plus"></i> New KYC Profile
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+      <div><div class="summary-label">Pending Review</div><div class="summary-value">{{ pendingCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Verified</div><div class="summary-value">{{ verifiedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-repeat"></i></div>
+      <div><div class="summary-label">Sent Back</div><div class="summary-value">{{ sentBackCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div>
+      <div><div class="summary-label">High Risk</div><div class="summary-value">{{ highRiskCount }}</div></div>
+    </div>
+  </div>
+
+  <app-data-table [loading]="loading" [empty]="!loading && !queueItems.length" emptyTitle="No queue item found" emptyMessage="No KYC profile is waiting in approval queue right now.">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Risk</th>
+        <th>Status</th>
+        <th>Branch</th>
+        <th>Reviewer</th>
+        <th class="text-center" style="width: 220px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of queueItems">
+        <td>
+          <div class="entity-inline-profile">
+            <div class="entity-avatar">
+              <img *ngIf="hasCustomerImage(item.customerId); else approvalQueueFallback" [src]="getImageUrl(item.customerId)" alt="Customer image">
+              <ng-template #approvalQueueFallback><i class="fa fa-user"></i></ng-template>
+            </div>
+            <div class="item-name">
+              <strong>{{ item.customerName }}</strong>
+              <span>{{ item.customerCode }}</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="risk-pill" [ngClass]="getRiskClass(item.riskLevel)">{{ getLabel(item.riskLevel) }}</span></td>
+        <td><app-status-badge [status]="item.reviewStatus"></app-status-badge></td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td>{{ item.reviewedBy || '-' }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn manage" type="button" title="Review" (click)="openReview(item)"><i class="fa fa-search-plus"></i></button>
+            <button class="action-btn view" type="button" title="View" (click)="openView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn upload" type="button" title="Upload" (click)="openUpload(item)"><i class="fa fa-upload"></i></button>
+            <button class="action-btn history" type="button" title="History" (click)="openHistory(item)"><i class="fa fa-history"></i></button>
+            <button class="action-btn search" type="button" title="Customer" (click)="openCustomer(item)"><i class="fa fa-user"></i></button>
+            <button *ngIf="item.reviewStatus === 'VERIFIED'" class="action-btn approve" type="button" title="Approve" (click)="approve(item)"><i class="fa fa-thumbs-up"></i></button>
+            <button class="action-btn return" type="button" title="Return" (click)="returnProfile(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+</div>
+</div>

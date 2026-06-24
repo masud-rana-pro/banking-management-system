@@ -1,0 +1,228 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container card-module">
+
+  <app-page-header
+    title="Card Management"
+    homeLabel="Home"
+    homeRoute="/cards/list"
+    currentLabel="Card View">
+  </app-page-header>
+
+  <app-page-title
+    title="Card View"
+    subtitle="Review card profile, customer-account linkage, event log, PIN history and monitoring alerts">
+
+    <button class="btn btn-outline-secondary" routerLink="/cards/list">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" [disabled]="!item">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button *ngIf="can('CUSTOMER_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!item">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button *ngIf="can('ACCOUNT_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openAccount()" [disabled]="!item">
+      <i class="fa fa-bank"></i> View Account
+    </button>
+
+    <button *ngIf="can('CARD_EDIT')" class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!item">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button *ngIf="can('CARD_ACTIVATE')" class="btn btn-outline-success" type="button" (click)="activation()" [disabled]="!item">
+      <i class="fa fa-play"></i> Activate
+    </button>
+
+    <button *ngIf="canAny(['CARD_BLOCK', 'CARD_UNBLOCK'])" class="btn btn-outline-warning" type="button" (click)="blockUnblock()" [disabled]="!item">
+      <i class="fa fa-ban"></i> Block / Unblock
+    </button>
+
+    <button *ngIf="can('CARD_PIN_EVENT')" class="btn btn-outline-primary" type="button" (click)="pinEventsPage()" [disabled]="!item">
+      <i class="fa fa-key"></i> PIN Events
+    </button>
+
+    <button *ngIf="can('CARD_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="usagePage()">
+      <i class="fa fa-exchange"></i> ATM/CDM Usage
+    </button>
+
+    <button *ngIf="can('CARD_EDIT')" class="btn" [ngClass]="item?.status === 'ARCHIVED' ? 'btn-outline-success' : 'btn-outline-danger'" type="button" (click)="toggleArchive()" [disabled]="!item">
+      <i class="fa" [ngClass]="item?.status === 'ARCHIVED' ? 'fa-undo' : 'fa-archive'"></i>
+      {{ item?.status === 'ARCHIVED' ? 'Restore' : 'Archive' }}
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading card view...
+  </div>
+
+  <div *ngIf="!loading && item" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="entity-avatar entity-avatar-lg">
+          <img *ngIf="customerProfileImageName; else cardViewAvatarFallback" [src]="getCustomerImageUrl()" alt="Customer image">
+          <ng-template #cardViewAvatarFallback><i class="fa fa-credit-card"></i></ng-template>
+        </div>
+        <div>
+          <h3>{{ item.cardRefNo }}</h3>
+          <p>{{ item.maskedCardNo }} | {{ item.customerCode }} | {{ item.accountNumber }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="item.cardStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-tags"></i></div>
+        <div><div class="summary-label">Card Type</div><div class="summary-value small">{{ getLabel(item.cardType) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-history"></i></div>
+        <div><div class="summary-label">Event Count</div><div class="summary-value">{{ item.eventCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-key"></i></div>
+        <div><div class="summary-label">PIN Events</div><div class="summary-value">{{ item.pinEventCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-bell"></i></div>
+        <div><div class="summary-label">Usage Alerts</div><div class="summary-value">{{ item.usageAlertCount }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Card Profile</h4>
+            <p>Issued card record and status details.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Card Ref No</span><strong>{{ item.cardRefNo }}</strong></div>
+          <div class="info-row"><span>Masked Card No</span><strong>{{ item.maskedCardNo }}</strong></div>
+          <div class="info-row"><span>Card Type</span><strong>{{ getLabel(item.cardType) }}</strong></div>
+          <div class="info-row"><span>Card Status</span><strong>{{ getLabel(item.cardStatus) }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ getLabel(item.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-user"></i>
+          <div>
+            <h4>Customer & Account</h4>
+            <p>Customer-owner and account relationship of the card.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Customer</span><strong>{{ item.customerName }}</strong></div>
+          <div class="info-row"><span>Customer Code</span><strong>{{ item.customerCode }}</strong></div>
+          <div class="info-row"><span>Account Number</span><strong>{{ item.accountNumber }}</strong></div>
+          <div class="info-row"><span>Account Type</span><strong>{{ item.accountTypeCode }} - {{ item.accountTypeName }}</strong></div>
+          <div class="info-row"><span>Branch</span><strong>{{ getBranchName(item.branchId) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-calendar"></i>
+          <div>
+            <h4>Validity & Monitoring</h4>
+            <p>Issue-expiry control and monitoring summary.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Issue Date</span><strong>{{ item.issueDate }}</strong></div>
+          <div class="info-row"><span>Expiry Date</span><strong>{{ item.expiryDate }}</strong></div>
+          <div class="info-row"><span>Expiring Soon</span><strong>{{ item.expiringSoon ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Block Reason</span><strong>{{ item.blockReason || '-' }}</strong></div>
+          <div class="info-row"><span>Current Balance</span><strong>{{ item.currentBalance | number:'1.2-2' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Event Log</h4>
+            <p>Status changes, issuance, activation and usage monitoring history.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap" *ngIf="events.length; else noEvents">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Performed By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let event of events | slice:0:6">
+                <td>{{ getLabel(event.eventType) }}</td>
+                <td>{{ event.eventDate | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td>
+                  <div class="entity-inline-profile">
+                    <img *ngIf="getUserImageUrl(event.performedBy); else cardEventUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(event.performedBy)" [alt]="event.performedBy || '-'">
+                    <ng-template #cardEventUserFallback>
+                      <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div class="item-name"><strong>{{ event.performedBy || '-' }}</strong></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noEvents><div class="empty-mini">No card event found.</div></ng-template>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-key"></i>
+          <div>
+            <h4>PIN Log</h4>
+            <p>PIN generation, reset and PIN security activity summary.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap" *ngIf="pinEvents.length; else noPins">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Performed By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let event of pinEvents | slice:0:6">
+                <td>{{ getLabel(event.eventType) }}</td>
+                <td>{{ event.eventDate | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td>
+                  <div class="entity-inline-profile">
+                    <img *ngIf="getUserImageUrl(event.performedBy); else cardPinUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(event.performedBy)" [alt]="event.performedBy || '-'">
+                    <ng-template #cardPinUserFallback>
+                      <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div class="item-name"><strong>{{ event.performedBy || '-' }}</strong></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noPins><div class="empty-mini">No PIN event found.</div></ng-template>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

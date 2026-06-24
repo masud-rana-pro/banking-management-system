@@ -1,0 +1,82 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container card-module">
+
+  <app-page-header
+    title="Card Management"
+    homeLabel="Home"
+    homeRoute="/cards/list"
+    currentLabel="Block / Unblock">
+  </app-page-header>
+
+  <app-page-title
+    title="Card Block / Unblock"
+    subtitle="Change card transaction eligibility using block reason and workflow remarks">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="openView()">
+      <i class="fa fa-arrow-left"></i> Card View
+    </button>
+
+    <button class="btn" [ngClass]="isBlocked ? 'btn-outline-success' : 'btn-outline-warning'" type="button" (click)="submit()" [disabled]="!item">
+      <i class="fa" [ngClass]="isBlocked ? 'fa-unlock' : 'fa-ban'"></i>
+      {{ isBlocked ? 'Unblock Card' : 'Block Card' }}
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading block/unblock workflow...
+  </div>
+
+  <div *ngIf="!loading && item" class="meta-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <img *ngIf="customerImageUrl; else cardBlockFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="item.customerName">
+        <ng-template #cardBlockFallback>
+          <i class="fa fa-shield"></i>
+        </ng-template>
+        <div>
+          <h4>Current Card Status</h4>
+          <p>Check current issue state before changing access to ATM/CDM transactions.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Card Ref No</span><strong>{{ item.cardRefNo }}</strong></div>
+        <div class="info-row"><span>Masked Card No</span><strong>{{ item.maskedCardNo }}</strong></div>
+        <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="info-row"><span>Customer</span><strong>{{ item.customerName }}</strong></div>
+        <div class="info-row"><span>Current Status</span><strong>{{ getLabel(item.cardStatus) }}</strong></div>
+        <div class="info-row"><span>Current Block Reason</span><strong>{{ item.blockReason || '-' }}</strong></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-exchange"></i>
+        <div>
+          <h4>{{ isBlocked ? 'Unblock Workflow' : 'Block Workflow' }}</h4>
+          <p>{{ isBlocked ? 'Remove card restriction and enable usage again.' : 'Store reason and restrict card transaction usage.' }}</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label class="form-label">Performed By</label>
+          <input class="form-control" [(ngModel)]="model.performedBy" placeholder="SYSTEM">
+        </div>
+
+        <div class="full-span" *ngIf="!isBlocked">
+          <label class="form-label">Block Reason</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="model.blockReason" placeholder="Required reason for block"></textarea>
+        </div>
+
+        <div class="full-span">
+          <label class="form-label">Remarks</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="model.remarks" [placeholder]="isBlocked ? 'Unblock remarks' : 'Block remarks'"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

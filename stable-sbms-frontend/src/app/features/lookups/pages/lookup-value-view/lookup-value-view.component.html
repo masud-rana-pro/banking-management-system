@@ -1,0 +1,49 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container lookup-module">
+  <app-page-header title="Lookup / Config" homeLabel="Home" homeRoute="/lookups/dashboard" currentLabel="Lookup Value View"></app-page-header>
+
+  <app-page-title title="Lookup Value View" subtitle="Inspect selected lookup value, child metadata, display order and extra configuration payload">
+    <button class="btn btn-outline-primary" type="button" (click)="edit()"><i class="fa fa-pencil"></i> Edit</button>
+    <button class="btn btn-primary" type="button" (click)="back()"><i class="fa fa-list"></i> Lookup Values</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading lookup value detail...
+  </div>
+
+  <div *ngIf="!loading && item as data" class="details-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-tag"></i>
+        <div>
+          <h4>Value Information</h4>
+          <p>Primary labels, display order and active state for downstream dropdown use.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Type</span><strong>{{ data.typeCode }} / {{ data.typeName }}</strong></div>
+        <div class="info-row"><span>Value Code</span><strong>{{ data.valueCode }}</strong></div>
+        <div class="info-row"><span>Value Label</span><strong>{{ data.valueLabel }}</strong></div>
+        <div class="info-row"><span>Bangla Label</span><strong>{{ data.valueBnLabel || '-' }}</strong></div>
+        <div class="info-row"><span>Sort Order</span><strong>{{ data.sortOrder ?? '-' }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ label(data.status) }}</strong></div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-code"></i>
+        <div>
+          <h4>Extra Data</h4>
+          <p>Optional JSON or metadata used by consuming modules for behavior or presentation.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Extra Data</span><strong>{{ data.extraData || '-' }}</strong></div>
+        <div class="info-row"><span>Created At</span><strong>{{ data.createdAt || '-' }}</strong></div>
+        <div class="info-row"><span>Updated At</span><strong>{{ data.updatedAt || '-' }}</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,104 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Islamic Account Management"
+    homeLabel="Home"
+    homeRoute="/accounts/account-types"
+    currentLabel="Account Type View">
+  </app-page-header>
+
+  <app-page-title
+    title="Account Type View"
+    subtitle="Review Islamic account type setup, contract, balance requirement and product behavior">
+
+    <button class="btn btn-outline-secondary" routerLink="/accounts/account-types">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openRequests()">
+      <i class="fa fa-file-text-o"></i> Opening Requests
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="edit()" [disabled]="!item">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading account type...
+  </div>
+
+  <div *ngIf="!loading && item" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-tags"></i></div>
+        <div>
+          <h3>{{ item.typeName }}</h3>
+          <p>{{ item.typeCode }} | {{ getLabel(item.shariahContractType) }} | {{ item.currencyCode }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="item.status"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-balance-scale"></i></div>
+        <div><div class="summary-label">Contract</div><div class="summary-value small">{{ getLabel(item.shariahContractType) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Currency</div><div class="summary-value small">{{ item.currencyCode }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-line-chart"></i></div>
+        <div><div class="summary-label">Profit Applicable</div><div class="summary-value small">{{ item.profitApplicable ? 'YES' : 'NO' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-arrow-circle-down"></i></div>
+        <div><div class="summary-label">Withdrawal Allowed</div><div class="summary-value small">{{ item.withdrawalAllowed ? 'YES' : 'NO' }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Type Setup</h4>
+            <p>Core account type information saved in the module.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Type Code</span><strong>{{ item.typeCode }}</strong></div>
+          <div class="info-row"><span>Type Name</span><strong>{{ item.typeName }}</strong></div>
+          <div class="info-row"><span>Contract Type</span><strong>{{ getLabel(item.shariahContractType) }}</strong></div>
+          <div class="info-row"><span>Currency</span><strong>{{ item.currencyCode }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ item.createdAt || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-check-square-o"></i>
+          <div>
+            <h4>Business Rules</h4>
+            <p>Opening balance, profit and withdrawal behavior summary.</p>
+          </div>
+        </div>
+        <div class="info-list">
+          <div class="info-row"><span>Minimum Opening Balance</span><strong>{{ item.minimumOpeningBalance | number:'1.2-2' }}</strong></div>
+          <div class="info-row"><span>Profit Applicable</span><strong>{{ item.profitApplicable ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Withdrawal Allowed</span><strong>{{ item.withdrawalAllowed ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ item.status }}</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

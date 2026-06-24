@@ -1,0 +1,184 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header title="ATM / CDM" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="Cash Bin Setup">
+  </app-page-header>
+
+  <app-page-title title="Cash Bin List"
+    subtitle="View and manage ATM/CDM cash cassette/bin setup, capacity and cash level">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')"><i class="fa fa-file-text-o"></i>
+            CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')"><i class="fa fa-file-excel-o"></i>
+            Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')"><i class="fa fa-file-pdf-o"></i>
+            PDF</button></li>
+      </ul>
+    </div>
+
+    <button *ngIf="can('ATM_CASH_BIN_CREATE')" class="btn btn-primary" routerLink="/atm/cash-bin/new">
+      <i class="fa fa-plus"></i> Add Cash Bin
+    </button>
+
+  </app-page-title>
+
+  <div class="cash-summary-row">
+
+    <div class="cash-summary-card card-total">
+      <div class="summary-icon primary">
+        <span class="taka-icon" aria-hidden="true">&#2547;</span>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Total Cash Bins</div>
+        <div class="summary-value">{{ totalAll }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-database"></i>
+          All configured cash bins
+        </div>
+      </div>
+    </div>
+
+    <div class="cash-summary-card card-active">
+      <div class="summary-icon success">
+        <i class="fa fa-check-circle"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Active Bins</div>
+        <div class="summary-value">{{ activeCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-line-chart"></i>
+          Ready for transaction
+        </div>
+      </div>
+    </div>
+
+    <div class="cash-summary-card card-low">
+      <div class="summary-icon warning">
+        <i class="fa fa-exclamation-triangle"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Low Cash</div>
+        <div class="summary-value">{{ lowCashCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-exclamation-circle"></i>
+          Needs replenishment
+        </div>
+      </div>
+    </div>
+
+    <div class="cash-summary-card card-full">
+      <div class="summary-icon info">
+        <i class="fa fa-archive"></i>
+      </div>
+
+      <div class="summary-content">
+        <div class="summary-label">Full Bins</div>
+        <div class="summary-value">{{ fullCount }}</div>
+        <div class="summary-hint">
+          <i class="fa fa-ban"></i>
+          Capacity reached
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search terminal / bin no" [(ngModel)]="filters.search"
+        (keyup.enter)="onSearch()" />
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let s of statusOptions" [value]="s.value">
+          {{ s.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No cash bins found"
+    emptyMessage="Try adjusting filters or create a new cash bin.">
+
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Terminal</th>
+        <th>Bin</th>
+        <th>Denomination</th>
+        <th>Capacity</th>
+        <th>Current</th>
+        <th>Amount</th>
+        <th style="width: 120px;">Status</th>
+        <th class="text-center" style="width: 150px;">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let c of cashBins; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+
+        <td>
+          <div class="cash-name">
+            <i class="fa fa-credit-card"></i>
+            <div>
+              <strong>{{ c.terminalName }}</strong>
+              <span>{{ c.terminalCode }} Ã¢â‚¬Â¢ ID: {{ c.terminalId }}</span>
+            </div>
+          </div>
+        </td>
+
+        <td><span class="type-pill">{{ c.binNo }}</span></td>
+        <td>{{ c.denomination }}</td>
+        <td>{{ c.maxCapacity }}</td>
+        <td>{{ c.currentCount }}</td>
+        <td>{{ c.currentAmount }}</td>
+
+        <td>
+          <app-status-badge [status]="c.status"></app-status-badge>
+        </td>
+
+        <td class="text-center">
+          <div class="cash-actions">
+            <button class="action-btn view" title="View" (click)="onView(c)">
+              <i class="fa fa-eye"></i>
+            </button>
+
+            <button *ngIf="can('ATM_CASH_BIN_EDIT')" class="action-btn edit" title="Edit" (click)="onEdit(c)">
+              <i class="fa fa-pencil"></i>
+            </button>
+
+            <button *ngIf="c.status !== 'ARCHIVED' && can('ATM_CASH_BIN_EDIT')" class="action-btn archive" title="Archive" (click)="onArchive(c)">
+              <i class="fa fa-archive"></i>
+            </button>
+
+            <button *ngIf="c.status === 'ARCHIVED' && can('ATM_CASH_BIN_EDIT')" class="action-btn restore" title="Restore" (click)="onRestore(c)">
+              <i class="fa fa-undo"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)">
+  </app-pagination>
+
+</div>
+</div>

@@ -1,0 +1,93 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 transaction-module">
+  <app-page-header title="Transactions" homeLabel="Home" homeRoute="/transactions/dashboard" currentLabel="Standing Instruction Create"></app-page-header>
+
+  <app-page-title title="Create Standing Instruction" subtitle="Configure repeat transfer between accounts with branch, frequency and next execution date mapping">
+    <button class="btn btn-outline-secondary" routerLink="/transactions/standing-instructions"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-success" routerLink="/transactions/transfer"><i class="fa fa-exchange"></i> Fund Transfer</button>
+    <button class="btn btn-outline-primary" routerLink="/transactions/dashboard"><i class="fa fa-home"></i> Dashboard</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading" class="transaction-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-calendar"></i>
+        </div>
+        <div>
+          <h3>Standing Instruction Setup</h3>
+          <p>Configure recurring transfer mapping, execution timing and record state before automation begins.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.status || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-random"></i>
+          <div>
+            <h4>Account Transfer Mapping</h4>
+            <p>Branch and account pair must be accurate because the instruction will keep running repeatedly on the saved setup.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div><label class="form-label">Branch</label><div class="input-with-icon"><i class="fa fa-building-o"></i><select class="form-select" [(ngModel)]="form.branchId"><option [ngValue]="null">Select branch</option><option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option></select></div></div>
+          <div><label class="form-label">From Account</label><div class="input-with-icon"><i class="fa fa-arrow-circle-o-up"></i><select class="form-select" [(ngModel)]="form.fromAccountId"><option [ngValue]="null">Select account</option><option *ngFor="let item of accounts" [ngValue]="item.id">{{ getAccountLabel(item) }}</option></select></div></div>
+          <div><label class="form-label">To Account</label><div class="input-with-icon"><i class="fa fa-arrow-circle-o-down"></i><select class="form-select" [(ngModel)]="form.toAccountId"><option [ngValue]="null">Select account</option><option *ngFor="let item of accounts" [ngValue]="item.id">{{ getAccountLabel(item) }}</option></select></div></div>
+          <div><label class="form-label">Transfer Mode</label><div class="input-with-icon"><i class="fa fa-exchange"></i><select class="form-select" [(ngModel)]="form.transferMode"><option *ngFor="let item of transferModes" [ngValue]="item.value">{{ item.label }}</option></select></div></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-clock-o"></i>
+          <div>
+            <h4>Execution Timing</h4>
+            <p>Define amount, first schedule date and repeat frequency so the instruction can run on the intended cycle.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div><label class="form-label">Amount</label><div class="input-with-icon"><span class="taka-icon" aria-hidden="true">&#2547;</span><input class="form-control" type="number" [(ngModel)]="form.amount"></div></div>
+          <div><label class="form-label">Schedule Date</label><div class="input-with-icon"><i class="fa fa-calendar"></i><input class="form-control" type="date" [(ngModel)]="form.scheduleDate"></div></div>
+          <div><label class="form-label">Frequency</label><div class="input-with-icon"><i class="fa fa-repeat"></i><select class="form-select" [(ngModel)]="form.frequency"><option *ngFor="let item of frequencies" [ngValue]="item.value">{{ item.label }}</option></select></div></div>
+          <div><label class="form-label">Record Status</label><div class="input-with-icon"><i class="fa fa-check-circle"></i><select class="form-select" [(ngModel)]="form.status"><option *ngFor="let item of recordStatuses" [ngValue]="item.value">{{ item.label }}</option></select></div></div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Instruction Note</h4>
+            <p>Add an operations note so later monitoring, history and troubleshooting views can explain this rule.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span"><label class="form-label">Remarks</label><div class="input-with-icon textarea-wrap"><i class="fa fa-commenting-o"></i><textarea class="form-control" rows="4" [(ngModel)]="form.remarks"></textarea></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" routerLink="/transactions/standing-instructions" type="button">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        Create Instruction
+      </button>
+    </div>
+  </div>
+</div>
+</div>

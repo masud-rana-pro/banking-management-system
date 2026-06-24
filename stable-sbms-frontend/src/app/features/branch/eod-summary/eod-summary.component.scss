@@ -1,0 +1,30 @@
+.branch-eod-page {
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .summary-card {
+    background: #fff;
+    border: 1px solid #dbe4f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    padding: 16px;
+  }
+
+  .summary-label {
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .summary-value {
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+}

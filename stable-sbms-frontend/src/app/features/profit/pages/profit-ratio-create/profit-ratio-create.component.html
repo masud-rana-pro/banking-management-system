@@ -1,0 +1,91 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 profit-module">
+  <app-page-header title="Profit Management" homeLabel="Home" homeRoute="/profit/dashboard" [currentLabel]="isEdit ? 'Edit Profit Ratio' : 'Create Profit Ratio'"></app-page-header>
+
+  <app-page-title [title]="isEdit ? 'Edit Profit Ratio' : 'Create Profit Ratio'" subtitle="Configure PSR by account type with effective date window and reusable ratio percentage">
+    <button class="btn btn-outline-secondary" routerLink="/profit/ratios"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading" class="profit-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-percent"></i>
+        </div>
+        <div>
+          <h3>{{ isEdit ? 'Update Profit Ratio' : 'New Profit Ratio' }}</h3>
+          <p>Set a reusable PSR rule with clean effective dates so future posting runs apply the right distribution percentage.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        ACTIVE
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-line-chart"></i>
+          <div>
+            <h4>Ratio Definition</h4>
+            <p>Choose the eligible account type, set the effective window and define the percentage that should drive future profit share calculations.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Ratio Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.ratioCode" placeholder="Auto generate if blank">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Account Type</label>
+            <div class="input-with-icon">
+              <i class="fa fa-university"></i>
+              <select class="form-select" [(ngModel)]="form.accountTypeId">
+                <option [ngValue]="null">Select account type</option>
+                <option *ngFor="let item of accountTypes" [ngValue]="item.id">{{ item.typeCode }} - {{ item.typeName }}</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Effective From</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.effectiveFrom">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Effective To</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar-o"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.effectiveTo">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Ratio Percent</label>
+            <div class="input-with-icon">
+              <i class="fa fa-percent"></i>
+              <input class="form-control" type="number" step="0.0001" [(ngModel)]="form.ratioPercent">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" routerLink="/profit/ratios" type="button"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        {{ isEdit ? 'Update Ratio' : 'Create Ratio' }}
+      </button>
+    </div>
+  </div>
+</div>
+</div>

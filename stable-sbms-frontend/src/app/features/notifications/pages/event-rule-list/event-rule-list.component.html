@@ -1,0 +1,49 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container notification-module">
+  <app-page-header title="Notification & Alerts" homeLabel="Home" homeRoute="/notifications/dashboard" currentLabel="Event Rule List"></app-page-header>
+
+  <app-page-title title="Event Rule List" subtitle="Map system events to centrally controlled notification flows and track their module reference">
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()"><i class="fa fa-print"></i> Print</button>
+    <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="btn btn-outline-primary" routerLink="/notifications/templates"><i class="fa fa-file-text-o"></i> Templates</button>
+    <button *ngIf="can('NOTIFICATION_EVENT_RULE_CREATE')" class="btn btn-primary" type="button" (click)="openNew()"><i class="fa fa-plus"></i> New Event Rule</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search event code / name / module" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No event rule found" emptyMessage="Create event rules so business events can resolve templates and delivery channels.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Event</th>
+        <th>Reference Module</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 120px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.eventCode }}</strong><span>{{ item.eventName }}</span></div></td>
+        <td>{{ item.referenceModule || '-' }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button *ngIf="can('NOTIFICATION_ALERTS_ACCESS')" class="action-btn logs" type="button" title="View Logs" (click)="openLogs(item)"><i class="fa fa-list-alt"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

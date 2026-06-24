@@ -1,0 +1,458 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container calculation-module">
+
+  <app-page-header
+    title="Calculation Engine"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Calculation Dashboard"
+    subtitle="Track simulator usage, failed projections and driver mix across financing, deposit scheme and profit workflows">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" title="Print calculation dashboard">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openFinancing()" title="Open financing module">
+      <i class="fa fa-cash-register"></i> Financing
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openDepositSchemes()" title="Open deposit scheme module">
+      <i class="fa fa-piggy-bank"></i> Deposit Schemes
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openProfitSchedules()" title="Open profit schedules">
+      <i class="fa fa-percent"></i> Profit Schedules
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="openSimulator()" title="Open calculation simulator">
+      <i class="fa fa-calculator"></i> Open Simulator
+    </button>
+
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading && summary as data" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow">
+            <i class="fa fa-calculator"></i>
+            Simulation Engine
+          </span>
+        </div>
+
+        <h3 class="dashboard-title">Track which product flows depend on projection logic the most</h3>
+        <p class="dashboard-subtitle">
+          Use this dashboard to see which modules are leaning on the engine, where failure is building and which product types dominate calculation volume.
+        </p>
+
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Recent Calculations</span>
+            <div class="dashboard-hero-metric-value">{{ data.recentCalculations }}</div>
+            <div class="dashboard-hero-metric-note">{{ data.recentItems.length }} source records visible in current traceability feed</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Financing Drivers</span>
+            <div class="dashboard-hero-metric-value">{{ data.financingSimulationCount }}</div>
+            <div class="dashboard-hero-metric-note">{{ data.depositSimulationCount }} deposit drivers also using the engine</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Failed Calculations</span>
+            <div class="dashboard-hero-metric-value">{{ data.failedCalculations }}</div>
+            <div class="dashboard-hero-metric-note">{{ data.profitSimulationCount }} profit-related calculation drivers in play</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Engine Dependence</span>
+            <h3 class="dashboard-title">How heavily the business workflow currently depends on simulation support</h3>
+            <p class="dashboard-subtitle">A compact view of recent volume and calculation stress across the source modules.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-focus-value">{{ data.financingSimulationCount + data.depositSimulationCount + data.profitSimulationCount }}</div>
+        <div class="dashboard-focus-note">visible source-module drivers currently relying on pricing, schedule or projection support</div>
+
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Financing</span>
+            <strong class="dashboard-mini-value">{{ data.financingSimulationCount }}</strong>
+            <span class="dashboard-mini-note">projection-intensive deals</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Deposit</span>
+            <strong class="dashboard-mini-value">{{ data.depositSimulationCount }}</strong>
+            <span class="dashboard-mini-note">scheme maturity logic</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Profit</span>
+            <strong class="dashboard-mini-value">{{ data.profitSimulationCount }}</strong>
+            <span class="dashboard-mini-note">posting and schedule support</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Failures</span>
+            <strong class="dashboard-mini-value">{{ data.failedCalculations }}</strong>
+            <span class="dashboard-mini-note">projection exceptions</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-chip-row">
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Metric Rows</span>
+        <strong class="dashboard-chip-value">{{ data.productWiseSimulationCounts.length }}</strong>
+        <span class="dashboard-chip-note">product metrics available for comparison</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Recent Items</span>
+        <strong class="dashboard-chip-value">{{ data.recentItems.length }}</strong>
+        <span class="dashboard-chip-note">source records linked back to modules</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Failure Load</span>
+        <strong class="dashboard-chip-value">{{ data.failedCalculations }}</strong>
+        <span class="dashboard-chip-note">projection or simulation exceptions</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Simulator Demand</span>
+        <strong class="dashboard-chip-value">{{ data.recentCalculations }}</strong>
+        <span class="dashboard-chip-note">recent overall engine usage</span>
+      </div>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-history"></i></div>
+        <div><div class="summary-label">Recent Calculations</div><div class="summary-value">{{ data.recentCalculations }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div>
+        <div><div class="summary-label">Failed Calculations</div><div class="summary-value">{{ data.failedCalculations }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-cash-register"></i></div>
+        <div><div class="summary-label">Financing Drivers</div><div class="summary-value">{{ data.financingSimulationCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-piggy-bank"></i></div>
+        <div><div class="summary-label">Deposit Drivers</div><div class="summary-value">{{ data.depositSimulationCount }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-percent"></i></div>
+        <div><div class="summary-label">Profit Drivers</div><div class="summary-value">{{ data.profitSimulationCount }}</div></div>
+      </div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Engine Load Pressure</h4>
+            <p class="dashboard-subtitle">Compare financing, deposit, profit and failure strain across the current simulation support queue.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+        </div>
+        <div class="dashboard-stack">
+          <div *ngFor="let band of calculationBands" class="dashboard-summary-band">
+            <div class="dashboard-summary-band-head">
+              <span class="dashboard-summary-band-title">{{ band.label }}</span>
+              <span class="dashboard-summary-band-value">{{ band.value }}</span>
+            </div>
+            <div class="dashboard-band-track">
+              <div class="dashboard-band-fill" [ngClass]="'tone-' + band.tone" [style.width.%]="band.share"></div>
+            </div>
+            <small>{{ band.note }}</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Calculation Demand Distribution</h4>
+            <p class="dashboard-subtitle">See how recent calculation activity is split between successful demand, failure load and the largest driver groups.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="calculationGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ data.recentCalculations }}</div>
+                  <div class="dashboard-donut-label">recent engine calculation events currently reflected in the dashboard</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-legend">
+            <div *ngFor="let legend of calculationLegend" class="dashboard-legend-item">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="legend.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ legend.label }}</span>
+                  <span class="dashboard-legend-note">{{ legend.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ legend.value }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Product Simulation Demand</h4>
+            <p class="dashboard-subtitle">Each bar shows how often a product family triggered the engine. Taller bars indicate heavier simulation reliance.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+        <div *ngIf="driverColumns.length; else noDriverBars" class="dashboard-column-chart calculation-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of driverAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of driverColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noDriverBars>
+          <div class="empty-mini">No product driver distribution available.</div>
+        </ng-template>
+        <div class="dashboard-chart-note">Highest bars point to the product families most dependent on formula, tenure and rate-based calculation support.</div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Source Module Contribution</h4>
+            <p class="dashboard-subtitle">Track which upstream business modules are sending the largest share of recent calculation requests.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-sitemap"></i></span>
+        </div>
+        <div *ngIf="sourceColumns.length; else noSourceBars" class="dashboard-column-chart calculation-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of sourceAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let chart of sourceColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ chart.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + chart.tone" [style.height.%]="chart.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="chart.label">{{ chart.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noSourceBars>
+          <div class="empty-mini">No source-module distribution available.</div>
+        </ng-template>
+        <div class="dashboard-chart-note">Use this view to see whether financing, deposit or profit workflows are generating the current calculation workload.</div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Calculation Activity Trend</h4>
+            <p class="dashboard-subtitle">Recent engine traffic across the latest operating days, based on source records already visible in the dashboard feed.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+        </div>
+        <div *ngIf="activityTrend.length; else noActivityTrend" class="dashboard-trend-shell">
+          <div class="dashboard-trend-axis">
+            <span *ngFor="let tick of activityTrendTicks" class="dashboard-trend-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div class="calculation-line-card">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="calculation-line-svg">
+              <defs>
+                <linearGradient id="calcTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(20,184,166,0.28)"></stop>
+                  <stop offset="100%" stop-color="rgba(20,184,166,0.03)"></stop>
+                </linearGradient>
+              </defs>
+              <path [attr.d]="activityTrendAreaPath" fill="url(#calcTrendFill)"></path>
+              <path [attr.d]="activityTrendPath" class="calculation-line-path"></path>
+              <g *ngFor="let point of activityTrend">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" class="dashboard-trend-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 5" text-anchor="middle" class="calculation-line-value">{{ point.value }}</text>
+              </g>
+            </svg>
+            <div class="calculation-line-labels">
+              <span *ngFor="let point of activityTrend">{{ point.shortLabel }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noActivityTrend>
+          <div class="empty-mini">No recent calculation activity trend available.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Source Control Matrix</h4>
+            <p class="dashboard-subtitle">See which source modules are clustering around the strongest current workflow statuses in the engine feed.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+        </div>
+        <div *ngIf="matrixRows.length && matrixColumns.length; else noMatrix" class="calculation-matrix">
+          <div class="calculation-matrix-header">
+            <div class="calculation-matrix-corner">Module</div>
+            <div *ngFor="let column of matrixColumns" class="calculation-matrix-col">{{ column.label }}</div>
+          </div>
+          <div *ngFor="let row of matrixRows" class="calculation-matrix-row">
+            <div class="calculation-matrix-label" [title]="row.label">{{ row.shortLabel }}</div>
+            <div *ngFor="let value of row.values" class="calculation-matrix-cell" [class.is-active]="value > 0">
+              {{ value }}
+            </div>
+          </div>
+        </div>
+        <ng-template #noMatrix>
+          <div class="empty-mini">No source control matrix available.</div>
+        </ng-template>
+      </article>
+    </section>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-line-chart"></i>
+          <div>
+            <h4>Product-wise Simulation Counts</h4>
+            <p>High-usage Islamic product types and support concepts that depend on the engine.</p>
+          </div>
+        </div>
+
+        <div *ngIf="metrics.length; else emptyMetrics" class="metric-list">
+          <div class="metric-row" *ngFor="let metric of metrics">
+            <div>
+              <div class="summary-label">{{ getLabel(metric.productType) }}</div>
+              <div class="metric-track">
+                <div class="metric-fill" [style.width.%]="(metric.usageCount / maxMetric) * 100"></div>
+              </div>
+            </div>
+            <div class="metric-count">{{ metric.usageCount }}</div>
+          </div>
+        </div>
+
+        <ng-template #emptyMetrics>
+          <div class="empty-mini">No calculation metrics available yet.</div>
+        </ng-template>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-crosshairs"></i>
+          <div>
+            <h4>Source Record Spotlight</h4>
+            <p>Highlight the most material recent calculation source record with quick operational context and direct navigation.</p>
+          </div>
+        </div>
+        <div *ngIf="selectedRecentItem as item; else noSpotlight" class="calculation-spotlight">
+          <div class="calculation-spotlight-hero">
+            <div class="calculation-spotlight-badge">{{ selectedSourceBadgeText }}</div>
+            <div class="calculation-spotlight-copy">
+              <h5>{{ item.referenceNo }}</h5>
+              <p>{{ item.customerOrAccount }}</p>
+              <span class="calculation-spotlight-module">{{ getLabel(item.sourceModule) }} | {{ getLabel(item.productType) }}</span>
+            </div>
+          </div>
+
+          <div class="calculation-spotlight-grid">
+            <div class="calculation-spotlight-stat">
+              <span>Amount</span>
+              <strong>{{ item.amount | number:'1.2-2' }}</strong>
+            </div>
+            <div class="calculation-spotlight-stat">
+              <span>Status</span>
+              <strong>{{ getLabel(item.status) }}</strong>
+            </div>
+          </div>
+
+          <div class="calculation-spotlight-badges">
+            <div *ngFor="let badge of selectedSourceBadges" class="calculation-spotlight-pill">
+              <span>{{ badge.label }}</span>
+              <strong>{{ badge.value }}</strong>
+            </div>
+          </div>
+
+          <div class="calculation-spotlight-actions print-hide">
+            <button class="btn btn-outline-primary btn-sm" type="button" (click)="openItem(item)" [disabled]="!item.routeHint">
+              <i class="fa fa-external-link"></i> Open Source
+            </button>
+          </div>
+        </div>
+
+        <ng-template #noSpotlight>
+          <div class="empty-mini">No recent source record available for spotlight.</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-clock-o"></i>
+        <div>
+          <h4>Recent Calculation Drivers</h4>
+          <p>Existing source-module records that currently feed calculation previews and audit-friendly schedule checks.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap" *ngIf="data.recentItems.length; else emptyRecent">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Reference</th>
+              <th>Product Type</th>
+              <th>Customer / Account</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th class="text-center print-hide">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of data.recentItems">
+              <td>{{ getLabel(item.sourceModule) }}</td>
+              <td>{{ item.referenceNo }}</td>
+              <td>{{ getLabel(item.productType) }}</td>
+              <td>{{ item.customerOrAccount }}</td>
+              <td>{{ item.amount | number:'1.2-2' }}</td>
+              <td><app-status-badge [status]="item.status"></app-status-badge></td>
+              <td>{{ item.eventDate }}</td>
+              <td class="text-center print-hide">
+                <div class="table-actions">
+                  <button class="action-btn preview" type="button" title="Focus record" (click)="focusItem(item)">
+                    <i class="fa fa-bullseye"></i>
+                  </button>
+                  <button class="action-btn view" type="button" title="Open source module" (click)="openItem(item)">
+                  <i class="fa fa-external-link"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyRecent>
+        <div class="empty-mini">No source-module records available for the calculation dashboard.</div>
+      </ng-template>
+    </div>
+  </div>
+
+</div>
+</div>

@@ -1,0 +1,160 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 integration-module">
+  <app-page-header title="Integration Management" homeLabel="Home" homeRoute="/integrations/dashboard" currentLabel="Edit Provider"></app-page-header>
+
+  <app-page-title title="Edit Provider" subtitle="Update endpoint, auth strategy and timeout while keeping credentials masked on view pages">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading provider form...
+  </div>
+
+  <div *ngIf="!loading" class="integration-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-pencil"></i>
+        </div>
+        <div>
+          <h3>Update Integration Provider</h3>
+          <p>Review endpoint identity, adjust timeout and revise credentials without breaking the existing delivery contract.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        ACTIVE
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-id-card-o"></i>
+          <div>
+            <h4>Provider Identity</h4>
+            <p>Keep code, display name and channel type stable so logs, retries and support teams can trace the connector correctly.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Provider Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.providerCode" placeholder="Provider code">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Provider Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tag"></i>
+              <input class="form-control" [(ngModel)]="form.providerName" placeholder="Enter provider name">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Provider Type</label>
+            <div class="input-with-icon">
+              <i class="fa fa-sitemap"></i>
+              <select class="form-select" [(ngModel)]="form.providerType">
+                <option value="">Select Provider Type</option>
+                <option value="EMAIL">EMAIL</option>
+                <option value="SMS">SMS</option>
+                <option value="PAYMENT">PAYMENT</option>
+                <option value="MOBILE_BANKING">MOBILE BANKING</option>
+                <option value="PUSH">PUSH</option>
+                <option value="GENERAL">GENERAL</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Auth Type</label>
+            <div class="input-with-icon">
+              <i class="fa fa-shield"></i>
+              <select class="form-select" [(ngModel)]="form.authType">
+                <option value="">Select Auth Type</option>
+                <option value="NONE">NONE</option>
+                <option value="API_KEY">API KEY</option>
+                <option value="BASIC">BASIC</option>
+                <option value="BEARER">BEARER</option>
+                <option value="USERNAME_PASSWORD">USERNAME PASSWORD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-globe"></i>
+          <div>
+            <h4>Endpoint & Timeout</h4>
+            <p>Update the base endpoint and wait window carefully so tests and live execution stay responsive and predictable.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Base URL</label>
+            <div class="input-with-icon">
+              <i class="fa fa-link"></i>
+              <input class="form-control" [(ngModel)]="form.baseUrl" placeholder="https://provider.example/api">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Timeout (Sec)</label>
+            <div class="input-with-icon">
+              <i class="fa fa-clock-o"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.timeoutSec" min="1" placeholder="30">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-lock"></i>
+          <div>
+            <h4>Credential Snapshot</h4>
+            <p>Replace only the values you need so the provider can keep working while still following the right auth profile.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">API Key</label>
+            <div class="input-with-icon">
+              <i class="fa fa-key"></i>
+              <input class="form-control" [(ngModel)]="form.apiKey" placeholder="Leave blank to keep or replace">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Username</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <input class="form-control" [(ngModel)]="form.username" placeholder="Optional username">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Password</label>
+            <div class="input-with-icon">
+              <i class="fa fa-lock"></i>
+              <input class="form-control" type="password" [(ngModel)]="form.password" placeholder="Leave blank to clear or replace">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" type="button" (click)="submit()" [disabled]="saving || loading">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ saving ? 'Saving...' : 'Update Provider' }}
+      </button>
+    </div>
+  </div>
+</div>
+</div>

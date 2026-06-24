@@ -1,0 +1,220 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header title="Vault Balance" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="Vault Detail">
+  </app-page-header>
+
+  <app-page-title title="Vault View" subtitle="Read-only vault position, closing status and cash movement snapshot">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="goLedger()">
+      <i class="fa fa-book"></i> Ledger
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="previewReport()" [disabled]="!vault">
+      <i class="fa fa-eye"></i> Preview Report
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="printReport()" [disabled]="!vault">
+      <i class="fa fa-print"></i> Print Report
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="downloadReport()" [disabled]="!vault">
+      <i class="fa fa-download"></i> PDF
+    </button>
+
+    <button *ngIf="vault && !vault.isClosed" class="btn btn-primary" type="button" (click)="closeVault()">
+      <i class="fa fa-lock"></i> Close Vault
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="view-card loading-card">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading vault detail...
+  </div>
+
+  <div *ngIf="!loading && vault" class="vault-view-shell">
+    <div id="print-section">
+      <div class="vault-hero">
+        <div class="vault-avatar">
+          <i class="fa fa-university"></i>
+        </div>
+
+        <div class="vault-hero-content">
+          <span class="eyebrow">Vault Balance</span>
+          <h3>{{ branch?.branchName || ('Branch #' + vault.branchId) }}</h3>
+          <p>
+            {{ branch?.branchCode || vault.branchId }}
+            <span>Ã¢â‚¬Â¢ Balance Date: {{ vault.balanceDate }}</span>
+          </p>
+        </div>
+
+        <div class="hero-status">
+          <app-status-badge [status]="vault.status"></app-status-badge>
+        </div>
+      </div>
+
+      <div class="summary-strip">
+
+        <div class="summary-item">
+          <i class="fa fa-calendar"></i>
+          <div>
+            <label>Balance Date</label>
+            <strong>{{ vault.balanceDate || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <span class="taka-icon" aria-hidden="true">&#2547;</span>
+          <div>
+            <label>Opening Balance</label>
+            <strong>Ã Â§Â³ {{ formatAmount(vault.openingBalance) }}</strong>
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <i class="fa fa-arrow-down"></i>
+          <div>
+            <label>Total Cash In</label>
+            <strong>Ã Â§Â³ {{ formatAmount(vault.totalCashIn) }}</strong>
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <i class="fa fa-arrow-up"></i>
+          <div>
+            <label>Total Cash Out</label>
+            <strong>Ã Â§Â³ {{ formatAmount(vault.totalCashOut) }}</strong>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-balance-scale"></i>
+          <div>
+            <h4>Vault Cash Position</h4>
+            <p>Opening, inflow, outflow and final closing balance.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+
+          <div class="detail-item">
+            <label>Opening Balance</label>
+            <strong>Ã Â§Â³ {{ formatAmount(vault.openingBalance) }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Total Cash In</label>
+            <strong>Ã Â§Â³ {{ formatAmount(vault.totalCashIn) }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Total Cash Out</label>
+            <strong>Ã Â§Â³ {{ formatAmount(vault.totalCashOut) }}</strong>
+          </div>
+
+          <div class="detail-item highlight">
+            <label>Closing Balance</label>
+            <strong>Ã Â§Â³ {{ formatAmount(vault.closingBalance) }}</strong>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-lock"></i>
+          <div>
+            <h4>Closing Information</h4>
+            <p>Vault closing state and responsible officer snapshot.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+
+          <div class="detail-item">
+            <label>Is Closed</label>
+            <strong>{{ vault.isClosed ? 'YES' : 'NO' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Closed By</label>
+            <strong>{{ vault.closedBy || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Closed At</label>
+            <strong>{{ vault.closedAt || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Status</label>
+            <strong>{{ vault.status || '-' }}</strong>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-bank"></i>
+          <div>
+            <h4>Branch Information</h4>
+            <p>Branch source information linked with this vault balance.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+
+          <div class="detail-item">
+            <label>Branch ID</label>
+            <strong>{{ vault.branchId }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Branch Code</label>
+            <strong>{{ branch?.branchCode || '-' }}</strong>
+          </div>
+
+          <div class="detail-item wide">
+            <label>Branch Name</label>
+            <strong>{{ branch?.branchName || '-' }}</strong>
+          </div>
+
+          <div class="detail-item wide">
+            <label>Remarks</label>
+            <strong>{{ vault.remarks || '-' }}</strong>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="detail-section last">
+        <div class="section-title">
+          <i class="fa fa-clock-o"></i>
+          <div>
+            <h4>Audit Snapshot</h4>
+            <p>Creation timestamp for this vault record.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Created At</label>
+            <strong>{{ vault.createdAt || '-' }}</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>

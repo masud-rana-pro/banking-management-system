@@ -1,0 +1,350 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/customers/list"
+    currentLabel="Customer Profile">
+  </app-page-header>
+
+  <app-page-title
+    title="Customer Profile"
+    subtitle="View customer profile, address, identity, onboarding progress and related operational summary">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()" [disabled]="!customer">
+      <i class="fa fa-print"></i> Print
+    </button>
+<!-- 
+    <button class="btn btn-outline-primary" type="button" (click)="edit()" [disabled]="!customer">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button *ngIf="customer?.status !== 'ARCHIVED'" class="btn btn-outline-danger" type="button" (click)="archive()" [disabled]="!customer">
+      <i class="fa fa-archive"></i> Archive
+    </button>
+
+    <button *ngIf="customer?.status === 'ARCHIVED'" class="btn btn-outline-success" type="button" (click)="restore()" [disabled]="!customer">
+      <i class="fa fa-undo"></i> Restore
+    </button>
+
+    <button class="btn btn-success" type="button" (click)="manageAddress()" [disabled]="!customer">
+      <i class="fa fa-map-marker"></i> Manage Address
+    </button>
+
+    <button class="btn btn-warning" type="button" (click)="manageIdentity()" [disabled]="!customer">
+      <i class="fa fa-id-card"></i> Manage Identity
+    </button>
+
+    <button class="btn btn-info" type="button" (click)="statusAction()" [disabled]="!customer">
+      <i class="fa fa-exchange"></i> Status Action
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openKyc()" [disabled]="!customer">
+      <i class="fa fa-shield"></i> Open KYC
+    </button> -->
+
+    <button class="btn btn-outline-primary" type="button" (click)="openAccountRequest()" [disabled]="!customer">
+      <i class="fa fa-bank"></i> New
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCards()" [disabled]="!customer">
+      <i class="fa fa-credit-card"></i> View Cards
+    </button>
+
+    <!-- <button class="btn btn-primary" type="button" (click)="issueCard()" [disabled]="!customer">
+      <i class="fa fa-plus-square"></i> Issue Card
+    </button> -->
+
+    <!-- <button class="btn btn-outline-primary" type="button" (click)="openCustomerStatementList()" [disabled]="!customer">
+      <i class="fa fa-file-text-o"></i> Statements
+    </button> -->
+
+    <button class="btn btn-outline-success" type="button" (click)="openCustomerStatement()" [disabled]="!customer">
+      <i class="fa fa-print"></i>Statement
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openDepositSchemeList()" [disabled]="!customer">
+      <i class="fa fa-pie-chart"></i> Deposit Schemes
+    </button>
+
+    <!-- <button class="btn btn-outline-success" type="button" (click)="openDepositSchemeEnrollment()" [disabled]="!customer">
+      <i class="fa fa-user-plus"></i> Enroll Scheme
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openFinancingList()" [disabled]="!customer">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Financing Apps
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="openFinancingApplication()" [disabled]="!customer">
+      <i class="fa fa-plus-circle"></i> New Financing
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openZakatProfiles()" [disabled]="!customer">
+      <i class="fa fa-calculator"></i> Zakat Profiles
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="runZakat()" [disabled]="!customer">
+      <span class="taka-icon" aria-hidden="true">&#2547;</span> Run Zakat
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openContracts()" [disabled]="!customer">
+      <i class="fa fa-file-text"></i> Contracts
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="generateContract()" [disabled]="!customer">
+      <i class="fa fa-pencil-square-o"></i> Generate Contract
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openVerificationLogs()" [disabled]="!customer">
+      <i class="fa fa-shield"></i> Verification Logs
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="sendContactOtp('EMAIL')" [disabled]="!customer || !customer?.email">
+      <i class="fa fa-envelope"></i> Email OTP
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="sendContactOtp('SMS')" [disabled]="!customer || !customer?.mobile">
+      <i class="fa fa-mobile"></i> Mobile OTP
+    </button> -->
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading customer profile...
+  </div>
+
+  <div *ngIf="!loading && customer as item" class="view-shell">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <div class="entity-avatar">
+          <img *ngIf="item.profileImageName; else customerViewAvatarFallback" [src]="getImageUrl(item.profileImageName)" alt="Customer image">
+          <ng-template #customerViewAvatarFallback><i class="fa fa-user"></i></ng-template>
+        </div>
+        <div>
+          <h3>{{ item.fullName }}</h3>
+          <p>{{ item.customerCode }} | {{ getLabel(item.customerType) }} | {{ getBranchName(item.branchId) }}</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <app-status-badge [status]="item.customerStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-user-circle"></i></div>
+        <div><div class="summary-label">Customer Type</div><div class="summary-value small">{{ getLabel(item.customerType) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-building"></i></div>
+        <div><div class="summary-label">Branch</div><div class="summary-value small">{{ getBranchName(item.branchId) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-map-marker"></i></div>
+        <div><div class="summary-label">Addresses</div><div class="summary-value">{{ addresses.length || item.addressCount || 0 }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-id-card"></i></div>
+        <div><div class="summary-label">Identity Docs</div><div class="summary-value">{{ identities.length || item.identityCount || 0 }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-check-square-o"></i></div>
+        <div><div class="summary-label">Verified Docs</div><div class="summary-value">{{ verifiedIdentityCount }}</div></div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Customer Profile</h4>
+            <p>Core identity, personal information and contact details.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Customer Code</span><strong>{{ item.customerCode }}</strong></div>
+          <div class="info-row"><span>Full Name</span><strong>{{ item.fullName }}</strong></div>
+          <div class="info-row"><span>Father Name</span><strong>{{ item.fatherName || '-' }}</strong></div>
+          <div class="info-row"><span>Mother Name</span><strong>{{ item.motherName || '-' }}</strong></div>
+          <div class="info-row"><span>Spouse Name</span><strong>{{ item.spouseName || '-' }}</strong></div>
+          <div class="info-row"><span>Date Of Birth</span><strong>{{ item.dateOfBirth || '-' }}</strong></div>
+          <div class="info-row"><span>Gender</span><strong>{{ getLabel(item.gender) || '-' }}</strong></div>
+          <div class="info-row"><span>Marital Status</span><strong>{{ getLabel(item.maritalStatus) || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-phone"></i>
+          <div>
+            <h4>Contact & Income</h4>
+            <p>Contact, occupation and source of fund profile.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Mobile</span><strong>{{ item.mobile }}</strong></div>
+          <div class="info-row"><span>Email</span><strong>{{ item.email || '-' }}</strong></div>
+          <div class="info-row"><span>Nationality</span><strong>{{ item.nationality || '-' }}</strong></div>
+          <div class="info-row"><span>Occupation</span><strong>{{ item.occupation || '-' }}</strong></div>
+          <div class="info-row"><span>Monthly Income</span><strong>{{ item.monthlyIncome || '-' }}</strong></div>
+          <div class="info-row"><span>Source Of Funds</span><strong>{{ item.sourceOfFunds || '-' }}</strong></div>
+          <div class="info-row"><span>Customer Status</span><strong>{{ getLabel(item.customerStatus) }}</strong></div>
+          <div class="info-row"><span>Record Status</span><strong>{{ getLabel(item.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-map-marker"></i>
+          <div>
+            <h4>Address Summary</h4>
+            <p>Present and permanent address tracking.</p>
+          </div>
+        </div>
+
+        <div *ngIf="addresses.length; else noAddress" class="info-list">
+          <div class="info-row"><span>Primary Address</span><strong>{{ primaryAddress?.addressLine1 || '-' }}</strong></div>
+          <div class="info-row"><span>Present Address</span><strong>{{ presentAddress?.addressLine1 || '-' }}</strong></div>
+          <div class="info-row"><span>Permanent Address</span><strong>{{ permanentAddress?.addressLine1 || '-' }}</strong></div>
+          <div class="info-row"><span>Total Address Records</span><strong>{{ addresses.length }}</strong></div>
+        </div>
+        <ng-template #noAddress>
+          <div class="empty-mini">No address information found.</div>
+        </ng-template>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-id-card"></i>
+          <div>
+            <h4>Identity Summary</h4>
+            <p>Document coverage and verification status.</p>
+          </div>
+        </div>
+
+        <div *ngIf="identities.length; else noIdentity" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>No</th>
+                <th>Image</th>
+                <th>Country</th>
+                <th>Verified</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let identity of identities">
+                <td>{{ getLabel(identity.documentType) }}</td>
+                <td>{{ identity.documentNo }}</td>
+                <td>
+                  <div class="entity-thumb" *ngIf="identity.imageFileName; else noCustomerIdentityThumb">
+                    <img [src]="getImageUrl(identity.imageFileName)" alt="Identity image">
+                  </div>
+                  <ng-template #noCustomerIdentityThumb><span class="entity-thumb-empty">No image</span></ng-template>
+                </td>
+                <td>{{ identity.issueCountry || '-' }}</td>
+                <td>{{ identity.verifiedFlag ? 'YES' : 'NO' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noIdentity>
+          <div class="empty-mini">No identity document found.</div>
+        </ng-template>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-phone-square"></i>
+          <div>
+            <h4>Contact Verification</h4>
+            <p>Customer contact completeness and onboarding readiness.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Mobile Available</span><strong>{{ item.mobile ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Email Available</span><strong>{{ item.email ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Mobile Verified</span><strong>{{ item.mobileVerified !== false ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Email Verified</span><strong>{{ item.emailVerified !== false ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Primary Address</span><strong>{{ primaryAddress ? 'YES' : 'NO' }}</strong></div>
+          <div class="info-row"><span>Contact Verification</span><strong>{{ isContactVerified ? 'READY' : 'PENDING' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-shield"></i>
+          <div>
+            <h4>KYC Summary</h4>
+            <p>Identity, verification and onboarding readiness based on current records.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Total Identity Docs</span><strong>{{ identities.length || item.identityCount || 0 }}</strong></div>
+          <div class="info-row"><span>Verified Identity Docs</span><strong>{{ verifiedIdentityCount }}</strong></div>
+          <div class="info-row"><span>Current KYC Status</span><strong>{{ item.customerStatus === 'PENDING_KYC' ? 'Pending review' : getLabel(item.customerStatus) }}</strong></div>
+          <div class="info-row"><span>KYC Readiness</span><strong>{{ isKycReady ? 'Ready for KYC processing' : 'Pending address, identity or verification' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-credit-card"></i>
+          <div>
+            <h4>Related Modules</h4>
+            <p>Playbook-required placeholders for accounts, cards and transactions.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Accounts Summary</span><strong>Module 8 pending integration</strong></div>
+          <div class="info-row"><span>Account Entry</span><strong>Use New Account Request action</strong></div>
+          <div class="info-row"><span>Zakat Summary</span><strong>Use Zakat Profiles or Run Zakat action</strong></div>
+          <div class="info-row"><span>Contract Summary</span><strong>Use Contracts or Generate Contract action</strong></div>
+          <div class="info-row"><span>Card Summary</span><strong>Use View Cards or Issue Card action</strong></div>
+          <div class="info-row"><span>Recent Transactions</span><strong>Available through linked account actions</strong></div>
+          <div class="info-row"><span>Verification Summary</span><strong>Use Verification Logs, Email OTP or Mobile OTP action</strong></div>
+          <div class="info-row"><span>Integration Note</span><strong>{{ relatedModuleSummary }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Timeline</h4>
+            <p>Customer activity timeline returned by backend workflow summary.</p>
+          </div>
+        </div>
+
+        <div *ngIf="timeline.length; else noTimeline" class="timeline-list">
+          <div class="timeline-item" *ngFor="let entry of timeline">
+            <div class="timeline-icon"><i class="fa fa-clock-o"></i></div>
+            <div class="timeline-content">
+              <strong>{{ entry.title }}</strong>
+              <p>{{ entry.description }}</p>
+              <span>{{ entry.activityTime | date:'yyyy-MM-dd HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noTimeline>
+          <div class="empty-mini">No customer timeline found.</div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

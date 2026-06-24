@@ -1,0 +1,34 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container user-module">
+  <app-page-header title="User Management" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="Lock / Unlock"></app-page-header>
+
+  <app-page-title title="Lock / Unlock User" subtitle="Control user sign-in state for security and operational risk handling">
+    <button class="btn btn-outline-primary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()"><i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : (user?.locked ? 'fa-unlock' : 'fa-lock')"></i> {{ user?.locked ? 'Unlock User' : 'Lock User' }}</button>
+  </app-page-title>
+
+  <div *ngIf="!loading && user as data" class="form-card">
+    <div class="card-heading">
+      <div class="entity-inline-profile">
+        <img *ngIf="data.profileImageName; else lockUserAvatarFallback" class="entity-avatar-lg" [src]="getProfileImageUrl(data.profileImageName)" [alt]="data.fullName">
+        <ng-template #lockUserAvatarFallback>
+          <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+        </ng-template>
+        <div>
+          <h4>{{ data.username }} / {{ data.fullName }}</h4>
+          <p>Inactive or locked users should not be able to sign in once real auth is wired.</p>
+        </div>
+      </div>
+    </div>
+    <div class="info-list" style="margin-bottom: 16px;">
+      <div class="info-row"><span>Current Status</span><strong>{{ data.status }}</strong></div>
+      <div class="info-row"><span>Locked</span><strong>{{ data.locked ? 'YES' : 'NO' }}</strong></div>
+      <div class="info-row"><span>Last Login</span><strong>{{ data.lastLoginAt || '-' }}</strong></div>
+    </div>
+    <form [formGroup]="form">
+      <label class="form-label">Reason</label>
+      <textarea class="form-control" formControlName="reason" placeholder="Enter lock / unlock reason for audit support"></textarea>
+    </form>
+  </div>
+</div>
+</div>

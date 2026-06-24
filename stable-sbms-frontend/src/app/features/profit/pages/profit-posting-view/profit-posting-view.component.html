@@ -1,0 +1,63 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container profit-module">
+  <app-page-header title="Profit Management" homeLabel="Home" homeRoute="/profit/dashboard" currentLabel="Profit Posting View"></app-page-header>
+
+  <app-page-title title="Profit Posting View" subtitle="Review posted amount, snapshot basis, posting period, account linkage and failure detail if any">
+    <button class="btn btn-outline-secondary" type="button" (click)="previewAdvice()" [disabled]="!item"><i class="fa fa-eye"></i> Preview Advice</button>
+    <button class="btn btn-outline-primary" type="button" (click)="printAdvice()" [disabled]="!item"><i class="fa fa-print"></i> Print Advice</button>
+    <button class="btn btn-primary" type="button" (click)="downloadAdvice()" [disabled]="!item"><i class="fa fa-download"></i> PDF</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openAccount()" [disabled]="!item"><i class="fa fa-bank"></i> Account</button>
+    <button class="btn btn-outline-success" type="button" (click)="openSchedule()" [disabled]="!item"><i class="fa fa-calendar"></i> Schedule</button>
+    <button class="btn btn-primary" type="button" (click)="openRunAgain()" [disabled]="!item"><i class="fa fa-play"></i> Run Again</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="item && !loading">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-list-ul"></i></div>
+        <div><div class="summary-label">Posting Ref</div><div class="summary-value small">{{ item.postingRef }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+        <div><div class="summary-label">Profit Amount</div><div class="summary-value small">{{ item.profitAmount | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-calendar-check-o"></i></div>
+        <div><div class="summary-label">Posting Date</div><div class="summary-value small">{{ item.postingDate }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-exclamation-circle"></i></div>
+        <div><div class="summary-label">Status</div><div class="summary-value small">{{ item.status }}</div></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-title-row">
+        <div class="entity-inline-profile">
+          <img *ngIf="customerImageUrl; else profitPostingViewFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="item.customerName">
+          <ng-template #profitPostingViewFallback>
+            <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <h5 class="mb-0">{{ item.accountNumber }}</h5>
+        </div>
+        <app-status-badge [status]="item.status"></app-status-badge>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><small>Profile</small><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="meta-item"><small>Customer</small><strong>{{ item.customerCode }} - {{ item.customerName }}</strong></div>
+        <div class="meta-item"><small>Schedule</small><strong>{{ item.scheduleId }}</strong></div>
+        <div class="meta-item"><small>Frequency</small><strong>{{ getLabel(item.profitFrequency) }}</strong></div>
+        <div class="meta-item"><small>Ratio Code</small><strong>{{ item.ratioCode || '-' }}</strong></div>
+        <div class="meta-item"><small>Period From</small><strong>{{ item.periodFrom }}</strong></div>
+        <div class="meta-item"><small>Period To</small><strong>{{ item.periodTo }}</strong></div>
+        <div class="meta-item"><small>Closing Balance</small><strong>{{ item.snapshotBalance | number:'1.2-2' }}</strong></div>
+        <div class="meta-item"><small>Average Balance</small><strong>{{ item.snapshotAverageBalance | number:'1.2-2' }}</strong></div>
+        <div class="meta-item"><small>Posted By</small><strong>{{ item.postedBy || '-' }}</strong></div>
+        <div class="meta-item"><small>Failure Reason</small><strong>{{ item.failureReason || '-' }}</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

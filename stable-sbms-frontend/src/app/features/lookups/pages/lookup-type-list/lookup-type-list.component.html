@@ -1,0 +1,48 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container lookup-module">
+  <app-page-header title="Lookup / Config" homeLabel="Home" homeRoute="/lookups/dashboard" currentLabel="Lookup Types"></app-page-header>
+
+  <app-page-title title="Lookup Type List" subtitle="Manage reusable lookup categories consumed by branch, customer, financing and reporting modules">
+    <button class="btn btn-primary" type="button" (click)="openNew()" title="Create a lookup type"><i class="fa fa-plus"></i> New Type</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" [(ngModel)]="keyword" placeholder="Search type code / name / description" (keyup.enter)="onSearch()">
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No lookup type found" emptyMessage="Create lookup types before assigning reusable values.">
+    <thead>
+      <tr>
+        <th style="width:60px;">#</th>
+        <th>Type Code</th>
+        <th>Type Name</th>
+        <th>Values</th>
+        <th>Status</th>
+        <th class="text-center" style="width:140px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>{{ item.typeCode }}</td>
+        <td>{{ item.typeName }}</td>
+        <td>{{ item.activeValueCount }}/{{ item.totalValueCount }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="openView(item)" title="View lookup type"><i class="fa fa-eye"></i></button>
+            <button class="action-btn edit" type="button" (click)="openEdit(item)" title="Edit lookup type"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn" [ngClass]="item.status === 'ARCHIVED' ? 'restore' : 'archive'" type="button" (click)="toggleArchive(item)" [title]="item.status === 'ARCHIVED' ? 'Restore lookup type' : 'Archive lookup type'">
+              <i class="fa" [ngClass]="item.status === 'ARCHIVED' ? 'fa-undo' : 'fa-archive'"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

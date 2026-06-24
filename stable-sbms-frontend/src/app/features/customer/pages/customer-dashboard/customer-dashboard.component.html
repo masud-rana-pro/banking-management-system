@@ -1,0 +1,447 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Customer Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Customer Dashboard"
+    subtitle="Track onboarding volume, KYC pressure, branch penetration and profile quality from one executive surface">
+
+    <button class="btn btn-outline-primary" routerLink="/customers/list" title="Open customer list">
+      <i class="fa fa-list"></i> Customer List
+    </button>
+
+    <button *ngIf="can('CUSTOMER_CREATE')" class="btn btn-primary" routerLink="/customers/new" title="Create customer">
+      <i class="fa fa-plus"></i> New Customer
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading customer dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-users"></i>
+              Customer Base
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Retail and relationship growth at a glance</h3>
+          <p class="dashboard-subtitle">
+            Keep onboarding balanced across branches while reducing incomplete profile risk and pending KYC backlog.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Live Customers</span>
+              <div class="dashboard-hero-metric-value">{{ summary.totalCustomers }}</div>
+              <div class="dashboard-hero-metric-note">{{ summary.newCustomersThisMonth }} added this month</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Active Base</span>
+              <div class="dashboard-hero-metric-value">{{ summary.activeCustomers }}</div>
+              <div class="dashboard-hero-metric-note">{{ verifiedMobileCount }} mobile numbers verified</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Risk Queue</span>
+              <div class="dashboard-hero-metric-value">{{ summary.pendingKycCustomers + summary.incompleteProfiles }}</div>
+              <div class="dashboard-hero-metric-note">{{ summary.blockedCustomers }} blocked relationships under watch</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Service Readiness</span>
+              <h3 class="dashboard-title">Verification and profile completion</h3>
+              <p class="dashboard-subtitle">Use this panel to spot records that still need document or contact-quality attention.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ fullyDocumentedCount }}</div>
+          <div class="dashboard-focus-note">customer profiles currently have both address and identity records in place</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Email Verified</span>
+              <strong class="dashboard-mini-value">{{ verifiedEmailCount }}</strong>
+              <span class="dashboard-mini-note">ready for alert delivery and OTP</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Pending KYC</span>
+              <strong class="dashboard-mini-value">{{ summary.pendingKycCustomers }}</strong>
+              <span class="dashboard-mini-note">compliance queue to review</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Incomplete</span>
+              <strong class="dashboard-mini-value">{{ summary.incompleteProfiles }}</strong>
+              <span class="dashboard-mini-note">profiles missing critical setup</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Blocked</span>
+              <strong class="dashboard-mini-value">{{ summary.blockedCustomers }}</strong>
+              <span class="dashboard-mini-note">relationships under restriction</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Branch Footprint</span>
+          <strong class="dashboard-chip-value">{{ branchDistribution.length }}</strong>
+          <span class="dashboard-chip-note">branches contributing visible customer volume</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Contact Reachability</span>
+          <strong class="dashboard-chip-value">{{ verifiedEmailCount + verifiedMobileCount }}</strong>
+          <span class="dashboard-chip-note">verified contact points across the base</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">KYC Pressure</span>
+          <strong class="dashboard-chip-value">{{ pendingKycList.length }}</strong>
+          <span class="dashboard-chip-note">profiles in immediate compliance review queue</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Profile Completion</span>
+          <strong class="dashboard-chip-value">{{ fullyDocumentedCount }}</strong>
+          <span class="dashboard-chip-note">fully documented relationships ready for downstream products</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card">
+          <div class="summary-icon primary"><i class="fa fa-users"></i></div>
+          <div>
+            <div class="summary-label">Total Customers</div>
+            <div class="summary-value">{{ summary.totalCustomers }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+          <div>
+            <div class="summary-label">Active Customers</div>
+            <div class="summary-value">{{ summary.activeCustomers }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+          <div>
+            <div class="summary-label">Pending KYC</div>
+            <div class="summary-value">{{ summary.pendingKycCustomers }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-icon danger"><i class="fa fa-ban"></i></div>
+          <div>
+            <div class="summary-label">Blocked Customers</div>
+            <div class="summary-value">{{ summary.blockedCustomers }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-icon info"><i class="fa fa-calendar"></i></div>
+          <div>
+            <div class="summary-label">New This Month</div>
+            <div class="summary-value">{{ summary.newCustomersThisMonth }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-icon warning"><i class="fa fa-exclamation-circle"></i></div>
+          <div>
+            <div class="summary-label">Incomplete Profiles</div>
+            <div class="summary-value">{{ summary.incompleteProfiles }}</div>
+          </div>
+        </div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Profile Health Mix</h4>
+              <p class="dashboard-subtitle">Balance onboarding quality, activation and compliance pressure with quick visual bands.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let item of healthBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ item.label }}</span>
+                <span class="dashboard-summary-band-value">{{ item.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+              </div>
+              <small>{{ item.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Customer Health Distribution</h4>
+              <p class="dashboard-subtitle">A portfolio split across active, pending, incomplete and blocked relationship states.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="customerHealthGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ summary.totalCustomers }}</div>
+                    <div class="dashboard-donut-label">total customers in the current relationship base</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of healthLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Customer Type Distribution</h4>
+              <p class="dashboard-subtitle">Compare how the customer base is distributed across individual, joint, corporate and SME profiles.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="typeColumns.length; else noTypeColumns" class="dashboard-column-chart customer-type-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of typeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of typeColumns" class="dashboard-column customer-type-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label customer-type-label" [title]="item.label">{{ item.label }}</span>
+            </div>
+          </div>
+          <ng-template #noTypeColumns>
+            <div class="empty-mini">No customer type distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Branch Penetration</h4>
+              <p class="dashboard-subtitle">Compare onboarding intensity across the branches carrying the strongest customer volume.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="branchColumns.length; else noBranchBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of branchAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of branchColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noBranchBars>
+            <div class="empty-mini">No branch distribution available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Customer Growth Over Time</h4>
+              <p class="dashboard-subtitle">A rolling six-month view of customers entering the relationship base.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+
+          <div *ngIf="customerTrendPoints.length; else noCustomerTrend" class="customer-line-chart-shell">
+            <svg class="customer-line-chart" viewBox="0 0 620 220" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="customerTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#12b3a6"></stop>
+                  <stop offset="100%" stop-color="#12b3a6" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <line x1="28" y1="188" x2="592" y2="188" class="customer-line-axis"></line>
+              <line x1="28" y1="40" x2="28" y2="188" class="customer-line-axis"></line>
+              <path *ngIf="customerTrendAreaPath" [attr.d]="customerTrendAreaPath" class="customer-line-area"></path>
+              <path *ngIf="customerTrendPath" [attr.d]="customerTrendPath" class="customer-line-path"></path>
+              <g *ngFor="let point of customerTrendPoints">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5.5" class="customer-line-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 12" text-anchor="middle" class="customer-line-value">{{ point.value }}</text>
+                <text [attr.x]="point.x" y="208" text-anchor="middle" class="customer-line-label">{{ point.label }}</text>
+              </g>
+            </svg>
+          </div>
+          <ng-template #noCustomerTrend>
+            <div class="empty-mini">No monthly customer growth trend available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Relationship Spotlight</h4>
+              <p class="dashboard-subtitle">Highlight a visible customer record with strong documented profile quality and income depth.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-user-circle-o"></i></span>
+          </div>
+
+          <button *ngIf="spotlightCustomer as item; else noSpotlight" class="customer-spotlight-card" type="button" (click)="openCustomer(item.id)">
+            <div class="customer-spotlight-avatar">
+              <img *ngIf="item.profileImageName; else customerSpotlightFallback" [src]="getImageUrl(item.profileImageName)" alt="Customer image">
+              <ng-template #customerSpotlightFallback><img src="assets/branding/account-holder-placeholder.svg" alt="Customer placeholder"></ng-template>
+            </div>
+            <div class="customer-spotlight-body">
+              <div class="customer-spotlight-title">{{ item.fullName }}</div>
+              <div class="customer-spotlight-subtitle">{{ item.customerCode }} | {{ getStatusLabel(item.customerType) }}</div>
+              <div class="customer-spotlight-meta">{{ getBranchName(item.branchId) }}</div>
+              <div class="customer-spotlight-stats">
+                <div>
+                  <span>Monthly Income</span>
+                  <strong>{{ item.monthlyIncome | number:'1.0-0' }}</strong>
+                </div>
+                <div>
+                  <span>Identities</span>
+                  <strong>{{ item.identityCount || 0 }}</strong>
+                </div>
+                <div>
+                  <span>Status</span>
+                  <strong>{{ getStatusLabel(item.customerStatus) }}</strong>
+                </div>
+              </div>
+            </div>
+          </button>
+          <ng-template #noSpotlight>
+            <div class="empty-mini">No customer spotlight available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Recent Onboarding Timeline</h4>
+              <p class="dashboard-subtitle">Quick access to the newest customer relationships entering the operating book.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-history"></i></span>
+          </div>
+
+          <div *ngIf="recentTimeline.length; else noRecentTimeline" class="dashboard-timeline-list">
+            <button
+              *ngFor="let item of recentTimeline; let i = index"
+              class="dashboard-timeline-item"
+              type="button"
+              [title]="'Open customer: ' + item.title"
+              (click)="openCustomer(recentCustomers[i].id)">
+              <span class="entity-avatar">
+                <img *ngIf="recentCustomers[i].profileImageName; else customerDashboardAvatarFallback" [src]="getImageUrl(recentCustomers[i].profileImageName)" alt="Customer image">
+                <ng-template #customerDashboardAvatarFallback><i class="fa fa-user"></i></ng-template>
+              </span>
+              <span>
+                <span class="dashboard-timeline-title">{{ item.title }}</span>
+                <span class="dashboard-timeline-subtitle">{{ item.subtitle }}</span>
+                <span class="dashboard-timeline-meta">{{ item.meta }}</span>
+              </span>
+            </button>
+          </div>
+          <ng-template #noRecentTimeline>
+            <div class="empty-mini">No recent customer found.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Branch Status Heatmap</h4>
+              <p class="dashboard-subtitle">See how active, pending-KYC and blocked relationships are distributed across the busiest branches.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th"></i></span>
+          </div>
+
+          <div class="customer-heatmap" *ngIf="branchStatusHeatRows.length; else noCustomerHeatmap">
+            <div class="customer-heatmap-head">
+              <span>Branch</span>
+              <span>Active</span>
+              <span>Pending KYC</span>
+              <span>Blocked</span>
+            </div>
+            <div class="customer-heatmap-row" *ngFor="let row of branchStatusHeatRows">
+              <span class="customer-heatmap-label">{{ row.label }}</span>
+              <button
+                *ngFor="let cell of row.cells"
+                type="button"
+                class="customer-heatmap-cell"
+                [style.opacity]="cell.intensity"
+                [title]="cell.label">
+                {{ cell.value }}
+              </button>
+            </div>
+          </div>
+          <ng-template #noCustomerHeatmap>
+            <div class="empty-mini">No branch status heatmap available.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Verification Readiness</h4>
+              <p class="dashboard-subtitle">Contact quality and profile completeness signals for downstream product readiness.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-shield"></i></span>
+          </div>
+
+          <div class="dashboard-info-stack">
+            <div *ngFor="let row of verificationRows" class="dashboard-info-row">
+              <span class="dashboard-info-label">{{ row.label }}</span>
+              <span class="dashboard-info-value">{{ row.value }}</span>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+  </ng-container>
+
+</div>
+</div>

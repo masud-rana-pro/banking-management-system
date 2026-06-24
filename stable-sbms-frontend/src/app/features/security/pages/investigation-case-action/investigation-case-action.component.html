@@ -1,0 +1,96 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 security-module">
+  <app-page-header title="Security / Audit / Investigation" homeLabel="Home" homeRoute="/security/dashboard" currentLabel="Investigation Case Action"></app-page-header>
+
+  <app-page-title title="Investigation Case Action" subtitle="Assign reviewer or close the case with mandatory remarks and audit trace">
+    <button class="btn btn-outline-primary" type="button" (click)="openView()"><i class="fa fa-eye"></i> View Case</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading case action form...
+  </div>
+
+  <div *ngIf="!loading && item as data" class="details-grid">
+    <div class="detail-card">
+      <div class="card-heading">
+        <i class="fa fa-search"></i>
+        <div>
+          <h4>Case Snapshot</h4>
+          <p>Current case status and assignee before action is applied.</p>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="entity-inline-profile mb-3">
+          <img *ngIf="getUserImageUrl(data.assignedUsername); else investigationActionUserFallback" class="entity-avatar-lg" [src]="getUserImageUrl(data.assignedUsername)" [alt]="data.assignedFullName || data.assignedUsername || 'Unassigned'">
+          <ng-template #investigationActionUserFallback>
+            <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user-secret"></i></span>
+          </ng-template>
+          <div class="item-name">
+            <strong>{{ data.assignedFullName || data.assignedUsername || '-' }}</strong>
+            <span>{{ data.assignedUsername || 'No assignee yet' }}</span>
+          </div>
+        </div>
+        <div class="info-row"><span>Case No</span><strong>{{ data.caseNo }}</strong></div>
+        <div class="info-row"><span>Case Type</span><strong>{{ getLabel(data.caseType) }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ getLabel(data.caseStatus) }}</strong></div>
+        <div class="info-row"><span>Assigned User</span><strong>{{ data.assignedFullName || data.assignedUsername || '-' }}</strong></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-pencil-square-o"></i>
+        <div>
+          <h4>Action Form</h4>
+          <p>Use assign or close action with assignee and lifecycle remarks.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="action-field">
+          <label class="form-label">Assigned User ID</label>
+          <div class="action-control">
+            <span class="control-icon"><i class="fa fa-user"></i></span>
+            <input class="form-control" type="number" [(ngModel)]="form.assignedTo" placeholder="Enter user id for assign action">
+          </div>
+        </div>
+
+        <div class="action-field">
+          <label class="form-label">Performed By</label>
+          <div class="action-control">
+            <span class="control-icon"><i class="fa fa-id-card-o"></i></span>
+            <input class="form-control" [(ngModel)]="form.performedBy" placeholder="SYSTEM">
+          </div>
+        </div>
+
+        <div class="action-field action-field-wide">
+          <label class="form-label">Remarks</label>
+          <div class="action-control textarea-control">
+            <span class="control-icon"><i class="fa fa-commenting-o"></i></span>
+            <textarea class="form-control" rows="5" [(ngModel)]="form.remarks" placeholder="Assignment / closure remarks"></textarea>
+          </div>
+        </div>
+
+        <div class="action-field action-field-wide">
+          <label class="form-label">Evidence File</label>
+          <div class="action-control file-control">
+            <span class="control-icon"><i class="fa fa-paperclip"></i></span>
+            <input class="form-control" type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" (change)="onEvidenceSelected($event)">
+          </div>
+          <small class="form-text text-muted d-block mt-2" *ngIf="hasEvidence()">
+            Attached: {{ form.evidenceFileName | displayFileName }}
+            <button class="btn btn-link btn-sm p-0 ms-2" type="button" (click)="previewEvidence()">Preview</button>
+          </small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline-primary" type="button" [disabled]="saving" (click)="assignCase()">
+          <i class="fa fa-user-plus"></i> Assign
+        </button>
+        <button class="btn btn-primary" type="button" [disabled]="saving" (click)="closeCase()">
+          <i class="fa fa-check-circle"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

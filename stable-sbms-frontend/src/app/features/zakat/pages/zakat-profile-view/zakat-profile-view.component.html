@@ -1,0 +1,118 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container zakat-module">
+  <app-page-header title="Zakat & Charity" homeLabel="Home" homeRoute="/zakat/profiles" currentLabel="Profile View"></app-page-header>
+
+  <app-page-title title="Zakat Profile View" subtitle="Review zakat profile, calculation status, charity fund movements and payout details">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-secondary" type="button" (click)="previewSheet()" [disabled]="!item"><i class="fa fa-eye"></i> Preview Sheet</button>
+    <button class="btn btn-outline-primary" type="button" (click)="printSheet()" [disabled]="!item"><i class="fa fa-print"></i> Print Sheet</button>
+    <button class="btn btn-primary" type="button" (click)="downloadSheet()" [disabled]="!item"><i class="fa fa-download"></i> PDF</button>
+    <button class="btn btn-outline-success" type="button" (click)="openCalc()" [disabled]="!item"><i class="fa fa-calculator"></i> Calculate</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openFund()"><i class="fa fa-bank"></i> Charity Fund</button>
+    <button class="btn btn-primary" type="button" (click)="openPayouts()"><span class="taka-icon" aria-hidden="true">&#2547;</span> Payouts</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading zakat profile...</div>
+
+  <div *ngIf="!loading && item as data">
+    <div class="profile-hero">
+      <div class="hero-left">
+        <img *ngIf="customerImageUrl; else zakatProfileViewFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="data.customerName">
+        <ng-template #zakatProfileViewFallback>
+          <div class="hero-icon"><i class="fa fa-calculator"></i></div>
+        </ng-template>
+        <div>
+          <h3>{{ data.customerCode }} - {{ data.customerName }}</h3>
+          <p>Zakat Year {{ data.zakatYear }}</p>
+        </div>
+      </div>
+      <app-status-badge [status]="data.calculationStatus"></app-status-badge>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-balance-scale"></i></div><div><div class="summary-label">Nisab Amount</div><div class="summary-value small">{{ data.nisabAmount | number:'1.2-2' }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon info"><i class="fa fa-line-chart"></i></div><div><div class="summary-label">Eligible Asset</div><div class="summary-value small">{{ data.eligibleAssetAmount | number:'1.2-2' }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><span class="taka-icon" aria-hidden="true">&#2547;</span></div><div><div class="summary-label">Zakat Amount</div><div class="summary-value small">{{ data.zakatAmount | number:'1.2-2' }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-calendar"></i></div><div><div class="summary-label">Year</div><div class="summary-value">{{ data.zakatYear }}</div></div></div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="info-list">
+          <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+          <div class="info-row"><span>Customer</span><strong>{{ data.customerName }}</strong></div>
+          <div class="info-row"><span>Customer Code</span><strong>{{ data.customerCode }}</strong></div>
+          <div class="info-row"><span>Calculation Status</span><strong>{{ getLabel(data.calculationStatus) }}</strong></div>
+          <div class="info-row"><span>Created At</span><strong>{{ data.createdAt || '-' }}</strong></div>
+          <div class="info-row"><span>Updated At</span><strong>{{ data.updatedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Proof Document</span><strong>{{ data.proofDocumentName | displayFileName }}</strong></div>
+          <div class="info-row" *ngIf="data.proofDocumentName"><span>Document Preview</span><strong><button class="btn btn-outline-primary btn-sm" type="button" (click)="previewProof()"><i class="fa fa-file-text-o"></i> Preview File</button></strong></div>
+          <div class="info-row"><span>Remarks</span><strong>{{ data.remarks || '-' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-bank"></i>
+          <div>
+            <h4>Recent Charity Fund Movements</h4>
+            <p>Fund ledger visibility for deduction and payout traceability.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Source</th>
+                <th>Credit</th>
+                <th>Debit</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fund of fundMovements">
+                <td>{{ fund.fundDate }}</td>
+                <td>{{ getLabel(fund.sourceType) }}</td>
+                <td>{{ fund.creditAmount | number:'1.2-2' }}</td>
+                <td>{{ fund.debitAmount | number:'1.2-2' }}</td>
+                <td>{{ fund.balanceAfter | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-heading">
+        <span class="taka-icon" aria-hidden="true">&#2547;</span>
+        <div>
+          <h4>Payout Details</h4>
+          <p>Recent beneficiary payout trail linked to charity fund usage.</p>
+        </div>
+      </div>
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Beneficiary</th>
+              <th>Date</th>
+              <th>Approved By</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let payout of payouts">
+              <td>{{ payout.beneficiaryCode }} - {{ payout.beneficiaryName }}</td>
+              <td>{{ payout.payoutDate }}</td>
+              <td>{{ payout.approvedBy }}</td>
+              <td>{{ payout.amount | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

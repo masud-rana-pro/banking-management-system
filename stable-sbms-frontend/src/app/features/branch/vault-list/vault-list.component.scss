@@ -1,0 +1,143 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep app-page-title .btn {
+  margin-left: 8px;
+}
+
+:host ::ng-deep app-data-table td {
+  vertical-align: middle !important;
+}
+
+.branch-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  > i {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--primary-light);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  strong {
+    display: block;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  span {
+    display: block;
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    margin-top: 3px;
+  }
+}
+
+.amount-pill,
+.date-pill {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.amount-pill.opening {
+  color: var(--primary-dark);
+  background: var(--primary-light);
+}
+
+.amount-pill.in {
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+.amount-pill.out {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+
+.amount-pill.closing {
+  color: var(--info);
+  background: var(--info-bg);
+}
+
+.date-pill {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 3px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &.view {
+    background: var(--info-bg);
+    color: var(--info);
+    border-color: rgba(37, 99, 235, 0.18);
+  }
+
+  &.close {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-color: rgba(220, 38, 38, 0.18);
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+:host ::ng-deep app-page-title .btn {
+  margin-left: 8px;
+}
+
+.export-dropdown {
+  display: inline-flex;
+
+  .dropdown-menu {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 6px;
+  }
+
+  .dropdown-item {
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+
+    i {
+      width: 16px;
+      color: var(--primary);
+    }
+
+    &:hover {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+  }
+}

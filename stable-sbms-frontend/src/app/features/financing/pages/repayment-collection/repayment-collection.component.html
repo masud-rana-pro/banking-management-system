@@ -1,0 +1,119 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/applications"
+    currentLabel="Repayment Collection">
+  </app-page-header>
+
+  <app-page-title
+    title="Repayment Collection"
+    subtitle="Collect installment payments, apply charity late fee when overdue and update financing status automatically">
+
+    <button class="btn btn-outline-secondary" [routerLink]="['/financing/applications', id]">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="collect()" [disabled]="saving || loading">
+      <i class="fa fa-credit-card"></i> Collect Payment
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading repayment page...
+  </div>
+
+  <div *ngIf="!loading && item as application" class="details-grid">
+    <div class="detail-card">
+      <div class="info-list">
+        <div class="entity-inline-profile mb-3">
+          <img *ngIf="customerImageUrl; else repaymentCustomerFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="application.customerName">
+          <ng-template #repaymentCustomerFallback>
+            <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <div>
+            <strong>{{ application.customerName }}</strong><br>
+            <span>{{ application.customerCode }}</span>
+          </div>
+        </div>
+        <div class="info-row"><span>Application No</span><strong>{{ application.applicationNo }}</strong></div>
+        <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="info-row"><span>Customer</span><strong>{{ application.customerName }}</strong></div>
+        <div class="info-row"><span>Status</span><strong>{{ getLabel(application.applicationStatus) }}</strong></div>
+        <div class="info-row"><span>Outstanding</span><strong>{{ application.totalOutstandingAmount | number:'1.2-2' }}</strong></div>
+        <div class="info-row"><span>Charity Fee</span><strong>{{ application.totalCharityAmount | number:'1.2-2' }}</strong></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-grid single">
+        <div>
+          <label class="form-label">Payment Amount</label>
+          <input class="form-control" type="number" [(ngModel)]="form.paymentAmount" min="0" step="0.01">
+        </div>
+        <div>
+          <label class="form-label">Payment Date</label>
+          <input class="form-control" type="date" [(ngModel)]="form.paymentDate">
+        </div>
+        <div>
+          <label class="form-label">Collected By</label>
+          <input class="form-control" [(ngModel)]="form.collectedBy" readonly>
+        </div>
+        <div>
+          <label class="form-label">Remarks</label>
+          <textarea class="form-control" [(ngModel)]="form.remarks"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="result" class="info-card" style="grid-column: 1 / -1;">
+      <div class="info-list">
+        <div class="info-row"><span>Collected Amount</span><strong>{{ result.collectedAmount | number:'1.2-2' }}</strong></div>
+        <div class="info-row"><span>Remaining Outstanding</span><strong>{{ result.remainingOutstandingAmount | number:'1.2-2' }}</strong></div>
+        <div class="info-row"><span>New Application Status</span><strong>{{ getLabel(result.applicationStatus) }}</strong></div>
+      </div>
+    </div>
+
+    <div class="table-card" style="grid-column: 1 / -1;">
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Due Date</th>
+              <th>Principal</th>
+              <th>Profit</th>
+              <th>Charity</th>
+              <th>Paid</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let schedule of schedules">
+              <td>{{ schedule.installmentNo }}</td>
+              <td>{{ schedule.dueDate }}</td>
+              <td>{{ schedule.principalAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.profitAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.charityAmount | number:'1.2-2' }}</td>
+              <td>{{ schedule.paidAmount | number:'1.2-2' }}</td>
+              <td><app-status-badge [status]="schedule.scheduleStatus"></app-status-badge></td>
+            </tr>
+            <tr *ngIf="!schedules.length">
+              <td colspan="7" class="text-center">No repayment schedule found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

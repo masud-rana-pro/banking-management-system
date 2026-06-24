@@ -1,0 +1,422 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container user-module">
+  <app-page-header title="User Management" homeLabel="Home" homeRoute="/dashboard" currentLabel="User Dashboard"></app-page-header>
+
+  <app-page-title title="User Dashboard" subtitle="Track workforce activation, security lock pressure, role allocation and branch distribution from one executive surface">
+    <button class="btn btn-outline-primary" type="button" title="Open user list" (click)="open('/admin/users')"><i class="fa fa-list"></i> User List</button>
+    <button class="btn btn-primary" type="button" title="Create user" (click)="open('/admin/users/new')" *ngIf="access.hasPermission('USER_CREATE')"><i class="fa fa-plus"></i> New User</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading user dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-users"></i>
+              Workforce Control
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">User activation, branch assignment and security readiness in one view</h3>
+          <p class="dashboard-subtitle">
+            Keep the user base operationally ready while spotting lock pressure, branch mapping gaps and role concentration.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Total Users</span>
+              <div class="dashboard-hero-metric-value">{{ data.totalUsers }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.activeUsers }} active user records currently available</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Locked Users</span>
+              <div class="dashboard-hero-metric-value">{{ data.lockedUsers }}</div>
+              <div class="dashboard-hero-metric-note">security lock events needing admin review</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Branch Footprint</span>
+              <div class="dashboard-hero-metric-value">{{ data.usersByBranch.length }}</div>
+              <div class="dashboard-hero-metric-note">branches currently carrying visible user volume</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Security Readiness</span>
+              <h3 class="dashboard-title">Keep operational users available and cleanly mapped</h3>
+              <p class="dashboard-subtitle">This panel helps you watch open user capacity, role coverage and lock pressure together.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.activeUsers - data.lockedUsers }}</div>
+          <div class="dashboard-focus-note">users currently active and not locked for day-to-day branch or admin execution</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Active</span>
+              <strong class="dashboard-mini-value">{{ data.activeUsers }}</strong>
+              <span class="dashboard-mini-note">system-ready user base</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Locked</span>
+              <strong class="dashboard-mini-value">{{ data.lockedUsers }}</strong>
+              <span class="dashboard-mini-note">security intervention queue</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Roles</span>
+              <strong class="dashboard-mini-value">{{ data.usersByRole.length }}</strong>
+              <span class="dashboard-mini-note">roles currently carrying users</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Logins</span>
+              <strong class="dashboard-mini-value">{{ data.recentLogins.length }}</strong>
+              <span class="dashboard-mini-note">security traces available for review</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Role Spread</span>
+          <strong class="dashboard-chip-value">{{ data.usersByRole.length }}</strong>
+          <span class="dashboard-chip-note">roles with visible user assignment coverage</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Branch Mapping</span>
+          <strong class="dashboard-chip-value">{{ data.usersByBranch.length }}</strong>
+          <span class="dashboard-chip-note">branches represented in the current workforce mix</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Security Pressure</span>
+          <strong class="dashboard-chip-value">{{ data.lockedUsers }}</strong>
+          <span class="dashboard-chip-note">accounts restricted by lock state right now</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Recent Login Watch</span>
+          <strong class="dashboard-chip-value">{{ data.recentLogins.length }}</strong>
+          <span class="dashboard-chip-note">latest session events captured in the module</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card" data-summary-hint="All registered user accounts"><div class="summary-icon primary"><i class="fa fa-users"></i></div><div><div class="summary-label">Total Users</div><div class="summary-value">{{ data.totalUsers }}</div></div></div>
+        <div class="summary-card" data-summary-hint="Operational users currently active"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Active Users</div><div class="summary-value">{{ data.activeUsers }}</div></div></div>
+        <div class="summary-card" data-summary-hint="Security-locked accounts under watch"><div class="summary-icon warning"><i class="fa fa-lock"></i></div><div><div class="summary-label">Locked Users</div><div class="summary-value">{{ data.lockedUsers }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>User Access Health</h4>
+              <p class="dashboard-subtitle">Balance active availability against lock pressure, inactive buildup and open-user capacity.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let item of userHealthBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ item.label }}</span>
+                <span class="dashboard-summary-band-value">{{ item.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+              </div>
+              <small>{{ item.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>User Status Distribution</h4>
+              <p class="dashboard-subtitle">Review how the user base is split across active, locked, inactive and open operational states.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="userStatusGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.totalUsers }}</div>
+                    <div class="dashboard-donut-label">user records currently participating in the security and access book</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of userStatusLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Role Allocation Profile</h4>
+              <p class="dashboard-subtitle">Compare where user concentration is highest across the leading operational roles.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="roleColumns.length; else noRoleBars" class="dashboard-column-chart user-role-chart-row">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of roleAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <button
+              *ngFor="let item of roleColumns"
+              class="dashboard-column user-column-button"
+              type="button"
+              [class.is-active]="activeRoleColumn?.label === item.label"
+              [title]="item.label"
+              (click)="selectRoleColumn(item)">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </button>
+          </div>
+          <div *ngIf="activeRoleColumn" class="dashboard-chart-note user-chart-note">
+            <strong>{{ activeRoleColumn.label }}</strong> currently carries
+            <strong>{{ activeRoleColumn.value }}</strong> users in the live access register.
+          </div>
+          <ng-template #noRoleBars>
+            <div class="empty-mini">No role distribution data found.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Branch User Coverage Curve</h4>
+              <p class="dashboard-subtitle">Track where branch-level user concentration rises and where workforce coverage begins to thin out.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+          </div>
+
+          <div *ngIf="branchCurvePoints.length; else noBranchCurve" class="user-line-chart-shell">
+            <svg class="user-line-chart" viewBox="0 0 620 220">
+              <g class="user-line-grid">
+                <line *ngFor="let _ of [0,1,2,3]" [attr.x1]="44" [attr.x2]="584" [attr.y1]="44 + (36 * _)" [attr.y2]="44 + (36 * _)"></line>
+              </g>
+              <g class="user-line-axis">
+                <text *ngFor="let tick of branchAxisTicks" x="34" [attr.y]="188 - ((tick.bottom / 100) * 144)" text-anchor="end">{{ tick.label }}</text>
+              </g>
+              <path class="user-line-area" [attr.d]="branchCurveAreaPath()"></path>
+              <path class="user-line-path" [attr.d]="branchCurvePath()"></path>
+              <g class="user-line-points">
+                <circle
+                  *ngFor="let point of branchCurvePoints; let i = index"
+                  class="user-line-point"
+                  [class.is-active]="activeBranchPoint?.label === point.label"
+                  [attr.cx]="branchPointX(i, branchCurvePoints.length)"
+                  [attr.cy]="branchPointY(point.value)"
+                  r="5"
+                  (click)="selectBranchPoint(point)">
+                  <title>{{ point.label }}: {{ point.value }}</title>
+                </circle>
+              </g>
+              <g class="user-line-labels">
+                <text
+                  *ngFor="let point of branchCurvePoints; let i = index"
+                  [attr.x]="branchPointX(i, branchCurvePoints.length)"
+                  y="210"
+                  text-anchor="middle">
+                  {{ point.shortLabel }}
+                </text>
+              </g>
+            </svg>
+          </div>
+          <div *ngIf="activeBranchPoint" class="dashboard-chart-note user-chart-note">
+            <strong>{{ activeBranchPoint.label }}</strong> currently supports
+            <strong>{{ activeBranchPoint.value }}</strong> mapped users in the branch workforce spread.
+          </div>
+          <ng-template #noBranchCurve><div class="empty-mini">No branch coverage data found.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Access Intensity Matrix</h4>
+              <p class="dashboard-subtitle">Read role concentration and branch coverage together from one compact heat-style view.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-th"></i></span>
+          </div>
+
+          <div class="user-heatmap" *ngIf="accessHeatRows.length; else noHeatmap">
+            <div class="user-heatmap-row" *ngFor="let row of accessHeatRows">
+              <div class="user-heatmap-row-label">{{ row.label }}</div>
+              <div class="user-heatmap-cells">
+                <div
+                  *ngFor="let cell of row.cells"
+                  class="user-heatmap-cell"
+                  [ngClass]="'tone-' + cell.tone"
+                  [style.opacity]="0.22 + (cell.share / 130)">
+                  <span>{{ cell.label }}</span>
+                  <strong>{{ cell.value }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noHeatmap><div class="empty-mini">No access intensity data found.</div></ng-template>
+        </article>
+
+        <article class="dashboard-panel user-spotlight-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>User Spotlight</h4>
+              <p class="dashboard-subtitle">Review a real user profile image, branch mapping, role ownership and last login evidence from the current selection.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-id-badge"></i></span>
+          </div>
+
+          <div *ngIf="selectedRecentUser as user; else noSpotlightUser" class="user-spotlight-card">
+            <div class="user-spotlight-head">
+              <div class="user-spotlight-avatar">
+                <img *ngIf="user.profileImageName; else spotlightUserFallback" [src]="getImageUrl(user.profileImageName)" [alt]="user.fullName || user.username">
+                <ng-template #spotlightUserFallback><i class="fa fa-user"></i></ng-template>
+              </div>
+              <div class="user-spotlight-copy">
+                <h5>{{ user.fullName || user.username }}</h5>
+                <p>@{{ user.username }}</p>
+                <div class="user-spotlight-meta">
+                  <span>{{ user.roleName || user.roleCode || 'Unassigned role' }}</span>
+                  <span>{{ user.branchName || 'Unassigned Branch' }}</span>
+                </div>
+              </div>
+              <app-status-badge [status]="user.locked ? 'LOCKED' : (user.status || 'ACTIVE')"></app-status-badge>
+            </div>
+
+            <div class="user-spotlight-grid">
+              <div class="user-spotlight-metric">
+                <span>Employee No</span>
+                <strong>{{ user.employeeNo || '-' }}</strong>
+              </div>
+              <div class="user-spotlight-metric">
+                <span>Designation</span>
+                <strong>{{ user.designation || '-' }}</strong>
+              </div>
+              <div class="user-spotlight-metric">
+                <span>Email</span>
+                <strong>{{ user.email || '-' }}</strong>
+              </div>
+              <div class="user-spotlight-metric">
+                <span>Last Login</span>
+                <strong>{{ user.lastLoginAt || '-' }}</strong>
+              </div>
+            </div>
+          </div>
+          <ng-template #noSpotlightUser><div class="empty-mini">No spotlight user available.</div></ng-template>
+        </article>
+      </section>
+
+      <div class="details-grid">
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-id-badge"></i>
+            <div>
+              <h4>Users By Role</h4>
+              <p>Current user allocation by role.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead><tr><th>Role</th><th>Count</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let item of data.usersByRole">
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.count }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-building"></i>
+            <div>
+              <h4>Users By Branch</h4>
+              <p>Branch-wise user distribution for branch-bound operations.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead><tr><th>Branch</th><th>Count</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let item of data.usersByBranch">
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.count }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-heading">
+          <i class="fa fa-history"></i>
+          <div>
+            <h4>Last Login List</h4>
+            <p>Most recent user security sessions captured in the module.</p>
+          </div>
+        </div>
+        <div class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Branch</th>
+                <th>Last Login</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of data.recentLogins">
+                <td>
+                  <div class="entity-inline-profile">
+                    <div class="entity-avatar">
+                      <img *ngIf="user.profileImageName; else dashboardUserAvatarFallback" [src]="getImageUrl(user.profileImageName)" alt="User image">
+                      <ng-template #dashboardUserAvatarFallback><i class="fa fa-user"></i></ng-template>
+                    </div>
+                    <span>{{ user.username }} / {{ user.fullName }}</span>
+                  </div>
+                </td>
+                <td>{{ user.roleName || '-' }}</td>
+                <td>{{ user.branchName || 'Unassigned Branch' }}</td>
+                <td>{{ user.lastLoginAt || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

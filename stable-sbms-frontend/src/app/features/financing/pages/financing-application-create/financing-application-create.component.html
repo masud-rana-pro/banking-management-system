@@ -1,0 +1,186 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/applications"
+    currentLabel="New Application">
+  </app-page-header>
+
+  <app-page-title
+    title="New Financing Application"
+    subtitle="Capture customer, product, branch, asset detail and purpose before review and approval flow">
+
+    <button class="btn btn-outline-secondary" routerLink="/financing/applications">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="financing-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-file-text-o"></i>
+        </div>
+
+        <div>
+          <h3>New Financing Application</h3>
+          <p>Capture customer, product and asset purpose correctly before sending this case into review workflow.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        DRAFT
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-users"></i>
+          <div>
+            <h4>Customer & Product Mapping</h4>
+            <p>Select the correct customer, financing product and branch so later review and approval flow stays traceable.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Customer</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <select class="form-select" [(ngModel)]="form.customerId">
+                <option [ngValue]="null">Select customer</option>
+                <option *ngFor="let customer of customers" [ngValue]="customer.id">{{ customer.customerCode }} - {{ customer.fullName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Financing Product</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tags"></i>
+              <select class="form-select" [(ngModel)]="form.productId">
+                <option [ngValue]="null">Select product</option>
+                <option *ngFor="let product of products" [ngValue]="product.id">{{ product.productCode }} - {{ product.productName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Branch</label>
+            <div class="input-with-icon">
+              <i class="fa fa-bank"></i>
+              <select class="form-select" [(ngModel)]="form.branchId">
+                <option [ngValue]="null">Select branch</option>
+                <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Requested Amount</label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.requestedAmount" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-cube"></i>
+          <div>
+            <h4>Asset & Business Purpose</h4>
+            <p>Describe the financed asset clearly and record the business reason in plain language for reviewers.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Asset Description</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-cubes"></i>
+              <textarea class="form-control" [(ngModel)]="form.assetDescription" placeholder="Vehicle, machinery, equipment or other financed asset"></textarea>
+            </div>
+          </div>
+
+          <div class="full-span">
+            <label class="form-label">Purpose</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-bullseye"></i>
+              <textarea class="form-control" [(ngModel)]="form.purpose" placeholder="Business expansion, transport support, working capital asset purchase"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-paperclip"></i>
+          <div>
+            <h4>Supporting Document</h4>
+            <p>Upload customer quotation, asset paper, invoice or any supporting document that reviewers should verify before approval.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Document File</label>
+            <input class="form-control" type="file" accept="image/*,.pdf,.doc,.docx" (change)="onSupportingDocumentSelected($event)">
+            <small class="text-muted d-block mt-2">
+              {{ uploadingDocument ? 'Uploading document...' : (form.supportingDocumentName ? (form.supportingDocumentName | displayFileName) : 'No file uploaded yet') }}
+            </small>
+          </div>
+
+          <div class="full-span" *ngIf="form.supportingDocumentName">
+            <button class="btn btn-outline-primary" type="button" (click)="previewSupportingDocument()">
+              <i class="fa fa-eye"></i> Preview Uploaded Document
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Review Note</h4>
+            <p>Add any initial note that should help the review team understand application context faster.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Remarks</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-commenting-o"></i>
+              <textarea class="form-control" [(ngModel)]="form.remarks" placeholder="Any initial note for review team"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" routerLink="/financing/applications">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-outline-primary" type="button" (click)="save(true)" [disabled]="saving">
+        <i class="fa fa-paper-plane"></i> Save & Submit
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        Save Draft
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>

@@ -1,0 +1,109 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container shariah-module">
+  <app-page-header title="Shariah Review" homeLabel="Home" homeRoute="/shariah/dashboard" currentLabel="Case List"></app-page-header>
+
+  <app-page-title title="Case List" subtitle="Submit review cases, monitor board queue, run decisions and inspect review history">
+    <button class="btn btn-outline-warning" type="button" (click)="openCorrectionQueue()"><i class="fa fa-reply"></i> Correction Queue</button>
+    <button class="btn btn-outline-success" type="button" (click)="openCertificates()"><i class="fa fa-certificate"></i> Fatwa Certificates</button>
+    <button class="btn btn-outline-primary" type="button" (click)="openAnnualReport()"><i class="fa fa-bar-chart"></i> Annual Report</button>
+    <button class="btn btn-primary" type="button" (click)="toggleCreateForm()" [disabled]="!can('SHARIAH_REVIEW_ACCESS')" [title]="getActionTitle('Submit Case', 'SHARIAH_REVIEW_ACCESS')"><i class="fa fa-plus"></i> Submit Case</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-clock-o"></i></div><div><div class="summary-label">Pending</div><div class="summary-value">{{ pendingCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Approved</div><div class="summary-value">{{ approvedCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-times-circle"></i></div><div><div class="summary-label">Rejected</div><div class="summary-value">{{ rejectedCount }}</div></div></div>
+    <div class="summary-card"><div class="summary-icon info"><i class="fa fa-reply"></i></div><div><div class="summary-label">Correction</div><div class="summary-value">{{ returnedCount }}</div></div></div>
+  </div>
+
+  <div *ngIf="showCreateForm" class="form-card">
+    <div class="card-heading">
+      <i class="fa fa-plus-circle"></i>
+      <div>
+        <h4>Submit Shariah Review Case</h4>
+        <p>Use source module reference and submit reviewer queue intake according to the playbook.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label">Reference Module</label>
+        <select class="form-select" [(ngModel)]="form.referenceModule">
+          <option value="">Select module</option>
+          <option *ngFor="let option of referenceModules" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Reference ID</label>
+        <input class="form-control" type="number" [(ngModel)]="form.referenceId">
+      </div>
+      <div>
+        <label class="form-label">Submitted By</label>
+        <input class="form-control" [(ngModel)]="form.submittedBy">
+      </div>
+      <div>
+        <label class="form-label">Remarks</label>
+        <textarea class="form-control" [(ngModel)]="form.remarks"></textarea>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button class="btn btn-primary" type="button" (click)="submitCase()" [disabled]="!can('SHARIAH_REVIEW_ACCESS')" [title]="getActionTitle('Create Case', 'SHARIAH_REVIEW_ACCESS')"><i class="fa fa-save"></i> Create Case</button>
+      <button class="btn btn-outline-secondary" type="button" (click)="toggleCreateForm()"><i class="fa fa-times"></i> Close</button>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search case / reference / submitter" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="tags">
+      <select class="form-select" [(ngModel)]="filters.referenceModule">
+        <option value="">All Reference Modules</option>
+        <option *ngFor="let option of referenceModules" [value]="option.value">{{ option.label }}</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.caseStatus">
+        <option value="">All Case Status</option>
+        <option value="PENDING_REVIEW">PENDING REVIEW</option>
+        <option value="APPROVED">APPROVED</option>
+        <option value="REJECTED">REJECTED</option>
+        <option value="RETURNED">RETURNED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No Shariah review case found" emptyMessage="Submit a case from financing, contract or other source module to begin review.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Case</th>
+        <th>Reference</th>
+        <th>Submitted</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 260px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.caseNo }}</strong><span>{{ item.submittedBy }}</span></div></td>
+        <td><div class="item-name"><strong>{{ getLabel(item.referenceModule) }}</strong><span>ID {{ item.referenceId }}</span></div></td>
+        <td>{{ item.submittedAt | date:'yyyy-MM-dd HH:mm' }}</td>
+        <td><app-status-badge [status]="item.caseStatus"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn review" type="button" title="Review" (click)="onReview(item)"><i class="fa fa-list-alt"></i></button>
+            <button class="action-btn approve" type="button" [disabled]="!can('SHARIAH_APPROVE')" [title]="getActionTitle('Approve', 'SHARIAH_APPROVE')" (click)="onDecision(item, 'approve')"><i class="fa fa-check"></i></button>
+            <button class="action-btn reject" type="button" [disabled]="!can('SHARIAH_REJECT')" [title]="getActionTitle('Reject', 'SHARIAH_REJECT')" (click)="onDecision(item, 'reject')"><i class="fa fa-times"></i></button>
+            <button class="action-btn return" type="button" [disabled]="!can('SHARIAH_RETURN')" [title]="getActionTitle('Return', 'SHARIAH_RETURN')" (click)="onDecision(item, 'return')"><i class="fa fa-reply"></i></button>
+            <button class="action-btn history" type="button" title="History" (click)="onHistory(item)"><i class="fa fa-history"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

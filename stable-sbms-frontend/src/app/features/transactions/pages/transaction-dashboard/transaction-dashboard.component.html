@@ -1,0 +1,288 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container transaction-module">
+
+  <app-page-header
+    title="Transactions"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Transaction Dashboard"
+    subtitle="Monitor cash flow, teller load, reversal risk, suspicious volume and branch activity from one operations cockpit">
+
+    <button class="btn btn-outline-primary" routerLink="/transactions/list" title="Open transaction journal">
+      <i class="fa fa-list"></i> Transaction List
+    </button>
+    <button class="btn btn-outline-success" routerLink="/transactions/deposit" title="Post deposit">
+      <i class="fa fa-plus-circle"></i> Deposit
+    </button>
+    <button class="btn btn-outline-warning" routerLink="/transactions/withdraw" title="Post withdrawal">
+      <i class="fa fa-minus-circle"></i> Withdraw
+    </button>
+    <button class="btn btn-primary" routerLink="/transactions/transfer" title="Create transfer">
+      <i class="fa fa-exchange"></i> Transfer
+    </button>
+
+  </app-page-title>
+
+  <div class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow">
+            <i class="fa fa-exchange"></i>
+            Cash Flow Desk
+          </span>
+        </div>
+
+        <h3 class="dashboard-title">Live movement across deposit, withdrawal and transfer channels</h3>
+        <p class="dashboard-subtitle">
+          Balance operating flow, teller headroom and control queues before reversals or unusual activity escalate.
+        </p>
+
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Deposit Flow</span>
+            <div class="dashboard-hero-metric-value">{{ summary.todayDepositTotal | number:'1.2-2' }}</div>
+            <div class="dashboard-hero-metric-note">credit-side inflow posted today</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Withdrawal Flow</span>
+            <div class="dashboard-hero-metric-value">{{ summary.todayWithdrawalTotal | number:'1.2-2' }}</div>
+            <div class="dashboard-hero-metric-note">cash-out demand processed today</div>
+          </div>
+
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Net Flow</span>
+            <div class="dashboard-hero-metric-value">{{ netFlow | number:'1.2-2' }}</div>
+            <div class="dashboard-hero-metric-note">{{ summary.todayTransferTotal | number:'1.2-2' }} transferred between accounts</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Control Exposure</span>
+            <h3 class="dashboard-title">Reversal, teller and suspicious load</h3>
+            <p class="dashboard-subtitle">A compact risk console for the items that can most quickly affect operations quality.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-focus-value">{{ summary.tellerLimitUsagePercent | number:'1.0-2' }}%</div>
+        <div class="dashboard-focus-note">current teller limit consumption across the live operating desk</div>
+
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Pending Reversal</span>
+            <strong class="dashboard-mini-value">{{ summary.pendingReversals }}</strong>
+            <span class="dashboard-mini-note">items waiting for controlled reversal action</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Suspicious Count</span>
+            <strong class="dashboard-mini-value">{{ summary.suspiciousTransactionCount }}</strong>
+            <span class="dashboard-mini-note">high-value or unusual movements flagged</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Teller Used</span>
+            <strong class="dashboard-mini-value">{{ summary.tellerLimitUsed | number:'1.2-2' }}</strong>
+            <span class="dashboard-mini-note">of {{ summary.tellerLimit | number:'1.2-2' }} approved limit</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Standing Rules</span>
+            <strong class="dashboard-mini-value">{{ standingInstructions.length }}</strong>
+            <span class="dashboard-mini-note">scheduled instructions in current pool</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-chip-row">
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Branch Activity</span>
+        <strong class="dashboard-chip-value">{{ summary.topBranches.length }}</strong>
+        <span class="dashboard-chip-note">branches contributing visible transaction load</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Suspicious Review</span>
+        <strong class="dashboard-chip-value">{{ suspiciousItems.length }}</strong>
+        <span class="dashboard-chip-note">high-value journal items needing attention</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Recent Journal</span>
+        <strong class="dashboard-chip-value">{{ recentTransactions.length }}</strong>
+        <span class="dashboard-chip-note">most recent posted or reviewed transaction lines</span>
+      </div>
+      <div class="dashboard-chip">
+        <span class="dashboard-chip-label">Instruction Pulse</span>
+        <strong class="dashboard-chip-value">{{ instructionBars.length }}</strong>
+        <span class="dashboard-chip-note">standing instruction statuses tracked right now</span>
+      </div>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-arrow-down"></i></div>
+        <div><div class="summary-label">Today Deposit</div><div class="summary-value">{{ summary.todayDepositTotal | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-arrow-up"></i></div>
+        <div><div class="summary-label">Today Withdrawal</div><div class="summary-value">{{ summary.todayWithdrawalTotal | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-exchange"></i></div>
+        <div><div class="summary-label">Today Transfer</div><div class="summary-value">{{ summary.todayTransferTotal | number:'1.2-2' }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-undo"></i></div>
+        <div><div class="summary-label">Pending Reversal</div><div class="summary-value">{{ summary.pendingReversals }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-user-circle"></i></div>
+        <div><div class="summary-label">Teller Usage %</div><div class="summary-value">{{ summary.tellerLimitUsagePercent | number:'1.0-2' }}%</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-shield"></i></div>
+        <div><div class="summary-label">Suspicious Count</div><div class="summary-value">{{ summary.suspiciousTransactionCount }}</div></div>
+      </div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Operating Flow Donut</h4>
+              <p class="dashboard-subtitle">A statistical split between deposit, withdrawal, transfer activity and the reversal control queue.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="transactionFlowGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ (summary.todayDepositTotal + summary.todayWithdrawalTotal + summary.todayTransferTotal) | number:'1.0-0' }}</div>
+                    <div class="dashboard-donut-label">total visible transaction flow value for the day</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of flowLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value | number:'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Branch Throughput Bar Chart</h4>
+              <p class="dashboard-subtitle">A statistical branch comparison chart based on transaction count flowing through the journal.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="branchColumns.length; else noBranchBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of branchAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of branchColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noBranchBars>
+            <div class="empty-mini">No branch activity found.</div>
+          </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Instruction Status Mix</h4>
+            <p class="dashboard-subtitle">Track the operational state of standing instructions without leaving the dashboard.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-repeat"></i></span>
+        </div>
+
+        <div *ngIf="instructionBars.length; else noInstructionBars" class="dashboard-bar-list">
+          <div *ngFor="let item of instructionBars" class="dashboard-bar-item">
+            <div class="dashboard-bar-head">
+              <span class="dashboard-bar-label">{{ item.label }}</span>
+              <span class="dashboard-bar-value">{{ item.value }}</span>
+            </div>
+            <div class="dashboard-bar-track">
+              <div class="dashboard-bar-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+            </div>
+            <span class="dashboard-bar-note">{{ item.note }}</span>
+          </div>
+        </div>
+        <ng-template #noInstructionBars>
+          <div class="empty-mini">No standing instruction found.</div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Control Signals</h4>
+            <p class="dashboard-subtitle">A compact checklist for control room attention before escalation or end-of-day review.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-shield"></i></span>
+        </div>
+
+        <div class="dashboard-info-stack">
+          <div *ngFor="let row of signalRows" class="dashboard-info-row">
+            <span class="dashboard-info-label">{{ row.label }}</span>
+            <span class="dashboard-info-value">{{ row.value }}</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel dashboard-grid-span-2">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>High-Value Journal Snapshot</h4>
+            <p class="dashboard-subtitle">Largest recent movements with quick context for branch, reference and transaction type.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+
+        <div *ngIf="recentAmountBars.length; else noAmountBars" class="dashboard-bar-list">
+          <div *ngFor="let item of recentAmountBars" class="dashboard-bar-item">
+            <div class="dashboard-bar-head">
+              <span class="dashboard-bar-label">{{ item.label }}</span>
+              <span class="dashboard-bar-value">{{ item.value | number:'1.2-2' }}</span>
+            </div>
+            <div class="dashboard-bar-track">
+              <div class="dashboard-bar-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+            </div>
+            <span class="dashboard-bar-note">{{ item.note }}</span>
+          </div>
+        </div>
+        <ng-template #noAmountBars>
+          <div class="empty-mini">No recent transaction found.</div>
+        </ng-template>
+      </article>
+    </section>
+  </div>
+
+</div>
+</div>

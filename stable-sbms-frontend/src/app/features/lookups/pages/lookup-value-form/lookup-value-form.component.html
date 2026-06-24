@@ -1,0 +1,147 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 lookup-module">
+  <app-page-header title="Lookup / Config" homeLabel="Home" homeRoute="/lookups/dashboard" [currentLabel]="editId ? 'Edit Lookup Value' : 'New Lookup Value'"></app-page-header>
+
+  <app-page-title [title]="editId ? 'Edit Lookup Value' : 'Create Lookup Value'" subtitle="Configure reusable dropdown value labels, Bangla label, sort order and activation flag">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading lookup value form...
+  </div>
+
+  <div class="lookup-form-shell" *ngIf="!loading">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-tags"></i>
+        </div>
+        <div>
+          <h3>{{ editId ? 'Update Lookup Value' : 'New Lookup Value' }}</h3>
+          <p>Configure reusable dropdown label, Bangla text, ordering rule and activation state for live modules.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.status || 'ACTIVE' }}
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-list-ul"></i>
+          <div>
+            <h4>Value Identity</h4>
+            <p>Keep the selected type, value code and labels readable for both operations and reporting use.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Lookup Type</label>
+            <div class="input-with-icon">
+              <i class="fa fa-folder-open"></i>
+              <select class="form-select" [(ngModel)]="form.lookupTypeId">
+                <option [ngValue]="null">Select type</option>
+                <option *ngFor="let type of types" [ngValue]="type.id">{{ type.typeCode }} - {{ type.typeName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Value Code</label>
+            <div class="input-with-icon">
+              <i class="fa fa-barcode"></i>
+              <input class="form-control" [(ngModel)]="form.valueCode" placeholder="e.g. URBAN">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Value Label</label>
+            <div class="input-with-icon">
+              <i class="fa fa-tag"></i>
+              <input class="form-control" [(ngModel)]="form.valueLabel" placeholder="e.g. Urban Branch">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Bangla Label</label>
+            <div class="input-with-icon">
+              <i class="fa fa-language"></i>
+              <input class="form-control" [(ngModel)]="form.valueBnLabel" placeholder="e.g. Urban Branch in Bangla">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-sort-amount-asc"></i>
+          <div>
+            <h4>Ordering & Status</h4>
+            <p>Set the display order and activation state so dropdowns remain consistent across modules.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Sort Order</label>
+            <div class="input-with-icon">
+              <i class="fa fa-sort-numeric-asc"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.sortOrder" placeholder="1">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="form.status">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="PENDING">PENDING</option>
+                <option value="ARCHIVED">ARCHIVED</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-database"></i>
+          <div>
+            <h4>Extra Configuration</h4>
+            <p>Keep optional JSON or note here when a module needs extra metadata for rendering or behavior.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Extra Data</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-code"></i>
+              <textarea class="form-control" [(ngModel)]="form.extraData" placeholder='Optional JSON or note, e.g. {"color":"green"}'></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="back()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ editId ? 'Update Value' : 'Save Value' }}
+      </button>
+    </div>
+  </div>
+</div>
+</div>

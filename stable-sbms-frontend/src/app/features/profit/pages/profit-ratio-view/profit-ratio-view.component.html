@@ -1,0 +1,117 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container profit-module">
+
+  <app-page-header
+    title="Profit Management"
+    homeLabel="Home"
+    homeRoute="/profit/dashboard"
+    currentLabel="Profit Ratio View">
+  </app-page-header>
+
+  <app-page-title
+    title="Profit Ratio View"
+    subtitle="Inspect PSR detail, effective window, linked schedules, posting history and failed posting cases">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="print()">
+      <i class="fa fa-print"></i> Print
+    </button>
+    <button class="btn btn-outline-primary" type="button" (click)="openEdit()" [disabled]="!item">
+      <i class="fa fa-pencil"></i> Edit Ratio
+    </button>
+    <button class="btn btn-outline-success" type="button" (click)="openCreateSchedule()" [disabled]="!item">
+      <i class="fa fa-calendar-plus-o"></i> Create Schedule
+    </button>
+    <button class="btn btn-primary" type="button" (click)="openPostingRun()" [disabled]="!item">
+      <i class="fa fa-play"></i> Run Posting
+    </button>
+
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="item && !loading">
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-percent"></i></div>
+        <div><div class="summary-label">Ratio Percent</div><div class="summary-value small">{{ item.ratioPercent | number:'1.2-4' }}%</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon success"><i class="fa fa-calendar-check-o"></i></div>
+        <div><div class="summary-label">Linked Schedules</div><div class="summary-value">{{ linkedSchedules.length }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-list-ul"></i></div>
+        <div><div class="summary-label">Posting History</div><div class="summary-value">{{ postingHistory.length }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div>
+        <div><div class="summary-label">Failed Cases</div><div class="summary-value">{{ failedPostings.length }}</div></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-title-row">
+        <h5 class="mb-0">{{ item.ratioCode }}</h5>
+        <app-status-badge [status]="item.status"></app-status-badge>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><small>Account Type</small><strong>{{ item.accountTypeCode }} - {{ item.accountTypeName }}</strong></div>
+        <div class="meta-item"><small>Effective From</small><strong>{{ item.effectiveFrom }}</strong></div>
+        <div class="meta-item"><small>Effective To</small><strong>{{ item.effectiveTo || 'Open Ended' }}</strong></div>
+        <div class="meta-item"><small>Ratio Percent</small><strong>{{ item.ratioPercent | number:'1.2-4' }}%</strong></div>
+        <div class="meta-item"><small>Current Window</small><strong>{{ item.activeNow ? 'ACTIVE NOW' : 'NOT CURRENTLY ACTIVE' }}</strong></div>
+        <div class="meta-item"><small>Updated At</small><strong>{{ item.updatedAt || '-' }}</strong></div>
+      </div>
+    </div>
+
+    <div class="list-grid">
+      <div class="info-card">
+        <div class="card-title-row">
+          <h5 class="mb-0">Linked Schedules</h5>
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="openCreateSchedule()">New Schedule</button>
+        </div>
+        <table class="sub-table">
+          <thead>
+            <tr><th>Account</th><th>Frequency</th><th>Next Date</th><th class="print-hide"></th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let schedule of linkedSchedules | slice:0:8">
+              <td>{{ schedule.accountNumber }}</td>
+              <td>{{ getLabel(schedule.profitFrequency) }}</td>
+              <td>{{ schedule.nextPostingDate }}</td>
+              <td class="text-end print-hide"><button class="btn btn-sm btn-outline-primary" (click)="openSchedule(schedule.id)">View</button></td>
+            </tr>
+            <tr *ngIf="linkedSchedules.length === 0">
+              <td colspan="4" class="text-center text-muted">No schedule linked with this account type.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-card">
+        <div class="card-title-row">
+          <h5 class="mb-0">Posting History</h5>
+          <button class="btn btn-sm btn-outline-primary" routerLink="/profit/postings">Posting List</button>
+        </div>
+        <table class="sub-table">
+          <thead>
+            <tr><th>Posting Ref</th><th>Date</th><th>Amount</th><th class="print-hide"></th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let posting of postingHistory | slice:0:8">
+              <td>{{ posting.postingRef }}</td>
+              <td>{{ posting.postingDate }}</td>
+              <td>{{ posting.profitAmount | number:'1.2-2' }}</td>
+              <td class="text-end print-hide"><button class="btn btn-sm btn-outline-primary" (click)="openPosting(posting.id)">View</button></td>
+            </tr>
+            <tr *ngIf="postingHistory.length === 0">
+              <td colspan="4" class="text-center text-muted">No posting history found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

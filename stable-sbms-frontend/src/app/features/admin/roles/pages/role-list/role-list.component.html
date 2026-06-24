@@ -1,0 +1,57 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container role-module">
+  <app-page-header title="Role Management" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="Role List"></app-page-header>
+
+  <app-page-title title="Role List" subtitle="Manage role codes, activation state, assigned users and permission density">
+    <button class="btn btn-outline-primary" type="button" routerLink="/admin/roles/dashboard" title="Open role dashboard"><i class="fa fa-bar-chart"></i> Dashboard</button>
+    <button class="btn btn-primary" type="button" routerLink="/admin/roles/new" *ngIf="access.hasPermission('ROLE_CREATE')" title="Create a new role"><i class="fa fa-plus"></i> Add Role</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search by code / name / description" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="INACTIVE">INACTIVE</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No roles found" emptyMessage="Create roles and map permissions to enable role based access control.">
+    <thead>
+      <tr>
+        <th style="width:60px;">#</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Users</th>
+        <th>Permissions</th>
+        <th class="text-center" style="width:180px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of rows; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>{{ role.code }} / {{ role.name }}</td>
+        <td><app-status-badge [status]="role.status"></app-status-badge></td>
+        <td>{{ role.assignedUserCount || 0 }}</td>
+        <td>{{ role.permissionCount || 0 }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" (click)="onView(role)" *ngIf="access.hasPermission('ROLE_VIEW')" title="View role details"><i class="fa fa-eye"></i></button>
+            <button class="action-btn edit" type="button" (click)="onEdit(role)" *ngIf="access.hasPermission('ROLE_EDIT')" title="Edit role"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn map" type="button" (click)="onMapPermissions(role)" *ngIf="access.hasPermission('ROLE_MAP_PERMISSIONS')" title="Map permissions"><i class="fa fa-key"></i></button>
+            <button class="action-btn" [ngClass]="role.status === 'INACTIVE' ? 'restore' : 'archive'" type="button" (click)="onToggleStatus(role)" *ngIf="(role.status === 'INACTIVE' && access.hasPermission('ROLE_RESTORE')) || (role.status !== 'INACTIVE' && access.hasPermission('ROLE_ARCHIVE'))" [title]="role.status === 'INACTIVE' ? 'Restore role' : 'Archive role'">
+              <i class="fa" [ngClass]="role.status === 'INACTIVE' ? 'fa-undo' : 'fa-archive'"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

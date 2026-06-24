@@ -1,0 +1,114 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container atm-module">
+
+  <app-page-header
+    title="ATM / CDM"
+    homeLabel="Home"
+    homeRoute="/atm/dashboard"
+    currentLabel="Replenishment List">
+  </app-page-header>
+
+  <app-page-title
+    title="Replenishment List"
+    subtitle="View ATM/CDM cash loading activity, amount and execution history">
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button *ngIf="can('ATM_REPLENISHMENT_CREATE')" class="btn btn-primary" routerLink="/atm/replenishment/new">
+      <i class="fa fa-plus"></i> New Replenishment
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-list"></i></div>
+      <div><div class="summary-label">Total Records</div><div class="summary-value">{{ totalAll }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Completed</div><div class="summary-value">{{ completedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-calendar"></i></div>
+      <div><div class="summary-label">Today</div><div class="summary-value">{{ todayCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-calculator"></i></div>
+      <div><div class="summary-label">Total Amount</div><div class="summary-value">{{ totalAmount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search terminal / bin / user" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let item of statusOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No replenishment found" emptyMessage="Try adjusting filters or create a new replenishment.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Terminal</th>
+        <th>Bin</th>
+        <th>Quantity</th>
+        <th>Amount</th>
+        <th>Performed By</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 130px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.terminalName }}</strong>
+            <span>{{ item.terminalCode }}</span>
+          </div>
+        </td>
+        <td>{{ item.binNo }}</td>
+        <td>{{ item.quantityAdded }}</td>
+        <td>{{ item.amountAdded }}</td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getUserImageUrl(item.performedBy); else replenishmentListUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(item.performedBy)" [alt]="item.performedBy">
+            <ng-template #replenishmentListUserFallback>
+              <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div class="item-name"><strong>{{ getUserDisplay(item.performedBy) }}</strong></div>
+          </div>
+        </td>
+        <td>{{ item.replenishmentDate }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <button class="action-btn view" type="button" (click)="onView(item)">
+            <i class="fa fa-eye"></i>
+          </button>
+          <button class="action-btn open ms-1" type="button" (click)="onViewTerminal(item)" title="View Terminal">
+            <i class="fa fa-credit-card"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

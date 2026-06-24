@@ -1,0 +1,128 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header title="Vault Balance" homeLabel="Home" homeRoute="/admin/dashboard"
+    currentLabel="Vault Balance List">
+  </app-page-header>
+
+  <app-page-title title="Vault Balance List" subtitle="View branch vault opening, closing and cash balance position">
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('csv')">
+            <i class="fa fa-file-text-o"></i> CSV
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('excel')">
+            <i class="fa fa-file-excel-o"></i> Excel
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('pdf')">
+            <i class="fa fa-file-pdf-o"></i> PDF
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" routerLink="/branches/cash-ledger">
+      <i class="fa fa-book"></i> View Ledger
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="openVault()">
+      <i class="fa fa-plus"></i> Open Vault
+    </button>
+
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search branch / date" [(ngModel)]="filters.search"
+        (keyup.enter)="onSearch()" />
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option *ngFor="let s of statusOptions" [value]="s.value">
+          {{ s.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="lock">
+      <select class="form-select" [(ngModel)]="filters.closed">
+        <option *ngFor="let c of closedOptions" [value]="c.value">
+          {{ c.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No vault records found"
+    emptyMessage="Try adjusting filters or open a new branch vault.">
+
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Branch</th>
+        <th>Date</th>
+        <th>Opening</th>
+        <th>Cash In</th>
+        <th>Cash Out</th>
+        <th>Closing</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 150px;">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of vaults; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+
+        <td>
+          <div class="branch-cell">
+            <i class="fa fa-bank"></i>
+            <div>
+              <strong>{{ getBranchName(item.branchId) }}</strong>
+              <span>{{ getBranchCode(item.branchId) }}</span>
+            </div>
+          </div>
+        </td>
+
+        <td><span class="date-pill">{{ item.balanceDate }}</span></td>
+        <td><span class="amount-pill opening">à§³ {{ formatAmount(item.openingBalance) }}</span></td>
+        <td><span class="amount-pill in">à§³ {{ formatAmount(item.totalCashIn) }}</span></td>
+        <td><span class="amount-pill out">à§³ {{ formatAmount(item.totalCashOut) }}</span></td>
+        <td><span class="amount-pill closing">à§³ {{ formatAmount(item.closingBalance) }}</span></td>
+
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+
+        <td class="text-center">
+          <button class="action-btn view" title="View" (click)="viewVault(item)">
+            <i class="fa fa-eye"></i>
+          </button>
+
+          <button *ngIf="!item.isClosed" class="action-btn close" title="Close Vault" (click)="closeVault(item)">
+            <i class="fa fa-lock"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)">
+  </app-pagination>
+
+</div>
+</div>

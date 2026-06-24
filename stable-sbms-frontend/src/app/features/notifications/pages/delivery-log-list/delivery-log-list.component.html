@@ -1,0 +1,62 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container notification-module">
+  <app-page-header title="Notification & Alerts" homeLabel="Home" homeRoute="/notifications/dashboard" currentLabel="Delivery Log List"></app-page-header>
+
+  <app-page-title title="Delivery Log List" subtitle="Inspect recipient, event, template, provider response and retry state for all sends">
+    <button *ngIf="can('NOTIFICATION_RETRY')" class="btn btn-outline-primary" routerLink="/notifications/retry-queue"><i class="fa fa-refresh"></i> Retry Queue</button>
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search event / template / recipient" [(ngModel)]="filters.keyword" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="exchange">
+      <select class="form-select" [(ngModel)]="filters.channelType">
+        <option value="">All Channel</option>
+        <option value="EMAIL">EMAIL</option>
+        <option value="SMS">SMS</option>
+        <option value="PUSH">PUSH</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.deliveryStatus">
+        <option value="">All Delivery Status</option>
+        <option value="PENDING">PENDING</option>
+        <option value="SENT">SENT</option>
+        <option value="FAILED">FAILED</option>
+        <option value="RETRY_QUEUED">RETRY QUEUED</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No notification log found" emptyMessage="Logs will appear here when notification delivery starts running.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Event / Template</th>
+        <th>Recipient</th>
+        <th>Channel</th>
+        <th>Status</th>
+        <th>Retry</th>
+        <th class="text-center" style="width: 120px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.eventCode }} | {{ item.templateCode }}</strong><span>{{ item.eventName }} | {{ item.templateName }}</span></div></td>
+        <td>{{ item.recipientTo }}</td>
+        <td>{{ getLabel(item.channelType) }}</td>
+        <td><app-status-badge [status]="item.deliveryStatus"></app-status-badge></td>
+        <td>{{ item.retryCount }}</td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="openView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('NOTIFICATION_RETRY')" class="action-btn retry" type="button" title="Retry" (click)="retry(item)"><i class="fa fa-refresh"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

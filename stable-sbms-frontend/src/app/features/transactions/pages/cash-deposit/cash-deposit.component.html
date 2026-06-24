@@ -1,0 +1,144 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 transaction-module">
+  <app-page-header title="Transactions" homeLabel="Home" homeRoute="/transactions/dashboard" currentLabel="Cash Deposit"></app-page-header>
+
+  <app-page-title title="Cash Deposit" subtitle="Post branch counter deposit, validate account, teller and amount, then generate journal entry">
+    <button class="btn btn-outline-secondary" routerLink="/transactions/dashboard"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-outline-primary" routerLink="/transactions/list"><i class="fa fa-list"></i> Transaction List</button>
+    <button class="btn btn-outline-warning" routerLink="/transactions/withdraw"><i class="fa fa-minus-circle"></i> Withdraw</button>
+    <button class="btn btn-outline-primary" routerLink="/transactions/transfer"><i class="fa fa-exchange"></i> Transfer</button>
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading" class="transaction-form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon">
+          <i class="fa fa-plus-circle"></i>
+        </div>
+        <div>
+          <h3>Cash Deposit Posting</h3>
+          <p>Capture branch, beneficiary account, teller and amount correctly before journal posting is created.</p>
+        </div>
+      </div>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        READY
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-bank"></i>
+          <div>
+            <h4>Branch & Account</h4>
+            <p>Choose the operating branch and beneficiary account so the deposit can be posted to the right ledger context.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Branch</label>
+            <div class="input-with-icon">
+              <i class="fa fa-building-o"></i>
+              <select class="form-select" [(ngModel)]="form.branchId">
+                <option [ngValue]="null">Select branch</option>
+                <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Credit Account</label>
+            <div class="input-with-icon">
+              <i class="fa fa-credit-card"></i>
+              <select class="form-select" [(ngModel)]="form.creditAccountId">
+                <option [ngValue]="null">Select account</option>
+                <option *ngFor="let item of accounts" [ngValue]="item.id">{{ getAccountLabel(item) }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-user-secret"></i>
+          <div>
+            <h4>Counter Operation</h4>
+            <p>Record the teller, terminal and amount that were actually used at the branch counter.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Teller User ID</label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.tellerUserId">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Terminal ID</label>
+            <div class="input-with-icon">
+              <i class="fa fa-desktop"></i>
+              <input class="form-control" type="number" [(ngModel)]="form.terminalId">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Amount</label>
+            <div class="input-with-icon">
+              <span class="taka-icon" aria-hidden="true">&#2547;</span>
+              <input class="form-control" type="number" [(ngModel)]="form.amount">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Transaction Date</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="datetime-local" [(ngModel)]="form.transactionDate">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section last">
+        <div class="section-heading">
+          <i class="fa fa-sticky-note-o"></i>
+          <div>
+            <h4>Narration</h4>
+            <p>Add a clear posting note so audit, statement and transaction review surfaces can explain this entry.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="full-span">
+            <label class="form-label">Narration</label>
+            <div class="input-with-icon textarea-wrap">
+              <i class="fa fa-commenting-o"></i>
+              <textarea class="form-control" rows="4" [(ngModel)]="form.narration"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" routerLink="/transactions/dashboard" type="button">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-success" type="button" [disabled]="saving" (click)="submit()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        Post Deposit
+      </button>
+    </div>
+  </div>
+</div>
+</div>

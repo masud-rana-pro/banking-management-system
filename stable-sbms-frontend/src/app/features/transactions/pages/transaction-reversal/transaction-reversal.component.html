@@ -1,0 +1,54 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2 transaction-module">
+
+  <app-page-header
+    title="Transactions"
+    homeLabel="Home"
+    homeRoute="/transactions/dashboard"
+    currentLabel="Transaction Reversal">
+  </app-page-header>
+
+  <app-page-title
+    title="Transaction Reversal"
+    subtitle="Capture reversal reason, validate original posting and create reversal voucher">
+
+    <button class="btn btn-outline-primary" *ngIf="id" [routerLink]="['/transactions', id]">
+      <i class="fa fa-eye"></i> View Transaction
+    </button>
+    <button class="btn btn-outline-secondary" routerLink="/transactions/list">
+      <i class="fa fa-list"></i> Transaction List
+    </button>
+
+  </app-page-title>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="item && !loading">
+    <div class="form-card">
+      <div class="meta-grid">
+        <div class="meta-item"><small>Reference</small><strong>{{ item.transactionRef }}</strong></div>
+        <div class="meta-item"><small>Type</small><strong>{{ item.transactionType }}</strong></div>
+        <div class="meta-item"><small>Amount</small><strong>{{ item.amount | number:'1.2-2' }}</strong></div>
+        <div class="meta-item"><small>Status</small><strong>{{ item.transactionStatus || item.status }}</strong></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="mb-3">
+        <label class="form-label">Reversal Reason</label>
+        <textarea class="form-control" rows="5" [(ngModel)]="reason" placeholder="Write reversal reason" [readonly]="!canReverse"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-danger" type="button" [disabled]="saving || !canReverse" [title]="getActionTitle('Reverse Transaction')" (click)="submit()">
+          <i class="fa fa-undo"></i> {{ saving ? 'Processing...' : 'Reverse Transaction' }}
+        </button>
+        <button class="btn btn-outline-secondary" type="button" [routerLink]="['/transactions', id]">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

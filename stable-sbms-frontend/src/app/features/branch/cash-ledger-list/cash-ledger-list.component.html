@@ -1,0 +1,166 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header title="Cash Ledger" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="Branch Cash Ledger">
+  </app-page-header>
+
+  <app-page-title title="Branch Cash Ledger"
+    subtitle="View auto-generated branch cash ledger entries from vault opening and closing">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="previewReport()">
+      <i class="fa fa-eye"></i> Preview Report
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="printReport()">
+      <i class="fa fa-print"></i> Print Report
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="downloadReport()">
+      <i class="fa fa-file-pdf-o"></i> PDF
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('csv')">
+            <i class="fa fa-file-text-o"></i> CSV
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('excel')">
+            <i class="fa fa-file-excel-o"></i> Excel
+          </button>
+        </li>
+
+        <li>
+          <button class="dropdown-item" type="button" (click)="onExport('pdf')">
+            <i class="fa fa-file-pdf-o"></i> PDF
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary" routerLink="/branches/vault">
+      <i class="fa fa-university"></i> Vault Balance
+    </button>
+
+  </app-page-title>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search branch / reference / date" [(ngModel)]="filters.search"
+        (keyup.enter)="onSearch()" />
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let b of branches" [value]="b.id">
+          {{ b.branchCode }} - {{ b.branchName }}
+        </option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="exchange">
+      <select class="form-select" [(ngModel)]="filters.entryType">
+        <option *ngFor="let e of entryTypeOptions" [value]="e.value">
+          {{ e.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="tags">
+      <select class="form-select" [(ngModel)]="filters.sourceType">
+        <option *ngFor="let s of sourceTypeOptions" [value]="s.value">
+          {{ s.label }}
+        </option>
+      </select>
+    </app-form-field>
+
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No cash ledger found"
+    emptyMessage="Vault opening and closing entries will appear here automatically.">
+
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Branch</th>
+        <th>Date</th>
+        <th>Entry Type</th>
+        <th>Source</th>
+        <th>Reference</th>
+        <th>Debit</th>
+        <th>Credit</th>
+        <th>Balance After</th>
+        <th>Created By</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of ledgers; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+
+        <td>
+          <div class="branch-cell">
+            <i class="fa fa-bank"></i>
+            <div>
+              <strong>{{ getBranchName(item.branchId) }}</strong>
+              <span>{{ getBranchCode(item.branchId) }}</span>
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <span class="date-pill">
+            <i class="fa fa-calendar"></i> {{ item.ledgerDate }}
+          </span>
+        </td>
+
+        <td>
+          <span class="entry-pill" [ngClass]="item.entryType.toLowerCase()">
+            {{ item.entryType }}
+          </span>
+        </td>
+
+        <td>
+          <span class="source-pill">
+            {{ item.sourceType }}
+          </span>
+        </td>
+
+        <td>
+          <span class="mono">{{ item.referenceNo || '-' }}</span>
+        </td>
+
+        <td>
+          <span class="amount-pill debit">à§³ {{ formatAmount(item.debitAmount) }}</span>
+        </td>
+
+        <td>
+          <span class="amount-pill credit">à§³ {{ formatAmount(item.creditAmount) }}</span>
+        </td>
+
+        <td>
+          <span class="amount-pill balance">à§³ {{ formatAmount(item.balanceAfter) }}</span>
+        </td>
+
+        <td>
+          <span class="mono">#{{ item.createdBy || '-' }}</span>
+        </td>
+      </tr>
+    </tbody>
+
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)">
+  </app-pagination>
+
+</div>
+</div>

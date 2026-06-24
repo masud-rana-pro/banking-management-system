@@ -1,0 +1,253 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container report-module">
+  <app-page-header
+    [title]="config.title"
+    homeLabel="Home"
+    [homeRoute]="config.homeRoute"
+    [currentLabel]="config.currentLabel">
+  </app-page-header>
+
+  <app-page-title
+    [title]="config.title"
+    [subtitle]="config.subtitle">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('CSV')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('EXCEL')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('PDF')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openHistory()">
+      <i class="fa fa-history"></i> Export History
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="openDashboard()">
+      <i class="fa fa-line-chart"></i> Dashboard
+    </button>
+  </app-page-title>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-filter"></i>
+        <div>
+          <h4>Report Filter</h4>
+          <p>Select date range and optional branch scope before viewing or exporting the report.</p>
+        </div>
+      </div>
+
+      <div class="filter-preset-bar">
+        <div class="filter-preset-group">
+          <button
+            *ngFor="let preset of datePresets"
+            class="filter-preset-chip"
+            type="button"
+            [class.active]="isPresetActive(preset.value)"
+            (click)="applyPreset(preset.value)">
+            {{ preset.label }}
+          </button>
+        </div>
+
+        <div class="filter-time-context">
+          <span class="time-context-pill"><i class="fa fa-calendar"></i> {{ filterRangeLabel }}</span>
+          <span class="time-context-pill"><i class="fa fa-clock-o"></i> {{ liveClockLabel }}</span>
+        </div>
+      </div>
+
+      <div class="filter-grid">
+      <div class="report-filter-field">
+        <label class="form-label">Date From</label>
+        <app-form-field icon="calendar">
+          <input class="form-control" type="date" [(ngModel)]="filters.dateFrom">
+        </app-form-field>
+      </div>
+
+      <div class="report-filter-field">
+        <label class="form-label">Date To</label>
+        <app-form-field icon="calendar-check">
+          <input class="form-control" type="date" [(ngModel)]="filters.dateTo">
+        </app-form-field>
+      </div>
+
+      <div class="report-filter-field" *ngIf="config.enableBranchFilter">
+        <label class="form-label">Branch</label>
+        <app-form-field icon="building">
+          <select class="form-select" [(ngModel)]="filters.branchId" [disabled]="isBranchSelectionLocked">
+            <option [ngValue]="null">All Branches</option>
+            <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branchName }} ({{ branch.branchCode }})</option>
+          </select>
+        </app-form-field>
+      </div>
+
+      <div class="report-filter-field">
+        <label class="form-label">Requested By</label>
+        <app-form-field icon="user">
+          <input class="form-control" [(ngModel)]="filters.requestedBy" placeholder="SYSTEM">
+        </app-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-primary" type="button" (click)="onFilter()">
+          <i class="fa fa-search"></i> View
+        </button>
+        <button class="btn btn-outline-secondary" type="button" (click)="onReset()">
+          <i class="fa fa-undo"></i> Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading report data...
+  </div>
+
+  <ng-container *ngIf="!loading && result as data">
+    <div class="summary-row">
+      <div class="summary-card" *ngFor="let metric of data.metrics | slice:0:4">
+        <div class="summary-icon" [ngClass]="metric.tone || 'primary'"><i [class]="config.icon"></i></div>
+        <div>
+          <div class="summary-label">{{ metric.label }}</div>
+          <div class="summary-value small">{{ metric.value }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-file-text-o"></i>
+          <div>
+            <h4>Run Summary</h4>
+            <p>Generated file, filter scope and run status for this report execution.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Report</span><strong>{{ data.reportName }}</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ formatLabel(data.runStatus) }}</strong></div>
+          <div class="info-row"><span>Date Range</span><strong>{{ data.dateFrom }} to {{ data.dateTo }}</strong></div>
+          <div class="info-row"><span>Requested By</span><strong>{{ data.requestedBy }}</strong></div>
+          <div class="info-row"><span>Generated At</span><strong>{{ data.generatedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Generated File</span><strong>{{ data.generatedFile?.originalFileName || '-' }}</strong></div>
+          <div class="info-row" *ngIf="data.generatedFile">
+            <span>File Actions</span>
+            <strong>
+              <button class="btn btn-outline-primary btn-sm me-2" type="button" (click)="previewCurrentFile()">
+                <i class="fa fa-file-text-o"></i> Preview
+              </button>
+              <button class="btn btn-outline-secondary btn-sm me-2" type="button" (click)="onPrint()">
+                <i class="fa fa-print"></i> Print
+              </button>
+              <button class="btn btn-primary btn-sm" type="button" (click)="downloadCurrentFile()">
+                <i class="fa fa-download"></i> Download
+              </button>
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-sliders"></i>
+          <div>
+            <h4>Filter Snapshot</h4>
+            <p>Audit-friendly filter payload captured when the report was generated.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Report Code</span><strong>{{ data.reportCode }}</strong></div>
+          <div class="info-row"><span>Report Type</span><strong>{{ formatLabel(data.reportType) }}</strong></div>
+          <div class="info-row"><span>Query Key</span><strong>{{ formatLabel(data.queryKey) }}</strong></div>
+          <div class="info-row"><span>Branch Scope</span><strong>{{ data.branchId || 'All Branches' }}</strong></div>
+          <div class="info-row"><span>Export Type</span><strong>{{ data.exportType || 'VIEW' }}</strong></div>
+          <div class="info-row"><span>Filter JSON</span><strong>{{ data.filterJson || '-' }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i [class]="config.icon"></i>
+        <div>
+          <h4>Report Result</h4>
+          <p>Operational rows rendered using the exact filters above, ready for print or export.</p>
+        </div>
+      </div>
+
+      <app-data-table [loading]="loading" [empty]="data.rows.length === 0" emptyTitle="No report data found" emptyMessage="Try a wider date range or a different branch filter.">
+        <thead>
+          <tr>
+            <th style="width: 60px;">#</th>
+            <th *ngFor="let column of data.columns">{{ column.label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of data.rows; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td *ngFor="let column of data.columns">{{ getCell(row, column.key) }}</td>
+          </tr>
+        </tbody>
+      </app-data-table>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-history"></i>
+        <div>
+          <h4>Export History</h4>
+          <p>Recent export activity for this report definition, including generated file references.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Requested By</th>
+              <th>Range</th>
+              <th>Status</th>
+              <th>Generated File</th>
+              <th class="text-center" style="width: 150px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of data.exportHistory">
+              <td>{{ item.requestedBy }}</td>
+              <td>{{ item.dateFrom || '-' }} to {{ item.dateTo || '-' }}</td>
+              <td><app-status-badge [status]="item.requestStatus"></app-status-badge></td>
+              <td>{{ item.generatedFile?.originalFileName || '-' }}</td>
+              <td class="text-center">
+                <button class="action-btn view" type="button" title="Open Report" (click)="openHistoryEntry(item)">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <button class="action-btn view" type="button" title="Preview File" (click)="previewHistoryFile(item)" [disabled]="loading">
+                  <i class="fa fa-file-text-o"></i>
+                </button>
+                <button class="action-btn edit" type="button" title="Print File" (click)="printHistoryFile(item)" [disabled]="loading">
+                  <i class="fa fa-print"></i>
+                </button>
+                <button class="action-btn download" type="button" title="Download File" (click)="downloadHistoryFile(item)" [disabled]="loading">
+                  <i class="fa fa-download"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="data.exportHistory.length === 0">
+              <td colspan="5" class="text-center empty-hint">No export history found for this report yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

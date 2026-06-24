@@ -1,0 +1,203 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/dashboard"
+    currentLabel="Application List">
+  </app-page-header>
+
+  <app-page-title
+    title="Financing Application List"
+    subtitle="Manage financing workflow from draft to disbursement, schedule and repayment collection with consistent action controls">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()">
+      <i class="fa fa-print"></i> Print
+    </button>
+
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-download"></i> Export
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+
+    <button *ngIf="can('FINANCING_ACCESS')" class="btn btn-outline-primary" routerLink="/financing/products">
+      <i class="fa fa-tags"></i> Product List
+    </button>
+
+    <button *ngIf="can('CONTRACTS_ACCESS')" class="btn btn-outline-primary" routerLink="/contracts/list">
+      <i class="fa fa-file-text-o"></i> Contracts
+    </button>
+
+    <button *ngIf="can('SHARIAH_REVIEW_ACCESS')" class="btn btn-outline-primary" type="button" (click)="onShariahCases()" title="Open Shariah case list">
+      <i class="fa fa-balance-scale"></i> Shariah Cases
+    </button>
+
+    <button *ngIf="can('FINANCING_COLLECT_PAYMENT')" class="btn btn-outline-primary" type="button" (click)="toggleOverdueOnly()" [class.active]="filters.overdueOnly">
+      <i class="fa fa-life-ring"></i> {{ filters.overdueOnly ? 'Show All Files' : 'Recovery Queue' }}
+    </button>
+
+    <button *ngIf="can('FINANCING_APPLICATION_CREATE')" class="btn btn-primary" routerLink="/financing/applications/new">
+      <i class="fa fa-plus"></i> New Application
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-clock-o"></i></div>
+      <div><div class="summary-label">Pending Flow</div><div class="summary-value">{{ pendingCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Approved</div><div class="summary-value">{{ approvedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon primary"><span class="taka-icon" aria-hidden="true">&#2547;</span></div>
+      <div><div class="summary-label">Disbursed / Active</div><div class="summary-value">{{ disbursedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-life-ring"></i></div>
+      <div><div class="summary-label">Need Recovery</div><div class="summary-value">{{ overdueApplicationCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-archive"></i></div>
+      <div><div class="summary-label">Archived</div><div class="summary-value">{{ archivedCount }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search application / customer / product" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="tags">
+      <select class="form-select" [(ngModel)]="filters.productId">
+        <option value="">All Products</option>
+        <option *ngFor="let product of products" [value]="product.id">{{ product.productCode }} - {{ product.productName }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="user">
+      <select class="form-select" [(ngModel)]="filters.customerId">
+        <option value="">All Customers</option>
+        <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.customerCode }} - {{ customer.fullName }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId" [disabled]="isBranchSelectionLocked">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.applicationStatus">
+        <option value="">All Workflow Status</option>
+        <option value="DRAFT">DRAFT</option>
+        <option value="SUBMITTED">SUBMITTED</option>
+        <option value="ASSET_VERIFIED">ASSET VERIFIED</option>
+        <option value="SHARIAH_REVIEW">SHARIAH REVIEW</option>
+        <option value="APPROVED">APPROVED</option>
+        <option value="REJECTED">REJECTED</option>
+        <option value="RETURNED">RETURNED</option>
+        <option value="DISBURSED">DISBURSED</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="CLOSED">CLOSED</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="life-ring">
+      <select class="form-select" [(ngModel)]="filters.overdueOnly">
+        <option [ngValue]="false">All Recovery States</option>
+        <option [ngValue]="true">Only Needs Recovery</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No financing application found" emptyMessage="Create financing applications to start review and disbursement processing.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Application</th>
+        <th>Customer</th>
+        <th>Product</th>
+        <th>Amount</th>
+        <th>Branch</th>
+        <th>Workflow</th>
+        <th>Recovery</th>
+        <th>Record</th>
+        <th class="text-center" style="width: 280px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.applicationNo }}</strong>
+            <span>{{ item.createdAt || '-' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getCustomerImageUrl(item.customerId); else financingCustomerFallback" class="entity-avatar" [src]="getCustomerImageUrl(item.customerId)" [alt]="item.customerName">
+            <ng-template #financingCustomerFallback>
+              <span class="entity-avatar entity-avatar-fallback">
+                <i class="fa fa-user"></i>
+              </span>
+            </ng-template>
+            <div class="item-name">
+              <strong>{{ item.customerName }}</strong>
+              <span>{{ item.customerCode }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.productName }}</strong>
+            <span>{{ item.productCode }}</span>
+          </div>
+        </td>
+        <td>{{ item.requestedAmount | number:'1.2-2' }}</td>
+        <td>{{ getBranchName(item.branchId) }}</td>
+        <td><app-status-badge [status]="item.applicationStatus"></app-status-badge></td>
+        <td>
+          <div class="item-name">
+            <strong [class.text-danger]="hasOverdueSchedules(item)" [class.text-success]="!hasOverdueSchedules(item)">{{ getRecoveryStatusLabel(item) }}</strong>
+            <span>Outstanding {{ item.totalOutstandingAmount | number:'1.2-2' }}</span>
+          </div>
+        </td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button *ngIf="can('FINANCING_APPLICATION_EDIT')" class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn review" type="button" [disabled]="!can('FINANCING_REVIEW')" [title]="getActionTitle('Review', 'FINANCING_REVIEW')" (click)="onReview(item)"><i class="fa fa-check-square-o"></i></button>
+            <button class="action-btn disburse" type="button" [disabled]="!can('FINANCING_DISBURSE')" [title]="getActionTitle('Disbursement', 'FINANCING_DISBURSE')" (click)="onDisburse(item)"><span class="taka-icon" aria-hidden="true">&#2547;</span></button>
+            <button *ngIf="can('FINANCING_ACCESS')" class="action-btn schedule" type="button" title="Schedule" (click)="onSchedule(item)"><i class="fa fa-calendar"></i></button>
+            <button class="action-btn repayment" type="button" [disabled]="!can('FINANCING_COLLECT_PAYMENT')" [title]="getActionTitle('Repayment', 'FINANCING_COLLECT_PAYMENT')" (click)="onRepayment(item)"><i class="fa fa-credit-card"></i></button>
+            <button *ngIf="can('CONTRACTS_ACCESS')" class="action-btn view" type="button" title="Contracts" (click)="onContracts(item)"><i class="fa fa-file-text-o"></i></button>
+            <button class="action-btn generate" type="button" [disabled]="!can('CONTRACT_GENERATE')" [title]="getActionTitle('Generate Contract', 'CONTRACT_GENERATE')" (click)="onGenerateContract(item)"><i class="fa fa-plus-circle"></i></button>
+            <button class="action-btn review" type="button" [disabled]="!can('SHARIAH_REVIEW_ACCESS')" [title]="getActionTitle('Submit Shariah Review', 'SHARIAH_REVIEW_ACCESS')" (click)="onSubmitShariahCase(item)"><i class="fa fa-balance-scale"></i></button>
+            <button *ngIf="(item.applicationStatus === 'DRAFT' || item.applicationStatus === 'RETURNED') && can('FINANCING_APPLICATION_CREATE')" class="action-btn activate" type="button" title="Submit" (click)="submit(item)"><i class="fa fa-paper-plane"></i></button>
+            <button *ngIf="item.applicationStatus === 'ASSET_VERIFIED' || item.applicationStatus === 'SHARIAH_REVIEW'" class="action-btn request" type="button" [disabled]="!can('FINANCING_APPROVE')" [title]="getActionTitle('Approve', 'FINANCING_APPROVE')" (click)="approve(item)"><i class="fa fa-check"></i></button>
+            <button *ngIf="item.status !== 'ARCHIVED'" class="action-btn archive" type="button" title="Archive" (click)="toggleArchive(item)"><i class="fa fa-archive"></i></button>
+            <button *ngIf="item.status === 'ARCHIVED'" class="action-btn restore" type="button" title="Restore" (click)="toggleArchive(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

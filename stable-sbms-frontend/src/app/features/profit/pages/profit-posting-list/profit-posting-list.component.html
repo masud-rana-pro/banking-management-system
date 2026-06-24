@@ -1,0 +1,98 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container profit-module">
+  <app-page-header title="Profit Management" homeLabel="Home" homeRoute="/profit/dashboard" currentLabel="Profit Posting List"></app-page-header>
+
+  <app-page-title title="Profit Posting List" subtitle="Review posted profit entries, failed logs, snapshot-backed amounts and rerun navigation">
+    <button class="btn btn-outline-secondary" type="button" (click)="onPrint()"><i class="fa fa-print"></i> Print</button>
+    <div class="dropdown export-dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-download"></i> Export</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button" (click)="onExport('csv')">CSV</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('excel')">Excel</button></li>
+        <li><button class="dropdown-item" type="button" (click)="onExport('pdf')">PDF</button></li>
+      </ul>
+    </div>
+    <button class="btn btn-outline-primary" routerLink="/profit/schedules"><i class="fa fa-calendar"></i> Schedule List</button>
+    <button *ngIf="can('PROFIT_POSTING_RUN')" class="btn btn-primary" routerLink="/profit/postings/run"><i class="fa fa-play"></i> Run Posting</button>
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-list-ul"></i></div>
+      <div><div class="summary-label">Total Postings</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Posted</div><div class="summary-value">{{ postedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div>
+      <div><div class="summary-label">Failed</div><div class="summary-value">{{ failedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-percent"></i></div>
+      <div><div class="summary-label">Unique Schedules</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search"><input class="form-control" placeholder="Search posting / account / customer / ratio" [(ngModel)]="filters.search" (keyup.enter)="onSearch()"></app-form-field>
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="POSTED">POSTED</option>
+        <option value="FAILED">FAILED</option>
+        <option value="PENDING">PENDING</option>
+      </select>
+    </app-form-field>
+    <app-form-field icon="building">
+      <select class="form-select" [(ngModel)]="filters.branchId">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No profit posting found" emptyMessage="Executed profit posting logs will appear here.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Posting</th>
+        <th>Account</th>
+        <th>Period</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th class="text-center print-hide" style="width: 180px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td><div class="item-name"><strong>{{ item.postingRef }}</strong><span>{{ item.postingDate }}</span></div></td>
+        <td>
+          <div class="entity-inline-profile">
+            <img *ngIf="getCustomerImageUrl(item.customerCode); else profitPostingListFallback" class="entity-avatar" [src]="getCustomerImageUrl(item.customerCode)" [alt]="item.customerName">
+            <ng-template #profitPostingListFallback>
+              <span class="entity-avatar entity-avatar-fallback"><i class="fa fa-user"></i></span>
+            </ng-template>
+            <div class="item-name"><strong>{{ item.accountNumber }}</strong><span>{{ item.customerCode }} - {{ item.customerName }}</span></div>
+          </div>
+        </td>
+        <td>{{ item.periodFrom }} to {{ item.periodTo }}</td>
+        <td><span class="balance-chip">{{ item.profitAmount | number:'1.2-2' }}</span></td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center print-hide">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn account" type="button" title="Account" (click)="onOpenAccount(item)"><i class="fa fa-bank"></i></button>
+            <button class="action-btn schedule" type="button" title="Schedule" (click)="onOpenSchedule(item)"><i class="fa fa-calendar"></i></button>
+            <button *ngIf="can('PROFIT_POSTING_RUN')" class="action-btn run" type="button" title="Run Again" (click)="onRunAgain(item)"><i class="fa fa-play"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+</div>
+</div>

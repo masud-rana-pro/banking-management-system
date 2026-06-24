@@ -1,0 +1,75 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container contract-module">
+  <app-page-header title="Contract Management" homeLabel="Home" homeRoute="/contracts/list" currentLabel="Sign Contract"></app-page-header>
+
+  <app-page-title title="Sign Contract" subtitle="Capture customer and shariah signatures with signer identity and remarks, then lock final agreement">
+    <button class="btn btn-outline-secondary" [routerLink]="['/contracts', id]"><i class="fa fa-arrow-left"></i> Back To View</button>
+    <button *ngIf="can('CONTRACTS_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openVersions()" [disabled]="!item"><i class="fa fa-history"></i> Versions</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box"><i class="fa fa-spinner fa-spin"></i> Loading sign page...</div>
+
+  <div *ngIf="!loading && item as contract" class="details-grid">
+    <div class="detail-card">
+      <div class="info-list">
+        <div class="entity-inline-profile mb-3">
+          <img *ngIf="customerImageUrl; else contractSignFallback" class="entity-avatar entity-avatar-lg" [src]="customerImageUrl" [alt]="contract.customerName">
+          <ng-template #contractSignFallback>
+            <span class="entity-avatar entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+          </ng-template>
+          <div>
+            <strong>{{ contract.customerName }}</strong><br>
+            <span>{{ contract.customerCode }}</span>
+          </div>
+        </div>
+        <div class="info-row"><span>Contract No</span><strong>{{ contract.contractNo }}</strong></div>
+        <div class="info-row"><span>Profile</span><strong>{{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</strong></div>
+        <div class="info-row">
+          <span>Supporting File</span>
+          <strong>
+            <ng-container *ngIf="contract.supportingDocumentName; else noSignDocument">
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="previewSupportingDocument()">
+                <i class="fa fa-eye"></i> {{ contract.supportingDocumentName | displayFileName }}
+              </button>
+            </ng-container>
+            <ng-template #noSignDocument>-</ng-template>
+          </strong>
+        </div>
+        <div class="info-row"><span>Status</span><strong>{{ getLabel(contract.contractStatus) }}</strong></div>
+        <div class="info-row"><span>Customer Signer</span><strong>{{ contract.signedByCustomer || '-' }}</strong></div>
+        <div class="info-row"><span>Shariah Signer</span><strong>{{ contract.signedByShariah || '-' }}</strong></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-user"></i>
+        <div>
+          <h4>Customer Sign</h4>
+          <p>Customer signature can move draft contract into active sign state.</p>
+        </div>
+      </div>
+      <div class="form-grid single">
+        <div><label class="form-label">Signed By</label><input class="form-control" [(ngModel)]="customerForm.signedBy"></div>
+        <div><label class="form-label">Remarks</label><textarea class="form-control" [(ngModel)]="customerForm.remarks"></textarea></div>
+        <div><button *ngIf="can('CONTRACT_CUSTOMER_SIGN')" class="btn btn-primary" type="button" (click)="customerSign()" [disabled]="processing || !!contract.signedByCustomer"><i class="fa fa-pencil-square-o"></i> Customer Sign</button></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="card-heading">
+        <i class="fa fa-balance-scale"></i>
+        <div>
+          <h4>Shariah Sign</h4>
+          <p>Final shariah approval locks the contract and preserves final text.</p>
+        </div>
+      </div>
+      <div class="form-grid single">
+        <div><label class="form-label">Signed By</label><input class="form-control" [(ngModel)]="shariahForm.signedBy"></div>
+        <div><label class="form-label">Remarks</label><textarea class="form-control" [(ngModel)]="shariahForm.remarks"></textarea></div>
+        <div><button *ngIf="can('CONTRACT_SHARIAH_SIGN')" class="btn btn-outline-success" type="button" (click)="shariahSign()" [disabled]="processing || !contract.signedByCustomer || !!contract.signedByShariah"><i class="fa fa-check-circle"></i> Shariah Sign & Lock</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

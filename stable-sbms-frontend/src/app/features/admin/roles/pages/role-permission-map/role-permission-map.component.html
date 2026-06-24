@@ -1,0 +1,82 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container role-module">
+  <app-page-header title="Role Management" homeLabel="Home" homeRoute="/admin/dashboard" currentLabel="Permission Map"></app-page-header>
+
+  <app-page-title title="Role Permission Map" subtitle="Assign module-level and action-level access codes to the selected role">
+    <button class="btn btn-outline-primary" type="button" (click)="back()" title="Back to role details"><i class="fa fa-arrow-left"></i> Back</button>
+    <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()" title="Save permission changes"><i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i> Save Permissions</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading permission matrix...
+  </div>
+
+  <div *ngIf="!loading && role as data" class="form-card">
+    <div class="card-heading">
+      <i class="fa fa-shield-lock"></i>
+      <div>
+        <h4>{{ data.code }} / {{ data.name }}</h4>
+        <p>Menu visibility and protected route access will follow the permissions selected below.</p>
+      </div>
+    </div>
+
+    <div class="permission-summary">
+      <div class="summary-pill">
+        <span>Total Codes</span>
+        <strong>{{ permissions.length }}</strong>
+      </div>
+      <div class="summary-pill active">
+        <span>Enabled</span>
+        <strong>{{ getEnabledCount() }}</strong>
+      </div>
+      <div class="summary-pill danger">
+        <span>High Risk</span>
+        <strong>{{ getHighRiskEnabledCount() }}</strong>
+      </div>
+    </div>
+
+    <div class="permission-grid">
+      <div class="permission-group" *ngFor="let group of grouped">
+        <div class="permission-title-row">
+          <div>
+            <div class="permission-title">{{ group.moduleLabel }}</div>
+            <div class="permission-subtitle">{{ getAllowedCount(group) }} of {{ group.items.length }} permissions enabled</div>
+          </div>
+          <span class="risk-badge" *ngIf="group.hasHighRisk">High Risk</span>
+        </div>
+
+        <div class="permission-bulk-actions">
+          <button class="btn btn-sm btn-outline-primary" type="button" (click)="toggleGroup(group, true)" title="Enable all permissions for this module">
+            <i class="fa fa-check-square"></i> Enable All
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" type="button" (click)="toggleGroup(group, false)" title="Disable all permissions for this module">
+            <i class="fa fa-square-o"></i> Clear
+          </button>
+        </div>
+
+        <div class="permission-section" *ngIf="group.standardItems.length">
+          <div class="section-label">Standard Access</div>
+          <label class="permission-item" *ngFor="let permission of group.standardItems; trackBy: trackByPermission" [title]="permission.displayName">
+            <input type="checkbox" [(ngModel)]="permission.allowed">
+            <div>
+              <span>{{ permission.displayName }}</span>
+              <small>{{ permission.permissionCode | readableCode }}</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="permission-section high-risk" *ngIf="group.highRiskItems.length">
+          <div class="section-label danger">High-Risk Actions</div>
+          <label class="permission-item high-risk" *ngFor="let permission of group.highRiskItems; trackBy: trackByPermission" [title]="permission.displayName + ' - sensitive action'">
+            <input type="checkbox" [(ngModel)]="permission.allowed">
+            <div>
+              <span>{{ permission.displayName }}</span>
+              <small>{{ permission.permissionCode | readableCode }}</small>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

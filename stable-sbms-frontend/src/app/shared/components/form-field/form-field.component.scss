@@ -1,0 +1,74 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.sbms-form-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: var(--control-h);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+  }
+}
+
+.field-icon {
+  width: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 0.9rem;
+  border-right: 1px solid var(--border);
+  height: 100%;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.field-control {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+
+  ::ng-deep input,
+  ::ng-deep select {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0 12px;
+    font-size: var(--text-md);
+    color: var(--text);
+    background: transparent;
+
+    &::placeholder { color: var(--text-subtle); }
+  }
+
+  ::ng-deep select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+  }
+}
+
+.required-star {
+  padding-right: 10px;
+  color: var(--danger);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}

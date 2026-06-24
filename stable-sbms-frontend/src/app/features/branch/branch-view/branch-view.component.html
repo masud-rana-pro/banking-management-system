@@ -1,0 +1,471 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header title="Branches" homeLabel="Home" homeRoute="/branches/dashboard" currentLabel="Branch Detail">
+  </app-page-header>
+
+  <app-page-title title="Branch View" subtitle="Read-only branch profile and operational information">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-primary" type="button" (click)="edit()" *ngIf="branch">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="goAssignments()" *ngIf="branch">
+      <i class="fa fa-users"></i> Assign User
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="goVaults()" *ngIf="branch">
+      <i class="fa fa-unlock-alt"></i> Open Vault
+    </button>
+
+    <button class="btn btn-outline-warning" type="button" (click)="goEodSummary()" *ngIf="branch">
+      <i class="fa fa-calendar-check-o"></i> Start EOD
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="goBranchStatements()" *ngIf="branch">
+      <i class="fa fa-file-text-o"></i> Statements
+    </button>
+
+    <button class="btn btn-outline-success" type="button" (click)="newBranchStatement()" *ngIf="branch">
+      <i class="fa fa-print"></i> New Statement
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="view-card loading-card">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading branch detail...
+  </div>
+
+  <div *ngIf="!loading && branch" class="branch-view-shell">
+    <div id="print-section">
+      <div class="branch-hero">
+        <div class="branch-avatar">
+          <i class="fa fa-bank"></i>
+        </div>
+
+        <div class="branch-hero-content">
+          <span class="eyebrow">Branch Profile</span>
+          <h3>{{ branch.branchName }}</h3>
+          <p>
+            {{ branch.branchCode }}
+            <span *ngIf="branch.branchShortName">â€¢ {{ branch.branchShortName }}</span>
+          </p>
+        </div>
+
+        <div class="hero-status">
+          <app-status-badge [status]="branch.status"></app-status-badge>
+        </div>
+      </div>
+
+      <div class="summary-strip">
+        <div class="summary-item">
+          <i class="fa fa-sitemap"></i>
+          <div>
+            <label>Type</label>
+            <strong>{{ branch.branchType || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <i class="fa fa-random"></i>
+          <div>
+            <label>Routing No</label>
+            <strong>{{ branch.routingNo || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <i class="fa fa-calendar"></i>
+          <div>
+            <label>Opened</label>
+            <strong>{{ branch.openedDate || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <i class="fa fa-user"></i>
+          <div class="entity-inline-profile entity-inline-profile--compact">
+            <img *ngIf="getUserImageUrl(branch.managerUserId); else branchManagerSummaryFallback" class="entity-avatar-sm" [src]="getUserImageUrl(branch.managerUserId)" [alt]="getUserDisplay(branch.managerUserId)">
+            <ng-template #branchManagerSummaryFallback>
+              <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user-tie"></i></span>
+            </ng-template>
+            <div>
+              <label>Manager</label>
+              <strong>{{ getUserDisplay(branch.managerUserId) }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Basic & Routing Information</h4>
+            <p>Core branch identity and banking route details.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Branch Type</label>
+            <strong>{{ branch.branchType || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Routing No</label>
+            <strong>{{ branch.routingNo || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>SWIFT Code</label>
+            <strong>{{ branch.swiftCode || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Opened Date</label>
+            <strong>{{ branch.openedDate || '-' }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-address-book"></i>
+          <div>
+            <h4>Contact Information</h4>
+            <p>Email, mobile and phone communication points.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Email</label>
+            <strong>{{ branch.email || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Mobile</label>
+            <strong>{{ branch.mobile || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Phone</label>
+            <strong>{{ branch.phone || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Status</label>
+            <strong>{{ branch.status || '-' }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-map-marker"></i>
+          <div>
+            <h4>Address & Location</h4>
+            <p>Physical branch location and administrative mapping.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item wide">
+            <label>Address Line 1</label>
+            <strong>{{ branch.addressLine1 || '-' }}</strong>
+          </div>
+
+          <div class="detail-item wide">
+            <label>Address Line 2</label>
+            <strong>{{ branch.addressLine2 || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Country ID</label>
+            <strong>{{ branch.countryId || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Division ID</label>
+            <strong>{{ branch.divisionId || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>District ID</label>
+            <strong>{{ branch.districtId || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Upazila ID</label>
+            <strong>{{ branch.upazilaId || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Postal Code</label>
+            <strong>{{ branch.postalCode || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Manager User ID</label>
+            <strong>{{ getUserDisplay(branch.managerUserId) }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-users"></i>
+          <div>
+            <h4>Assigned Staff</h4>
+            <p>Current staff assignment snapshot for this branch.</p>
+          </div>
+
+          <button class="mini-action-btn" type="button" (click)="goAssignments()">
+            <i class="fa fa-external-link"></i> Manage
+          </button>
+        </div>
+
+        <div class="mini-summary-row">
+          <div class="mini-summary-card">
+            <label>Total Assignments</label>
+            <strong>{{ assignments.length }}</strong>
+          </div>
+
+          <div class="mini-summary-card">
+            <label>Active Assignments</label>
+            <strong>{{ activeAssignmentsCount() }}</strong>
+          </div>
+
+          <div class="mini-summary-card">
+            <label>Active Tellers</label>
+            <strong>{{ activeTellerCount() }}</strong>
+          </div>
+        </div>
+
+        <div class="related-table-wrapper">
+          <table class="related-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Role</th>
+                <th>From Date</th>
+                <th>Primary</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let a of assignments.slice(0, 5)">
+                <td>
+                  <div class="entity-inline-profile entity-inline-profile--compact">
+                    <img *ngIf="getUserImageUrl(a.userId); else branchAssignmentUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(a.userId)" [alt]="getUserDisplay(a.userId)">
+                    <ng-template #branchAssignmentUserFallback>
+                      <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div>
+                      <strong>{{ getUserDisplay(a.userId) }}</strong>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ a.assignmentRole }}</td>
+                <td>{{ a.fromDate || '-' }}</td>
+                <td>{{ a.isPrimary ? 'YES' : 'NO' }}</td>
+                <td><app-status-badge [status]="a.status"></app-status-badge></td>
+              </tr>
+
+              <tr *ngIf="assignments.length === 0">
+                <td colspan="5" class="empty-related">No assignments found for this branch.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-shield"></i>
+          <div>
+            <h4>Teller Limit Snapshot</h4>
+            <p>Latest teller cash control limits configured for this branch.</p>
+          </div>
+
+          <button class="mini-action-btn" type="button" (click)="goTellerLimits()">
+            <i class="fa fa-external-link"></i> Manage
+          </button>
+        </div>
+
+        <div class="mini-summary-row">
+          <div class="mini-summary-card">
+            <label>Total Limits</label>
+            <strong>{{ tellerLimits.length }}</strong>
+          </div>
+
+          <div class="mini-summary-card">
+            <label>Active Limits</label>
+            <strong>{{ activeLimitCount() }}</strong>
+          </div>
+
+          <div class="mini-summary-card">
+            <label>Latest Date</label>
+            <strong>{{ tellerLimits[0]?.limitDate || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="related-table-wrapper">
+          <table class="related-table">
+            <thead>
+              <tr>
+                <th>Teller</th>
+                <th>Limit Date</th>
+                <th>Deposit</th>
+                <th>Withdraw</th>
+                <th>Single Txn</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let l of tellerLimits.slice(0, 5)">
+                <td>
+                  <div class="entity-inline-profile entity-inline-profile--compact">
+                    <img *ngIf="getUserImageUrl(l.userId); else branchTellerLimitUserFallback" class="entity-avatar-sm" [src]="getUserImageUrl(l.userId)" [alt]="getUserDisplay(l.userId)">
+                    <ng-template #branchTellerLimitUserFallback>
+                      <span class="entity-avatar-sm entity-avatar-fallback"><i class="fa fa-user"></i></span>
+                    </ng-template>
+                    <div>
+                      <strong>{{ getUserDisplay(l.userId) }}</strong>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ l.limitDate }}</td>
+                <td>à§³ {{ formatAmount(l.dailyDepositLimit) }}</td>
+                <td>à§³ {{ formatAmount(l.dailyWithdrawLimit) }}</td>
+                <td>à§³ {{ formatAmount(l.singleTxnLimit) }}</td>
+                <td><app-status-badge [status]="l.status"></app-status-badge></td>
+              </tr>
+
+              <tr *ngIf="tellerLimits.length === 0">
+                <td colspan="6" class="empty-related">No teller limits found for this branch.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-lock"></i>
+          <div>
+            <h4>Vault Snapshot</h4>
+            <p>Latest vault opening/closing status for this branch.</p>
+          </div>
+
+          <button class="mini-action-btn" routerLink="/branches/vault">
+            <i class="fa fa-external-link"></i> Manage
+          </button>
+        </div>
+
+        <div *ngIf="latestVault; else noVault" class="mini-summary-row">
+
+          <div class="mini-summary-card">
+            <label>Opening</label>
+            <strong>à§³ {{ formatAmount(latestVault.openingBalance) }}</strong>
+          </div>
+
+          <div class="mini-summary-card">
+            <label>Cash In</label>
+            <strong>à§³ {{ formatAmount(latestVault.totalCashIn) }}</strong>
+          </div>
+
+          <div class="mini-summary-card">
+            <label>Cash Out</label>
+            <strong>à§³ {{ formatAmount(latestVault.totalCashOut) }}</strong>
+          </div>
+
+          <div class="mini-summary-card">
+            <label>Closing</label>
+            <strong>à§³ {{ formatAmount(latestVault.closingBalance) }}</strong>
+          </div>
+
+        </div>
+
+        <ng-template #noVault>
+          <div class="empty-related">No vault data available.</div>
+        </ng-template>
+      </div>
+      <div class="detail-section">
+        <div class="section-title">
+          <i class="fa fa-exchange"></i>
+          <div>
+            <h4>Cash Ledger Snapshot</h4>
+            <p>Latest transaction movements for this branch.</p>
+          </div>
+
+          <button class="mini-action-btn" routerLink="/branches/cash-ledger">
+            <i class="fa fa-external-link"></i> View Ledger
+          </button>
+        </div>
+
+        <div class="related-table-wrapper">
+          <table class="related-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let l of ledgerEntries.slice(0,5)">
+                <td>{{ l.ledgerDate }}</td>
+                <td>{{ l.entryType }}</td>
+                <td>à§³ {{ formatAmount(l.debitAmount) }}</td>
+                <td>à§³ {{ formatAmount(l.creditAmount) }}</td>
+                <td>à§³ {{ formatAmount(l.balanceAfter) }}</td>
+              </tr>
+
+              <tr *ngIf="ledgerEntries.length === 0">
+                <td colspan="5" class="empty-related">No ledger entries found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="detail-section last">
+        <div class="section-title">
+          <i class="fa fa-clock-o"></i>
+          <div>
+            <h4>Audit Snapshot</h4>
+            <p>Creation and latest update timestamps.</p>
+          </div>
+
+          <button class="mini-action-btn" type="button" (click)="goInterBranchTransfer()">
+            <i class="fa fa-exchange"></i> Transfer
+          </button>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Created At</label>
+            <strong>{{ branch.createdAt || '-' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <label>Updated At</label>
+            <strong>{{ branch.updatedAt || '-' }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

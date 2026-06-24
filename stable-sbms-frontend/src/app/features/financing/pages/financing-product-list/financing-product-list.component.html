@@ -1,0 +1,118 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container financing-module">
+
+  <app-page-header
+    title="Financing Management"
+    homeLabel="Home"
+    homeRoute="/financing/dashboard"
+    currentLabel="Product List">
+  </app-page-header>
+
+  <app-page-title
+    title="Financing Product List"
+    subtitle="Manage Islamic financing product masters, product ranges, profit rules and navigation into application flow">
+
+    <button class="btn btn-outline-primary" routerLink="/financing/applications">
+      <i class="fa fa-folder-open"></i> Application List
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/calculations/simulator">
+      <i class="fa fa-calculator"></i> Calculation Simulator
+    </button>
+
+    <button class="btn btn-primary" routerLink="/financing/products/new">
+      <i class="fa fa-plus"></i> New Product
+    </button>
+
+  </app-page-title>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon primary"><i class="fa fa-tags"></i></div>
+      <div><div class="summary-label">Total Products</div><div class="summary-value">{{ allItems.length }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon success"><i class="fa fa-check-circle"></i></div>
+      <div><div class="summary-label">Active</div><div class="summary-value">{{ activeCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon warning"><i class="fa fa-archive"></i></div>
+      <div><div class="summary-label">Archived</div><div class="summary-value">{{ archivedCount }}</div></div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon info"><i class="fa fa-folder-open-o"></i></div>
+      <div><div class="summary-label">Applications</div><div class="summary-value">{{ totalApplications }}</div></div>
+    </div>
+  </div>
+
+  <app-filter-bar (search)="onSearch()" (reset)="onReset()">
+    <app-form-field icon="search">
+      <input class="form-control" placeholder="Search code / name / profit rule" [(ngModel)]="filters.search" (keyup.enter)="onSearch()">
+    </app-form-field>
+
+    <app-form-field icon="check-circle">
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
+    </app-form-field>
+
+    <app-form-field icon="briefcase">
+      <select class="form-select" [(ngModel)]="filters.financingType">
+        <option value="">All Financing Type</option>
+        <option value="MURABAHA">MURABAHA</option>
+        <option value="IJARAH">IJARAH</option>
+        <option value="MUSHARAKA">MUSHARAKA</option>
+        <option value="MUDARABA">MUDARABA</option>
+        <option value="SALAM">SALAM</option>
+        <option value="ISTISNA">ISTISNA</option>
+      </select>
+    </app-form-field>
+  </app-filter-bar>
+
+  <app-data-table [loading]="loading" [empty]="!loading && total === 0" emptyTitle="No financing product found" emptyMessage="Create financing products to start application processing.">
+    <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>Product</th>
+        <th>Type</th>
+        <th>Range</th>
+        <th>Tenure</th>
+        <th>Profit Rule</th>
+        <th>Status</th>
+        <th class="text-center" style="width: 260px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+        <td>
+          <div class="item-name">
+            <strong>{{ item.productCode }}</strong>
+            <span>{{ item.productName }}</span>
+          </div>
+        </td>
+        <td>{{ getLabel(item.financingType) }}</td>
+        <td>{{ item.minimumAmount | number:'1.2-2' }} - {{ item.maximumAmount | number:'1.2-2' }}</td>
+        <td>{{ item.tenureMonths }} Months</td>
+        <td>{{ item.profitRule }}</td>
+        <td><app-status-badge [status]="item.status"></app-status-badge></td>
+        <td class="text-center">
+          <div class="table-actions">
+            <button class="action-btn view" type="button" title="View" (click)="onView(item)"><i class="fa fa-eye"></i></button>
+            <button class="action-btn edit" type="button" title="Edit" (click)="onEdit(item)"><i class="fa fa-pencil"></i></button>
+            <button class="action-btn profit" type="button" title="Calculate" (click)="openCalculator(item)"><i class="fa fa-calculator"></i></button>
+            <button class="action-btn request" type="button" title="Applications" (click)="onApplications(item)"><i class="fa fa-folder-open"></i></button>
+            <button *ngIf="item.status !== 'ARCHIVED'" class="action-btn archive" type="button" title="Archive" (click)="toggleArchive(item)"><i class="fa fa-archive"></i></button>
+            <button *ngIf="item.status === 'ARCHIVED'" class="action-btn restore" type="button" title="Restore" (click)="toggleArchive(item)"><i class="fa fa-undo"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </app-data-table>
+
+  <app-pagination [page]="page" [pageSize]="pageSize" [total]="total" (pageChange)="onPageChange($event)"></app-pagination>
+
+</div>
+</div>

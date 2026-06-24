@@ -1,0 +1,200 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container">
+
+  <app-page-header
+    title="KYC Management"
+    homeLabel="Home"
+    homeRoute="/kyc/list"
+    currentLabel="Document Upload">
+  </app-page-header>
+
+  <app-page-title
+    title="KYC Document Upload"
+    subtitle="Upload KYC document metadata, file reference id and verification state for the selected customer">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="back()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openView()" [disabled]="!profile">
+      <i class="fa fa-eye"></i> View KYC
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openCustomer()" [disabled]="!profile">
+      <i class="fa fa-user"></i> View Customer
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openHistory()" [disabled]="!profile">
+      <i class="fa fa-history"></i> History
+    </button>
+
+    <button class="btn btn-outline-primary" type="button" (click)="openReview()" [disabled]="!profile">
+      <i class="fa fa-search-plus"></i> Review
+    </button>
+
+    <button class="btn btn-outline-primary" routerLink="/kyc/list">
+      <i class="fa fa-list"></i> KYC List
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading document upload page...
+  </div>
+
+  <div *ngIf="!loading && profile as item" class="manage-shell">
+    <div class="entity-inline-profile mb-3">
+      <img *ngIf="customerImageUrl; else kycDocumentAvatarFallback" class="entity-avatar-lg" [src]="customerImageUrl" [alt]="item.customerName">
+      <ng-template #kycDocumentAvatarFallback>
+        <span class="entity-avatar-lg entity-avatar-fallback"><i class="fa fa-user"></i></span>
+      </ng-template>
+      <div class="item-name">
+        <strong>{{ item.customerCode }} - {{ item.customerName }}</strong>
+        <span>KYC document management workspace</span>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon primary"><i class="fa fa-user"></i></div>
+        <div><div class="summary-label">Customer</div><div class="summary-value small">{{ item.customerCode }}</div><div class="summary-hint">{{ item.customerName }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon warning"><i class="fa fa-shield"></i></div>
+        <div><div class="summary-label">KYC Status</div><div class="summary-value small">{{ getLabel(item.reviewStatus) }}</div></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon info"><i class="fa fa-file-text-o"></i></div>
+        <div><div class="summary-label">Documents</div><div class="summary-value">{{ documents.length }}</div></div>
+      </div>
+    </div>
+
+    <div class="manage-grid">
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-upload"></i>
+          <div>
+            <h4>Upload Form</h4>
+            <p>Add document metadata and reference id for this KYC profile.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Document Type</label>
+            <select class="form-select" [(ngModel)]="form.documentType">
+              <option value="">Select Document Type</option>
+              <option *ngFor="let item of documentTypeOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Record Status</label>
+            <select class="form-select" [(ngModel)]="form.status">
+              <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Document No</label>
+            <input class="form-control" [(ngModel)]="form.documentNo" placeholder="Document number">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Document File</label>
+            <div class="image-upload-panel">
+              <div class="image-upload-preview" [class.has-image]="!!form.fileReferenceId">
+                <img *ngIf="form.fileReferenceId && isImageFile(form.fileReferenceId); else kycDocumentPlaceholder" [src]="getImageUrl(form.fileReferenceId)" alt="KYC document preview">
+                <ng-template #kycDocumentPlaceholder>
+                  <ng-container *ngIf="form.fileReferenceId && isPdfFile(form.fileReferenceId); else kycImagePlaceholder">
+                    <iframe class="document-preview-frame" [src]="getImageUrl(form.fileReferenceId)" title="KYC document PDF preview"></iframe>
+                  </ng-container>
+                </ng-template>
+                <ng-template #kycImagePlaceholder>
+                  <div class="image-upload-placeholder">
+                    <i class="fa fa-file-text-o"></i>
+                    <span>No document uploaded</span>
+                  </div>
+                </ng-template>
+              </div>
+              <input class="form-control" type="file" accept="image/*,.pdf,.doc,.docx" (change)="onDocumentImageSelected($event)">
+              <div class="image-upload-meta">
+                <span>{{ form.fileReferenceId ? (form.fileReferenceId | displayFileName) : 'No file selected' }}</span>
+                <strong *ngIf="uploadingImage"><i class="fa fa-spinner fa-spin"></i> Uploading...</strong>
+              </div>
+              <small class="text-muted d-block mt-2">Profile: {{ customer?.profileImageName ? 'Image available' : 'No image uploaded' }}</small>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Issue Date</label>
+            <input class="form-control" type="date" [(ngModel)]="form.issueDate">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Expiry Date</label>
+            <input class="form-control" type="date" [(ngModel)]="form.expiryDate">
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="verifiedFlag" [(ngModel)]="form.verifiedFlag">
+              <label class="form-check-label" for="verifiedFlag">Verified Flag</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions px-0 pb-0 border-0 mt-3 justify-content-start">
+          <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+            <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
+            Upload Document
+          </button>
+        </div>
+      </div>
+
+      <div class="manage-card">
+        <div class="section-heading">
+          <i class="fa fa-file-text-o"></i>
+          <div>
+            <h4>Existing Documents</h4>
+            <p>Review all uploaded documents for this KYC profile.</p>
+          </div>
+        </div>
+
+        <div *ngIf="documents.length; else noDocuments" class="mini-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>No</th>
+                <th>File</th>
+                <th>Verified</th>
+                <th style="width: 110px;">Preview</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let doc of documents">
+                <td>{{ getLabel(doc.documentType) }}</td>
+                <td>{{ doc.documentNo || '-' }}</td>
+                <td>{{ doc.fileReferenceId | displayFileName }}</td>
+                <td>{{ doc.verifiedFlag ? 'YES' : 'NO' }}</td>
+                <td>
+                  <button *ngIf="doc.fileReferenceId" class="btn btn-sm btn-outline-primary" type="button" (click)="openDocument(doc.fileReferenceId)">
+                    <i class="fa fa-eye"></i> Preview
+                  </button>
+                  <span *ngIf="!doc.fileReferenceId" class="entity-thumb-empty">No file</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noDocuments>
+          <div class="empty-mini">No document uploaded yet.</div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

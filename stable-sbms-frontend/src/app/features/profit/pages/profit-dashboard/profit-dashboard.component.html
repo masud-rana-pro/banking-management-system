@@ -1,0 +1,342 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container profit-module">
+
+  <app-page-header
+    title="Profit Management"
+    homeLabel="Home"
+    homeRoute="/dashboard"
+    currentLabel="Dashboard">
+  </app-page-header>
+
+  <app-page-title
+    title="Profit Dashboard"
+    subtitle="Monitor active PSR setup, posting pipeline, monthly output, failure pressure and the next run window from one view">
+
+    <button *ngIf="can('REPORTING_REGULATORY_ACCESS')" class="btn btn-outline-secondary" routerLink="/reports/profit-distribution" title="Open profit report">
+      <i class="fa fa-bar-chart"></i> Profit Report
+    </button>
+    <button class="btn btn-outline-primary" routerLink="/profit/ratios" title="Open profit ratios">
+      <i class="fa fa-percent"></i> Profit Ratios
+    </button>
+    <button class="btn btn-outline-success" routerLink="/profit/schedules" title="Open schedules">
+      <i class="fa fa-calendar"></i> Schedules
+    </button>
+    <button class="btn btn-outline-primary" routerLink="/profit/postings" title="Open posting list">
+      <i class="fa fa-list"></i> Posting List
+    </button>
+    <button *ngIf="can('PROFIT_POSTING_RUN')" class="btn btn-primary" type="button" (click)="openPostingRun()" title="Run posting">
+      <i class="fa fa-play"></i> Run Posting
+    </button>
+
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i> Loading profit dashboard...
+  </div>
+
+  <div *ngIf="!loading" class="dashboard-premium">
+    <section class="dashboard-hero-grid">
+      <article class="dashboard-hero-card">
+        <div class="dashboard-hero-top">
+          <span class="dashboard-eyebrow"><i class="fa fa-percent"></i> Profit Posting Engine</span>
+        </div>
+        <h3 class="dashboard-title">PSR readiness, schedule timing and posting stability in one console</h3>
+        <p class="dashboard-subtitle">
+          Move between current ratio exposure, pending cycles, failed posting pressure and the next execution date from one executive board.
+        </p>
+        <div class="dashboard-hero-metrics">
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Active Ratios</span>
+            <div class="dashboard-hero-metric-value">{{ summary.activeProfitRatios }}</div>
+            <div class="dashboard-hero-metric-note">PSR entries currently in effect</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Posted This Month</span>
+            <div class="dashboard-hero-metric-value">{{ summary.postedThisMonth }}</div>
+            <div class="dashboard-hero-metric-note">posting rows completed in current month</div>
+          </div>
+          <div class="dashboard-hero-metric">
+            <span class="dashboard-hero-metric-label">Next Posting Date</span>
+            <div class="dashboard-hero-metric-value">{{ summary.upcomingPostingRun.nextPostingDate || '-' }}</div>
+            <div class="dashboard-hero-metric-note">{{ summary.upcomingPostingRun.pendingSchedules }} schedules waiting</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-focus-card">
+        <div class="dashboard-focus-header">
+          <div>
+            <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Execution Pressure</span>
+            <h3 class="dashboard-title">Pending cycles and failure watch</h3>
+            <p class="dashboard-subtitle">Track what still needs to post and where failure remediation is starting to build up.</p>
+          </div>
+        </div>
+        <div class="dashboard-focus-value">{{ summary.pendingPostingCycles }}</div>
+        <div class="dashboard-focus-note">posting cycles are still queued before the next profit distribution sweep</div>
+        <div class="dashboard-mini-grid mt-3">
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Failed Logs</span>
+            <strong class="dashboard-mini-value">{{ summary.failedPostingLogs }}</strong>
+            <span class="dashboard-mini-note">postings with failure reasons recorded</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Upcoming Schedules</span>
+            <strong class="dashboard-mini-value">{{ upcomingSchedules.length }}</strong>
+            <span class="dashboard-mini-note">next schedules visible in the near queue</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Pending Schedules</span>
+            <strong class="dashboard-mini-value">{{ summary.upcomingPostingRun.pendingSchedules }}</strong>
+            <span class="dashboard-mini-note">full schedule volume awaiting posting</span>
+          </div>
+          <div class="dashboard-mini-stat">
+            <span class="dashboard-mini-label">Failed Cases</span>
+            <strong class="dashboard-mini-value">{{ summary.recentFailedPostings.length }}</strong>
+            <span class="dashboard-mini-note">recent failures visible for drilldown</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-icon primary"><i class="fa fa-percent"></i></div><div><div class="summary-label">Active Profit Ratios</div><div class="summary-value">{{ summary.activeProfitRatios }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon warning"><i class="fa fa-clock-o"></i></div><div><div class="summary-label">Pending Posting Cycles</div><div class="summary-value">{{ summary.pendingPostingCycles }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon success"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Posted This Month</div><div class="summary-value">{{ summary.postedThisMonth }}</div></div></div>
+      <div class="summary-card"><div class="summary-icon danger"><i class="fa fa-exclamation-triangle"></i></div><div><div class="summary-label">Failed Posting Logs</div><div class="summary-value">{{ summary.failedPostingLogs }}</div></div></div>
+    </div>
+
+    <section class="dashboard-analytics-grid">
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Profit Operations Distribution</h4>
+            <p class="dashboard-subtitle">See how current ratio readiness, pending cycles, completed postings and failed logs are shaping the profit operation desk.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+        </div>
+        <div class="dashboard-visual-grid">
+          <div class="dashboard-donut-card">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut-chart" [style.background]="profitGradient">
+                <div class="dashboard-donut-hole">
+                  <div class="dashboard-donut-value">{{ summary.activeProfitRatios }}</div>
+                  <div class="dashboard-donut-label">active PSR rows driving current profit logic</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-legend">
+            <div *ngFor="let item of profitLegend" class="dashboard-legend-item">
+              <div class="dashboard-legend-main">
+                <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                <span class="dashboard-legend-text">
+                  <span class="dashboard-legend-label">{{ item.label }}</span>
+                  <span class="dashboard-legend-note">{{ item.note }}</span>
+                </span>
+              </div>
+              <span class="dashboard-legend-value">{{ item.value }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Active PSR Rate Distribution</h4>
+            <p class="dashboard-subtitle">Each bar shows the live profit-sharing ratio by account type. Taller bars indicate richer current payout ratios.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+        </div>
+        <div *ngIf="psrColumns.length; else noMetrics" class="dashboard-column-chart profit-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of psrAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let item of psrColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ item.value | number:'1.2-2' }}%</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noMetrics><div class="empty-mini">No active PSR found.</div></ng-template>
+        <div class="dashboard-chart-note">Use this view to identify which account types are carrying the strongest current profit-sharing promise.</div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Posting Frequency Queue</h4>
+            <p class="dashboard-subtitle">Compare the near-term posting backlog by monthly, quarterly, half-yearly and yearly schedule buckets.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+        </div>
+        <div *ngIf="scheduleColumns.length; else noSchedules" class="dashboard-column-chart profit-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of scheduleAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let item of scheduleColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ item.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noSchedules><div class="empty-mini">No upcoming schedule found.</div></ng-template>
+        <div class="dashboard-chart-note">Higher columns point to the posting frequencies that will create the next operational wave for the profit desk.</div>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Upcoming Posting Trend</h4>
+            <p class="dashboard-subtitle">Track how the visible posting queue is spreading across the next scheduled operating dates.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-line-chart"></i></span>
+        </div>
+        <div *ngIf="postingTrend.length; else noPostingTrend" class="dashboard-trend-shell">
+          <div class="dashboard-trend-axis">
+            <span *ngFor="let tick of postingTrendTicks" class="dashboard-trend-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div class="profit-line-card">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="profit-line-svg">
+              <defs>
+                <linearGradient id="profitTrendFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(20,184,166,0.28)"></stop>
+                  <stop offset="100%" stop-color="rgba(20,184,166,0.03)"></stop>
+                </linearGradient>
+              </defs>
+              <path [attr.d]="postingTrendAreaPath" fill="url(#profitTrendFill)"></path>
+              <path [attr.d]="postingTrendPath" class="profit-line-path"></path>
+              <g *ngFor="let point of postingTrend">
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" class="dashboard-trend-point"></circle>
+                <text [attr.x]="point.x" [attr.y]="point.y - 5" text-anchor="middle" class="profit-line-value">{{ point.value }}</text>
+              </g>
+            </svg>
+            <div class="profit-line-labels">
+              <span *ngFor="let point of postingTrend">{{ point.shortLabel }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noPostingTrend><div class="empty-mini">No upcoming posting trend available.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Posting Load</h4>
+            <p class="dashboard-subtitle">See which branches are carrying the heaviest share of the visible upcoming profit schedule queue.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-building"></i></span>
+        </div>
+        <div *ngIf="branchColumns.length; else noBranchLoad" class="dashboard-column-chart profit-chart-row">
+          <div class="dashboard-y-axis">
+            <span *ngFor="let tick of branchAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+          </div>
+          <div *ngFor="let item of branchColumns" class="dashboard-column">
+            <div class="dashboard-column-plot">
+              <span class="dashboard-column-value">{{ item.value }}</span>
+              <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+            </div>
+            <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+          </div>
+        </div>
+        <ng-template #noBranchLoad><div class="empty-mini">No branch load profile available.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Profit Spotlight</h4>
+            <p class="dashboard-subtitle">Highlight the schedule carrying the heaviest visible balance exposure before the next posting window arrives.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-user-circle-o"></i></span>
+        </div>
+        <div *ngIf="selectedSchedule as item; else noSpotlight" class="profit-spotlight">
+          <div class="profit-spotlight-hero">
+            <div class="profit-spotlight-avatar" [class.has-image]="!!getSelectedCustomerImageUrl(item.customerCode)">
+              <img *ngIf="getSelectedCustomerImageUrl(item.customerCode)" [src]="getSelectedCustomerImageUrl(item.customerCode)" [alt]="item.customerName">
+              <span *ngIf="!getSelectedCustomerImageUrl(item.customerCode)">{{ selectedScheduleBadgeText }}</span>
+            </div>
+            <div class="profit-spotlight-copy">
+              <h5>{{ item.customerName }}</h5>
+              <p>{{ item.accountNumber }} | {{ item.accountTypeName }}</p>
+              <span class="profit-spotlight-module">{{ getBranchName(item.branchId) }}</span>
+            </div>
+          </div>
+
+          <div class="profit-spotlight-grid">
+            <div class="profit-spotlight-stat">
+              <span>Current Balance</span>
+              <strong>{{ item.currentBalance | number:'1.2-2' }}</strong>
+            </div>
+            <div class="profit-spotlight-stat">
+              <span>Customer Code</span>
+              <strong>{{ item.customerCode }}</strong>
+            </div>
+          </div>
+
+          <div class="profit-spotlight-badges">
+            <div *ngFor="let badge of selectedScheduleBadges" class="profit-spotlight-pill">
+              <span>{{ badge.label }}</span>
+              <strong>{{ badge.value }}</strong>
+            </div>
+          </div>
+
+          <div class="profit-spotlight-actions print-hide">
+            <button class="btn btn-outline-primary btn-sm" type="button" (click)="openSchedule(item.id)">
+              <i class="fa fa-external-link"></i> Open Schedule
+            </button>
+          </div>
+        </div>
+        <ng-template #noSpotlight><div class="empty-mini">No profit schedule available for spotlight.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Branch Status Matrix</h4>
+            <p class="dashboard-subtitle">See how active, pending, archived and due-soon schedules are distributed across the busiest branch queue pockets.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-th-large"></i></span>
+        </div>
+        <div *ngIf="matrixRows.length && matrixColumns.length; else noMatrix" class="profit-matrix">
+          <div class="profit-matrix-header">
+            <div class="profit-matrix-corner">Branch</div>
+            <div *ngFor="let column of matrixColumns" class="profit-matrix-col">{{ column.label }}</div>
+          </div>
+          <div *ngFor="let row of matrixRows" class="profit-matrix-row">
+            <div class="profit-matrix-label" [title]="row.label">{{ row.shortLabel }}</div>
+            <div *ngFor="let value of row.values" class="profit-matrix-cell" [class.is-active]="value > 0">{{ value }}</div>
+          </div>
+        </div>
+        <ng-template #noMatrix><div class="empty-mini">No branch status matrix available.</div></ng-template>
+      </article>
+
+      <article class="dashboard-panel dashboard-grid-span-2">
+        <div class="dashboard-panel-heading">
+          <div>
+            <h4>Posting Failure Snapshot</h4>
+            <p class="dashboard-subtitle">Recent failed postings that need correction before the next run.</p>
+          </div>
+          <span class="dashboard-panel-icon"><i class="fa fa-history"></i></span>
+        </div>
+        <div class="dashboard-timeline-list">
+          <button *ngFor="let item of summary.recentFailedPostings" class="dashboard-timeline-item" type="button" (click)="openPosting(item.id)">
+            <span class="dashboard-timeline-marker tone-danger"><i class="fa fa-exclamation-circle"></i></span>
+            <span>
+              <span class="dashboard-timeline-title">{{ item.postingRef }}</span>
+              <span class="dashboard-timeline-subtitle">{{ item.accountNumber }} | {{ getBranchName(item.branchId) }}</span>
+              <span class="dashboard-timeline-meta">{{ item.failureReason || 'Failure reason not captured' }}</span>
+            </span>
+          </button>
+          <div *ngIf="summary.recentFailedPostings.length === 0" class="empty-mini">No failed posting log found.</div>
+        </div>
+      </article>
+    </section>
+  </div>
+
+</div>
+</div>

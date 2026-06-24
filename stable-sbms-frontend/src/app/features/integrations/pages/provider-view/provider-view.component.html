@@ -1,0 +1,103 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container integration-module">
+  <app-page-header title="Integration Management" homeLabel="Home" homeRoute="/integrations/dashboard" currentLabel="Provider View"></app-page-header>
+
+  <app-page-title title="Provider View" subtitle="Inspect masked credentials, test status, execution footprint and retry history for this provider">
+    <button class="btn btn-outline-secondary" type="button" (click)="back()"><i class="fa fa-arrow-left"></i> Back</button>
+    <button *ngIf="can('INTEGRATION_MANAGEMENT_ACCESS')" class="btn btn-outline-primary" type="button" (click)="openLogs()" [disabled]="!item"><i class="fa fa-list-alt"></i> Logs</button>
+    <button *ngIf="can('INTEGRATION_PROVIDER_TEST')" class="btn btn-outline-primary" type="button" (click)="openTest()" [disabled]="!item"><i class="fa fa-paper-plane"></i> Test</button>
+    <button *ngIf="can('INTEGRATION_PROVIDER_EDIT')" class="btn btn-primary" type="button" (click)="edit()" [disabled]="!item"><i class="fa fa-pencil"></i> Edit</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="loading-box">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading provider view...
+  </div>
+
+  <div *ngIf="!loading && item as provider">
+    <div class="hero-strip">
+      <div>
+        <h3>{{ provider.providerCode }} | {{ provider.providerName }}</h3>
+        <p>{{ getLabel(provider.providerType) }} | {{ provider.baseUrl }}</p>
+      </div>
+      <app-status-badge [status]="provider.status"></app-status-badge>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-info-circle"></i>
+          <div>
+            <h4>Provider Detail</h4>
+            <p>Configuration summary used by notification, verification and payment-related integration hooks.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Provider Code</span><strong>{{ provider.providerCode }}</strong></div>
+          <div class="info-row"><span>Provider Name</span><strong>{{ provider.providerName }}</strong></div>
+          <div class="info-row"><span>Provider Type</span><strong>{{ getLabel(provider.providerType) }}</strong></div>
+          <div class="info-row"><span>Auth Type</span><strong>{{ getLabel(provider.authType) }}</strong></div>
+          <div class="info-row"><span>Timeout</span><strong>{{ provider.timeoutSec }} sec</strong></div>
+          <div class="info-row"><span>Status</span><strong>{{ getLabel(provider.status) }}</strong></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="card-heading">
+          <i class="fa fa-lock"></i>
+          <div>
+            <h4>Masked Credentials & Test Status</h4>
+            <p>Masked output keeps credentials secure while still showing readiness and recent execution health.</p>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Base URL</span><strong>{{ provider.baseUrl }}</strong></div>
+          <div class="info-row"><span>API Key</span><strong>{{ provider.maskedApiKey || '-' }}</strong></div>
+          <div class="info-row"><span>Username</span><strong>{{ provider.username || '-' }}</strong></div>
+          <div class="info-row"><span>Password</span><strong>{{ provider.maskedPassword || '-' }}</strong></div>
+          <div class="info-row"><span>Last Test Status</span><strong>{{ getLabel(provider.lastExecutionStatus) || '-' }}</strong></div>
+          <div class="info-row"><span>Last Executed At</span><strong>{{ provider.lastExecutedAt || '-' }}</strong></div>
+          <div class="info-row"><span>Total Executions</span><strong>{{ provider.executionCount }}</strong></div>
+          <div class="info-row"><span>Failure Count</span><strong>{{ provider.failureCount }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="card-heading">
+        <i class="fa fa-history"></i>
+        <div>
+          <h4>Recent Execution Logs</h4>
+          <p>Latest provider activity including failures and queued retries.</p>
+        </div>
+      </div>
+
+      <div class="mini-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>HTTP</th>
+              <th>Status</th>
+              <th>Retry</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of logs | slice:0:8">
+              <td>{{ log.referenceModule || '-' }}{{ log.referenceId ? (' | ' + log.referenceId) : '' }}</td>
+              <td>{{ log.httpStatus || '-' }}</td>
+              <td><app-status-badge [status]="log.executionStatus"></app-status-badge></td>
+              <td>{{ log.retryCount }}</td>
+            </tr>
+            <tr *ngIf="logs.length === 0">
+              <td colspan="4" class="text-center">No execution log found for this provider.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

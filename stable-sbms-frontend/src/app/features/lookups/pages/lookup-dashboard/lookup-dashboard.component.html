@@ -1,0 +1,308 @@
+<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container lookup-module">
+  <app-page-header title="Lookup / Config" homeLabel="Home" homeRoute="/dashboard" currentLabel="Dashboard"></app-page-header>
+
+  <app-page-title title="Lookup Dashboard" subtitle="Monitor reusable config types, value activation, change churn and dropdown readiness from one executive surface">
+    <button class="btn btn-outline-primary" type="button" title="Open lookup types" (click)="open('/lookups/types')"><i class="fa fa-folder-open"></i> Lookup Types</button>
+    <button class="btn btn-primary" type="button" title="Open lookup values" (click)="open('/lookups/values')"><i class="fa fa-list-ul"></i> Lookup Values</button>
+  </app-page-title>
+
+  <div *ngIf="loading" class="form-card">
+    <i class="fa fa-spinner fa-spin"></i> Loading lookup dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading && summary as data">
+    <div class="dashboard-premium">
+      <section class="dashboard-hero-grid">
+        <article class="dashboard-hero-card">
+          <div class="dashboard-hero-top">
+            <span class="dashboard-eyebrow">
+              <i class="fa fa-sliders"></i>
+              Config Foundation
+            </span>
+          </div>
+
+          <h3 class="dashboard-title">Reusable config, dropdown health and change pressure in one place</h3>
+          <p class="dashboard-subtitle">
+            Keep shared lookup types clean and active so branch, customer, financing and reporting flows stay stable.
+          </p>
+
+          <div class="dashboard-hero-metrics">
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Lookup Types</span>
+              <div class="dashboard-hero-metric-value">{{ data.lookupTypeCount }}</div>
+              <div class="dashboard-hero-metric-note">reusable configuration families in the catalog</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Lookup Values</span>
+              <div class="dashboard-hero-metric-value">{{ data.lookupValueCount }}</div>
+              <div class="dashboard-hero-metric-note">{{ data.activeValueCount }} currently active and consumable</div>
+            </div>
+
+            <div class="dashboard-hero-metric">
+              <span class="dashboard-hero-metric-label">Recent Churn</span>
+              <div class="dashboard-hero-metric-value">{{ data.recentlyChangedCount }}</div>
+              <div class="dashboard-hero-metric-note">recent config changes worth regression attention</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-focus-card">
+          <div class="dashboard-focus-header">
+            <div>
+              <span class="dashboard-eyebrow" style="background: rgba(var(--primary-rgb), 0.09); color: var(--primary);">Dropdown Readiness</span>
+              <h3 class="dashboard-title">Keep shared config healthy before downstream modules break</h3>
+              <p class="dashboard-subtitle">Use this panel to watch active value coverage, inactive buildup and recent catalog changes.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-focus-value">{{ data.activeValueCount }}</div>
+          <div class="dashboard-focus-note">active values currently ready to drive dropdowns, workflow choices and reporting dimensions</div>
+
+          <div class="dashboard-mini-grid mt-3">
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Active Values</span>
+              <strong class="dashboard-mini-value">{{ data.activeValueCount }}</strong>
+              <span class="dashboard-mini-note">safe for business module use</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Inactive Values</span>
+              <strong class="dashboard-mini-value">{{ data.lookupValueCount - data.activeValueCount }}</strong>
+              <span class="dashboard-mini-note">kept out of current operations</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Types</span>
+              <strong class="dashboard-mini-value">{{ data.recentTypes.length }}</strong>
+              <span class="dashboard-mini-note">latest type definitions under watch</span>
+            </div>
+            <div class="dashboard-mini-stat">
+              <span class="dashboard-mini-label">Recent Values</span>
+              <strong class="dashboard-mini-value">{{ data.recentValues.length }}</strong>
+              <span class="dashboard-mini-note">latest value records updated in the catalog</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-chip-row">
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Catalog Types</span>
+          <strong class="dashboard-chip-value">{{ data.lookupTypeCount }}</strong>
+          <span class="dashboard-chip-note">reusable config families available to the platform</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Ready Values</span>
+          <strong class="dashboard-chip-value">{{ data.activeValueCount }}</strong>
+          <span class="dashboard-chip-note">active dropdown values ready for immediate use</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Change Watch</span>
+          <strong class="dashboard-chip-value">{{ data.recentlyChangedCount }}</strong>
+          <span class="dashboard-chip-note">configuration churn needing visibility and control</span>
+        </div>
+        <div class="dashboard-chip">
+          <span class="dashboard-chip-label">Tracked Values</span>
+          <strong class="dashboard-chip-value">{{ data.recentValues.length }}</strong>
+          <span class="dashboard-chip-note">recent value records available for review</span>
+        </div>
+      </section>
+
+      <div class="summary-row">
+        <div class="summary-card" data-summary-hint="Reusable configuration families"><div class="summary-icon primary"><i class="fa fa-folder"></i></div><div><div class="summary-label">Lookup Types</div><div class="summary-value">{{ data.lookupTypeCount }}</div></div></div>
+        <div class="summary-card" data-summary-hint="All dropdown and config values"><div class="summary-icon success"><i class="fa fa-tags"></i></div><div><div class="summary-label">Lookup Values</div><div class="summary-value">{{ data.lookupValueCount }}</div></div></div>
+        <div class="summary-card" data-summary-hint="Values ready for current module use"><div class="summary-icon info"><i class="fa fa-check-circle"></i></div><div><div class="summary-label">Active Values</div><div class="summary-value">{{ data.activeValueCount }}</div></div></div>
+        <div class="summary-card" data-summary-hint="Recent config churn needing review"><div class="summary-icon warning"><i class="fa fa-history"></i></div><div><div class="summary-label">Changed This Week</div><div class="summary-value">{{ data.recentlyChangedCount }}</div></div></div>
+      </div>
+
+      <section class="dashboard-analytics-grid">
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Lookup Health Mix</h4>
+              <p class="dashboard-subtitle">Balance active dropdown readiness against inactive buildup and recent change pressure.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-heartbeat"></i></span>
+          </div>
+
+          <div class="dashboard-stack">
+            <div *ngFor="let item of lookupHealthBands" class="dashboard-summary-band">
+              <div class="dashboard-summary-band-head">
+                <span class="dashboard-summary-band-title">{{ item.label }}</span>
+                <span class="dashboard-summary-band-value">{{ item.value }}</span>
+              </div>
+              <div class="dashboard-band-track">
+                <div class="dashboard-band-fill" [ngClass]="'tone-' + item.tone" [style.width.%]="item.share"></div>
+              </div>
+              <small>{{ item.note }}</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Config Distribution Donut</h4>
+              <p class="dashboard-subtitle">A pie-style view across types, active values, inactive values and weekly change volume.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-pie-chart"></i></span>
+          </div>
+
+          <div class="dashboard-visual-grid">
+            <div class="dashboard-donut-card">
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut-chart" [style.background]="lookupGradient">
+                  <div class="dashboard-donut-hole">
+                    <div class="dashboard-donut-value">{{ data.lookupValueCount }}</div>
+                    <div class="dashboard-donut-label">lookup values currently available across the shared configuration book</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-legend">
+              <div *ngFor="let item of lookupHealthLegend" class="dashboard-legend-item">
+                <div class="dashboard-legend-main">
+                  <span class="dashboard-legend-swatch" [style.background]="item.color"></span>
+                  <span class="dashboard-legend-text">
+                    <span class="dashboard-legend-label">{{ item.label }}</span>
+                    <span class="dashboard-legend-note">{{ item.note }}</span>
+                  </span>
+                </div>
+                <span class="dashboard-legend-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Type Coverage Bar Chart</h4>
+              <p class="dashboard-subtitle">A statistical type coverage chart showing which config families carry the most values.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-bar-chart"></i></span>
+          </div>
+
+          <div *ngIf="typeColumns.length; else noTypeBars" class="dashboard-column-chart">
+            <div class="dashboard-y-axis">
+              <span *ngFor="let tick of typeAxisTicks" class="dashboard-y-axis-tick" [style.bottom.%]="tick.bottom">{{ tick.label }}</span>
+            </div>
+            <div *ngFor="let item of typeColumns" class="dashboard-column">
+              <div class="dashboard-column-plot">
+                <span class="dashboard-column-value">{{ item.value }}</span>
+                <div class="dashboard-column-bar" [ngClass]="'tone-' + item.tone" [style.height.%]="item.height"></div>
+              </div>
+              <span class="dashboard-column-label" [title]="item.label">{{ item.shortLabel }}</span>
+            </div>
+          </div>
+          <ng-template #noTypeBars>
+            <div class="empty-mini">No lookup type coverage data found.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Recent Value Timeline</h4>
+              <p class="dashboard-subtitle">Quick visibility into the latest lookup value changes affecting downstream forms and workflows.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-history"></i></span>
+          </div>
+
+          <div *ngIf="recentTimeline.length; else noRecentTimeline" class="dashboard-timeline-list">
+            <div *ngFor="let item of recentTimeline" class="dashboard-timeline-item">
+              <span class="dashboard-timeline-marker" [ngClass]="'tone-' + item.tone">
+                <i class="fa fa-tag"></i>
+              </span>
+              <span>
+                <span class="dashboard-timeline-title">{{ item.title }}</span>
+                <span class="dashboard-timeline-subtitle">{{ item.subtitle }}</span>
+                <span class="dashboard-timeline-meta">{{ item.meta }}</span>
+              </span>
+            </div>
+          </div>
+          <ng-template #noRecentTimeline>
+            <div class="empty-mini">No recent lookup value changes found.</div>
+          </ng-template>
+        </article>
+
+        <article class="dashboard-panel">
+          <div class="dashboard-panel-heading">
+            <div>
+              <h4>Config Hygiene Readout</h4>
+              <p class="dashboard-subtitle">Track activation ratio, change footprint and catalog density from a compact view.</p>
+            </div>
+            <span class="dashboard-panel-icon"><i class="fa fa-cogs"></i></span>
+          </div>
+
+          <div class="dashboard-info-stack">
+            <div *ngFor="let row of configRows" class="dashboard-info-row">
+              <span class="dashboard-info-label">{{ row.label }}</span>
+              <span class="dashboard-info-value">{{ row.value }}</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="details-grid">
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-folder-open"></i>
+            <div>
+              <h4>Recent Lookup Types</h4>
+              <p>Latest type definitions and child value coverage.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Values</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentTypes | slice:0:8">
+                  <td>{{ item.typeCode }} / {{ item.typeName }}</td>
+                  <td><app-status-badge [status]="item.status"></app-status-badge></td>
+                  <td>{{ item.activeValueCount }}/{{ item.totalValueCount }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-heading">
+            <i class="fa fa-list-ul"></i>
+            <div>
+              <h4>Recent Lookup Values</h4>
+              <p>Recently updated value labels, display order and activation status.</p>
+            </div>
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Value</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of data.recentValues | slice:0:8">
+                  <td>{{ item.typeCode }}</td>
+                  <td>{{ item.valueCode }} / {{ item.valueLabel }}</td>
+                  <td><app-status-badge [status]="item.status"></app-status-badge></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>

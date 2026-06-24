@@ -1,0 +1,282 @@
+﻿<div class="container mx-auto px-5 py-2 pb-5 pt-2 user-module">
+<div class="container mx-auto px-5 py-2">
+
+  <app-page-header
+    title="Customer Management"
+    homeLabel="Home"
+    homeRoute="/customers/list"
+    currentLabel="Customer Form">
+  </app-page-header>
+
+  <app-page-title
+    [title]="id ? 'Edit Customer' : 'Create Customer'"
+    subtitle="Maintain customer identity, contact, profile, branch mapping and onboarding status">
+
+    <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+
+  </app-page-title>
+
+  <div class="form-shell">
+    <div class="form-hero">
+      <div class="hero-left">
+        <div class="hero-icon"><i class="fa fa-user"></i></div>
+        <div>
+          <h3>{{ id ? 'Update Customer Profile' : 'New Customer Onboarding' }}</h3>
+          <p>Capture profile, demographic, branch and onboarding information following the playbook.</p>
+        </div>
+      </div>
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        {{ form.customerStatus || 'PENDING KYC' }}
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-box">
+      <i class="fa fa-spinner fa-spin"></i>
+      Loading customer information...
+    </div>
+
+    <div *ngIf="!loading" class="form-body">
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-id-card"></i>
+          <div>
+            <h4>Basic Identity</h4>
+            <p>Customer code, type and personal profile information.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Customer Photo</label>
+            <div class="image-upload-panel">
+              <div class="image-upload-preview" [class.has-image]="!!profileImagePreviewUrl">
+                <img *ngIf="profileImagePreviewUrl; else customerImagePlaceholder" [src]="profileImagePreviewUrl" alt="Customer photo preview">
+                <ng-template #customerImagePlaceholder>
+                  <div class="image-upload-placeholder">
+                    <i class="fa fa-image"></i>
+                    <span>No photo uploaded</span>
+                  </div>
+                </ng-template>
+              </div>
+              <input class="form-control" type="file" accept="image/*" (change)="onProfileImageSelected($event)">
+              <div class="image-upload-meta">
+                <span>{{ form.profileImageName || 'No file selected' }}</span>
+                <strong *ngIf="uploadingImage"><i class="fa fa-spinner fa-spin"></i> Uploading...</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Customer Code</label>
+            <div class="readonly-chip">
+              <i class="fa fa-barcode"></i>
+              {{ customerCodePreview }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Customer Type <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-user-circle"></i>
+              <select class="form-select" [(ngModel)]="form.customerType">
+                <option value="">Select Type</option>
+                <option *ngFor="let item of customerTypeOptions" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-user"></i>
+              <input class="form-control" [(ngModel)]="form.fullName" placeholder="Enter full name">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Father Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-male"></i>
+              <input class="form-control" [(ngModel)]="form.fatherName" placeholder="Enter father name">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Mother Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-female"></i>
+              <input class="form-control" [(ngModel)]="form.motherName" placeholder="Enter mother name">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Spouse Name</label>
+            <div class="input-with-icon">
+              <i class="fa fa-heart"></i>
+              <input class="form-control" [(ngModel)]="form.spouseName" placeholder="Enter spouse name">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Date Of Birth</label>
+            <div class="input-with-icon">
+              <i class="fa fa-calendar"></i>
+              <input class="form-control" type="date" [(ngModel)]="form.dateOfBirth">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Gender</label>
+            <div class="input-with-icon">
+              <i class="fa fa-venus-mars"></i>
+              <select class="form-select" [(ngModel)]="form.gender">
+                <option value="">Select Gender</option>
+                <option *ngFor="let item of genderOptions" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Marital Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-link"></i>
+              <select class="form-select" [(ngModel)]="form.maritalStatus">
+                <option value="">Select Marital Status</option>
+                <option *ngFor="let item of maritalStatusOptions" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-phone"></i>
+          <div>
+            <h4>Contact & Income</h4>
+            <p>Customer contact details, occupation and source of funds.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Nationality</label>
+            <div class="input-with-icon">
+              <i class="fa fa-flag"></i>
+              <select class="form-select" [(ngModel)]="form.nationality">
+                <option *ngFor="let item of countries" [value]="item.name">{{ item.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Mobile <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-mobile"></i>
+              <input class="form-control" [(ngModel)]="form.mobile" placeholder="01XXXXXXXXX">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Email</label>
+            <div class="input-with-icon">
+              <i class="fa fa-envelope"></i>
+              <input class="form-control" [(ngModel)]="form.email" placeholder="name@example.com">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Occupation</label>
+            <div class="input-with-icon">
+              <i class="fa fa-briefcase"></i>
+              <input class="form-control" [(ngModel)]="form.occupation" placeholder="Occupation">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Monthly Income</label>
+            <div class="input-with-icon">
+              
+              <input class="form-control" type="number" [(ngModel)]="form.monthlyIncome" placeholder="Monthly income">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Source Of Funds</label>
+            <div class="input-with-icon">
+              <i class="fa fa-bank"></i>
+              <input class="form-control" [(ngModel)]="form.sourceOfFunds" placeholder="Business / Salary / Savings">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <i class="fa fa-building"></i>
+          <div>
+            <h4>Branch & Status</h4>
+            <p>Branch assignment, onboarding state and record lifecycle control.</p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Branch <span class="text-danger">*</span></label>
+            <div class="input-with-icon">
+              <i class="fa fa-building-o"></i>
+              <select class="form-select" [(ngModel)]="form.branchId">
+                <option [ngValue]="null">Select Branch</option>
+                <option *ngFor="let item of branches" [ngValue]="item.id">{{ item.branchCode }} - {{ item.branchName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Selected Branch</label>
+            <div class="readonly-chip">
+              <i class="fa fa-info-circle"></i>
+              {{ selectedBranchLabel }}
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Customer Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-check-circle"></i>
+              <select class="form-select" [(ngModel)]="form.customerStatus">
+                <option *ngFor="let item of customerStatusOptions" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Record Status</label>
+            <div class="input-with-icon">
+              <i class="fa fa-archive"></i>
+              <select class="form-select" [(ngModel)]="form.status">
+                <option *ngFor="let item of recordStatusOptions" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions" *ngIf="!loading">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+        <i class="fa fa-times"></i> Cancel
+      </button>
+
+      <button class="btn btn-primary" type="button" [disabled]="saving" (click)="save()">
+        <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ id ? 'Update Customer' : 'Save Customer' }}
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>
