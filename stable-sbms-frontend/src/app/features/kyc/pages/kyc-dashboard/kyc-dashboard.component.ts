@@ -211,7 +211,7 @@ export class KycDashboardComponent implements OnInit {
     });
 
     this.pendingQueue = this.profiles
-      .filter(item => ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(item.reviewStatus))
+      .filter(item => ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'SENT_BACK', 'REJECTED'].includes(item.reviewStatus))
       .slice(0, 6);
 
     this.highRiskProfiles = this.profiles

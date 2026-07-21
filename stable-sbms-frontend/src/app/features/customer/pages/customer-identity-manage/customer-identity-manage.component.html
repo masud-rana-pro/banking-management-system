@@ -163,7 +163,7 @@
                 <img *ngIf="form.imageFileName && isImageFile(form.imageFileName); else identityDocumentPlaceholder" [src]="getImageUrl(form.imageFileName)" alt="Identity preview">
                 <ng-template #identityDocumentPlaceholder>
                   <ng-container *ngIf="form.imageFileName && isPdfFile(form.imageFileName); else identityPlaceholder">
-                    <iframe class="document-preview-frame" [src]="getImageUrl(form.imageFileName)" title="Identity document PDF preview"></iframe>
+                    <iframe class="document-preview-frame" [src]="getTrustedDocumentUrl(form.imageFileName)" title="Identity document PDF preview"></iframe>
                   </ng-container>
                 </ng-template>
                 <ng-template #identityPlaceholder>

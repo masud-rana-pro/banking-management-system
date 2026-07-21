@@ -25,6 +25,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         "/api/auth/reset-password",
                         "/api/auth/send-otp",
                         "/api/auth/verify-otp",
+                        "/api/files/upload-image",
+                        "/api/files/upload-document",
                         "/api/files/images/**",
                         "/api/files/documents/**",
                         "/actuator/**",

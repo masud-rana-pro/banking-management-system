@@ -108,7 +108,7 @@
                 <img *ngIf="form.fileReferenceId && isImageFile(form.fileReferenceId); else kycDocumentPlaceholder" [src]="getImageUrl(form.fileReferenceId)" alt="KYC document preview">
                 <ng-template #kycDocumentPlaceholder>
                   <ng-container *ngIf="form.fileReferenceId && isPdfFile(form.fileReferenceId); else kycImagePlaceholder">
-                    <iframe class="document-preview-frame" [src]="getImageUrl(form.fileReferenceId)" title="KYC document PDF preview"></iframe>
+                    <iframe class="document-preview-frame" [src]="getTrustedDocumentUrl(form.fileReferenceId)" title="KYC document PDF preview"></iframe>
                   </ng-container>
                 </ng-template>
                 <ng-template #kycImagePlaceholder>

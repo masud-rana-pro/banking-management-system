@@ -18,6 +18,9 @@ import { KycService } from '../../services/kyc.service';
 })
 export class KycApprovalQueueComponent implements OnInit {
 
+  private readonly actionableStatuses = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'VERIFIED', 'SENT_BACK', 'REJECTED'];
+  private readonly pendingStatuses = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'SENT_BACK', 'REJECTED'];
+
   loading = false;
   queueItems: KycProfileResponse[] = [];
   branches: BranchResponse[] = [];
@@ -52,8 +55,8 @@ export class KycApprovalQueueComponent implements OnInit {
         const allProfiles = profiles || [];
         this.branches = branches || [];
         this.customerImageMap = this.buildCustomerImageMap(customers || []);
-        this.queueItems = allProfiles.filter(item => ['SUBMITTED', 'UNDER_REVIEW', 'VERIFIED', 'SENT_BACK'].includes(item.reviewStatus));
-        this.pendingCount = this.queueItems.filter(item => ['SUBMITTED', 'UNDER_REVIEW'].includes(item.reviewStatus)).length;
+        this.queueItems = allProfiles.filter(item => this.actionableStatuses.includes(item.reviewStatus));
+        this.pendingCount = this.queueItems.filter(item => this.pendingStatuses.includes(item.reviewStatus)).length;
         this.verifiedCount = this.queueItems.filter(item => item.reviewStatus === 'VERIFIED').length;
         this.sentBackCount = this.queueItems.filter(item => item.reviewStatus === 'SENT_BACK').length;
         this.highRiskCount = this.queueItems.filter(item => item.riskLevel === 'HIGH').length;

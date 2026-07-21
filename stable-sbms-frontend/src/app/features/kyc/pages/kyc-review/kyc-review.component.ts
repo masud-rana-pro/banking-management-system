@@ -292,7 +292,7 @@ export class KycReviewComponent implements OnInit {
   private buildReviewRequest(markUnderReview: boolean): KycProfileRequest {
     let reviewStatus = this.form.reviewStatus;
 
-    if (markUnderReview && ['DRAFT', 'SUBMITTED', 'SENT_BACK'].includes(reviewStatus)) {
+    if (markUnderReview && ['DRAFT', 'SUBMITTED', 'SENT_BACK', 'REJECTED'].includes(reviewStatus)) {
       reviewStatus = 'UNDER_REVIEW';
     }
 

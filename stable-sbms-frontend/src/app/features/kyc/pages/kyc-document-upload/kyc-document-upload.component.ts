@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -61,6 +62,10 @@ export class KycDocumentUploadComponent implements OnInit {
 
   getImageUrl(fileName?: string | null): string {
     return this.fileUploadService.resolveDocumentUrl(fileName);
+  }
+
+  getTrustedDocumentUrl(fileName?: string | null): SafeResourceUrl | null {
+    return this.fileUploadService.resolveTrustedDocumentUrl(fileName);
   }
 
   isImageFile(fileName?: string | null): boolean {
@@ -208,6 +213,14 @@ export class KycDocumentUploadComponent implements OnInit {
   private validateForm(): boolean {
     if (!this.form.documentType) {
       Swal.fire('Validation', 'Document type is required.', 'warning');
+      return false;
+    }
+    if (!this.form.fileReferenceId?.trim()) {
+      Swal.fire('Validation', 'Please upload/select a document file before submitting.', 'warning');
+      return false;
+    }
+    if (!this.form.documentNo?.trim()) {
+      Swal.fire('Validation', 'Document number is required.', 'warning');
       return false;
     }
 

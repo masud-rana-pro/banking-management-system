@@ -72,7 +72,7 @@
             <div class="input-with-icon">
               <i class="fa fa-user"></i>
               <select class="form-select" [(ngModel)]="form.customerId">
-                <option [ngValue]="null">Select customer</option>
+                <option [ngValue]="null">Select active KYC-approved customer</option>
                 <option *ngFor="let customer of customers" [ngValue]="customer.id">{{ customer.customerCode }} - {{ customer.fullName }}</option>
               </select>
             </div>
@@ -106,6 +106,9 @@
               <span class="taka-icon" aria-hidden="true">&#2547;</span>
               <input class="form-control" type="number" [(ngModel)]="form.requestedAmount" min="0" step="0.01">
             </div>
+            <small class="text-muted d-block mt-2" *ngIf="selectedProduct">
+              Allowed range: Tk {{ selectedProduct.minimumAmount | number:'1.2-2' }} to Tk {{ selectedProduct.maximumAmount | number:'1.2-2' }}
+            </small>
           </div>
         </div>
       </div>
@@ -190,7 +193,7 @@
         <i class="fa fa-times"></i> Cancel
       </button>
 
-      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving || loading">
+      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving || loading || uploadingDocument">
         <i class="fa" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
         Update Application
       </button>

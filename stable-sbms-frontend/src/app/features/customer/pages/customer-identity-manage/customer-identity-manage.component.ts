@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SafeResourceUrl } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -149,6 +150,10 @@ export class CustomerIdentityManageComponent implements OnInit {
 
   getImageUrl(fileName?: string | null): string {
     return this.fileUploadService.resolveDocumentUrl(fileName);
+  }
+
+  getTrustedDocumentUrl(fileName?: string | null): SafeResourceUrl | null {
+    return this.fileUploadService.resolveTrustedDocumentUrl(fileName);
   }
 
   isImageFile(fileName?: string | null): boolean {

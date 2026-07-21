@@ -54,11 +54,17 @@ export class FinancingApplicationCreateComponent implements OnInit {
 
   loadLookups(): void {
     this.financingService.getProducts().subscribe(data => this.products = data.filter(item => item.status !== 'ARCHIVED'));
-    this.customerService.getAll().subscribe(data => this.customers = data.filter(item => item.status !== 'ARCHIVED'));
+    this.customerService.getAll().subscribe(data => this.customers = data.filter(item => item.status !== 'ARCHIVED' && item.customerStatus === 'ACTIVE'));
     this.branchApi.getAll().subscribe(data => this.branches = data);
   }
 
   save(submitAfterSave = false): void {
+    const validationMessage = this.validateForm(submitAfterSave);
+    if (validationMessage) {
+      Swal.fire('Required', validationMessage, 'warning');
+      return;
+    }
+
     this.saving = true;
     this.financingService.createApplication(this.form).subscribe({
       next: data => {
@@ -102,10 +108,12 @@ export class FinancingApplicationCreateComponent implements OnInit {
         this.form.supportingDocumentName = result.fileName;
         this.uploadedDocumentUrl = result.fileUrl || this.fileUploadService.resolveDocumentUrl(result.fileName);
         this.uploadingDocument = false;
+        input.value = '';
       },
       error: err => {
         console.error(err);
         this.uploadingDocument = false;
+        input.value = '';
         Swal.fire('Error', err?.error?.message || 'Failed to upload supporting document.', 'error');
       }
     });
@@ -114,5 +122,41 @@ export class FinancingApplicationCreateComponent implements OnInit {
   previewSupportingDocument(): void {
     if (!this.form.supportingDocumentName) return;
     window.open(this.fileUploadService.resolveDocumentUrl(this.form.supportingDocumentName), '_blank');
+  }
+
+  get selectedProduct(): FinancingProductResponse | undefined {
+    return this.products.find(product => product.id === this.form.productId);
+  }
+
+  private validateForm(submitAfterSave: boolean): string {
+    if (this.uploadingDocument) {
+      return 'Please wait until supporting document upload is completed.';
+    }
+    if (!this.form.customerId) {
+      return 'Please select an active KYC-approved customer.';
+    }
+    if (!this.form.productId) {
+      return 'Please select a financing product.';
+    }
+    if (!this.form.branchId) {
+      return 'Please select a branch.';
+    }
+    if (!this.form.requestedAmount || this.form.requestedAmount <= 0) {
+      return 'Requested amount must be greater than zero.';
+    }
+    const product = this.selectedProduct;
+    if (product && (this.form.requestedAmount < product.minimumAmount || this.form.requestedAmount > product.maximumAmount)) {
+      return `Requested amount must be between Tk ${product.minimumAmount.toLocaleString()} and Tk ${product.maximumAmount.toLocaleString()} for ${product.productName}.`;
+    }
+    if (!this.form.assetDescription?.trim()) {
+      return 'Asset description is required.';
+    }
+    if (!this.form.purpose?.trim()) {
+      return 'Purpose is required.';
+    }
+    if (submitAfterSave && !this.form.supportingDocumentName?.trim()) {
+      return 'Supporting document is required before submitting the financing application.';
+    }
+    return '';
   }
 }

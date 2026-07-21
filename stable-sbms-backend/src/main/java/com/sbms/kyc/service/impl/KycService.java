@@ -260,7 +260,9 @@ public class KycService implements IKycService {
                 kycProfileRepository.countByReviewStatuses(List.of(
                         KycReviewStatus.DRAFT,
                         KycReviewStatus.SUBMITTED,
-                        KycReviewStatus.UNDER_REVIEW
+                        KycReviewStatus.UNDER_REVIEW,
+                        KycReviewStatus.SENT_BACK,
+                        KycReviewStatus.REJECTED
                 )),
                 kycProfileRepository.countByReviewStatuses(List.of(
                         KycReviewStatus.VERIFIED,
@@ -300,6 +302,14 @@ public class KycService implements IKycService {
 
         if (request.getDocumentType() == null) {
             throw new BadRequestException("Document type is required");
+        }
+
+        if (trim(request.getFileReferenceId()) == null) {
+            throw new BadRequestException("Document file is required");
+        }
+
+        if (trim(request.getDocumentNo()) == null) {
+            throw new BadRequestException("Document number is required");
         }
 
         if (request.getIssueDate() != null

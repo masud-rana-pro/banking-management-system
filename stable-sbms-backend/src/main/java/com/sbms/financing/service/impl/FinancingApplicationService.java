@@ -12,6 +12,7 @@ import com.sbms.common.exception.BadRequestException;
 import com.sbms.common.exception.ResourceNotFoundException;
 import com.sbms.common.mail.AutomatedMailService;
 import com.sbms.customer.entity.Customer;
+import com.sbms.customer.enums.CustomerStatus;
 import com.sbms.customer.enums.RecordStatus;
 import com.sbms.customer.repository.CustomerRepository;
 import com.sbms.financing.dto.request.FinancingApplicationRequest;
@@ -127,6 +128,9 @@ public class FinancingApplicationService implements IFinancingApplicationService
         FinancingApplication entity = getApplication(id);
         if (!(entity.getApplicationStatus() == FinancingApplicationStatus.DRAFT || entity.getApplicationStatus() == FinancingApplicationStatus.RETURNED)) {
             throw new BadRequestException("Only draft or returned applications can be submitted");
+        }
+        if (entity.getSupportingDocumentName() == null || entity.getSupportingDocumentName().trim().isEmpty()) {
+            throw new BadRequestException("Supporting document is required before submitting financing application");
         }
         entity.setApplicationStatus(FinancingApplicationStatus.SUBMITTED);
         entity.setSubmittedAt(LocalDateTime.now());
@@ -531,6 +535,9 @@ public class FinancingApplicationService implements IFinancingApplicationService
 
         if (branch.getIsDeleted() != null && branch.getIsDeleted()) throw new BadRequestException("Deleted branch cannot be used");
         if (product.getStatus() == RecordStatus.ARCHIVED) throw new BadRequestException("Archived financing product cannot be used");
+        if (customer.getCustomerStatus() != CustomerStatus.ACTIVE) {
+            throw new BadRequestException("Only active and KYC-approved customers can apply for financing");
+        }
 
         BigDecimal requestedAmount = scaleMoney(request.getRequestedAmount());
         if (requestedAmount.compareTo(product.getMinimumAmount()) < 0 || requestedAmount.compareTo(product.getMaximumAmount()) > 0) {
