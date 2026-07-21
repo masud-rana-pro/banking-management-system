@@ -1,27 +1,131 @@
-# SbmsFrontend
+# SBMS Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.3.
+Angular client application for the Al-Barakah Shariah Banking Management System.
 
-## Development server
+The frontend provides the operational user interface for authentication, dashboard analytics, customer onboarding, KYC, account management, transactions, Islamic financing, reports, statements, certificates, notifications and administrative control.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Stack
 
-## Code scaffolding
+- Angular 13
+- TypeScript
+- SCSS
+- Bootstrap 5
+- Bootstrap Icons
+- Font Awesome
+- RxJS
+- SweetAlert2
+- jsPDF / jsPDF AutoTable
+- XLSX
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Application Structure
+
+```text
+src/app/
+|-- core/          # Layout, guards, interceptors, shell, header, sidebar and shared services
+|-- shared/        # Reusable UI components, tables, filters, forms, dialogs and utilities
+`-- features/      # Business feature modules and pages
+```
+
+Important feature areas:
+
+```text
+features/
+|-- auth/
+|-- general-dashboard/
+|-- admin/
+|-- branch/
+|-- customer/
+|-- kyc/
+|-- accounts/
+|-- transactions/
+|-- cards/
+|-- deposit-schemes/
+|-- financing/
+|-- profit/
+|-- reports/
+|-- statement/
+|-- shariah/
+|-- zakat/
+|-- notifications/
+|-- security/
+|-- verification/
+`-- workflow/
+```
+
+## Local Development
+
+Install dependencies:
+
+```powershell
+npm install
+```
+
+Run development server:
+
+```powershell
+npm start
+```
+
+Open:
+
+```text
+http://localhost:4200
+```
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```powershell
+npm run build
+```
 
-## Running unit tests
+The build output is generated under `dist/`.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Configuration
 
-## Running end-to-end tests
+Check the environment files under:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```text
+src/environments/
+```
 
-## Further help
+Make sure the API base URL points to the running backend service, usually:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```text
+http://localhost:8080
+```
+
+## UI Standards Used in This Project
+
+- Shared page header and action button patterns.
+- Reusable filter bars for reports and operational lists.
+- Shared table action menu with icon mode and three-dot menu mode.
+- Popup form pattern for new/edit/action workflows.
+- Responsive dashboard cards and charts.
+- Light and dark theme-aware SCSS.
+- Banking-style document, statement and certificate preview layouts.
+
+## Common Verification Checklist
+
+After frontend changes, verify:
+
+- Login, OTP and logout.
+- Topbar buttons: theme, language, notification, message and profile menu.
+- Dashboard filters and chart responsiveness.
+- List view and grid view actions.
+- New/edit/view/delete/archive style actions where applicable.
+- File upload and preview controls.
+- Voucher, report, statement and certificate preview/download.
+- Mobile and small-width responsive page headers.
+- Browser console remains free of runtime errors.
+
+## Useful Commands
+
+```powershell
+npm start
+npm run build
+npm test
+```
+
+## Development Notes
+
+Keep feature-specific logic inside the relevant feature module, and put reusable UI behavior inside `shared/` or `core/` only when it is used across multiple modules. Avoid committing `node_modules`, `dist`, temporary generated files or local environment secrets.
