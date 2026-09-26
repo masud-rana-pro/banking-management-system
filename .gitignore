@@ -1,0 +1,71 @@
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*.iml
+.idea/
+.vscode/
+.history/
+
+# Local secrets and machine-specific configuration
+.env
+.env.*
+!.env.example
+credentials.txt
+**/application-local.properties
+**/application-secrets.properties
+**/*.jks
+**/*.p12
+**/*.pfx
+**/*.pem
+**/*.key
+
+# Java / Maven / Gradle output
+**/target/
+**/build/
+**/.gradle/
+*.class
+
+# Angular / Node output
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+**/.cache/
+**/out-tsc/
+**/tmp/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.pid
+NUL
+NUL.map
+
+# Runtime-generated banking artifacts
+/stable-sbms-backend/generated-reports/
+/stable-sbms-backend/generated-statements/
+/stable-sbms-backend/src/main/resources/uploads/*
+!/stable-sbms-backend/src/main/resources/uploads/.gitkeep
+
+# Local data, verification exports and presentation working files
+/db/
+/docs/
+/photos/
+/FULL_PROJECT_DEMO_GUIDE.html
+/FULL_PROJECT_DEMO_GUIDE.md
+/SBMS_SHOWCASE_PRACTICE.md
+/SBMS_VIDEO_SCRIPT_14_MIN.md
+/SBMS-System-Verification-Playbook.pdf
+/playbook-final.pdf
+/video-voice-demo/
+*.m4a
+*.wav
+*.mp4
