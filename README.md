@@ -7,7 +7,7 @@ Al-Barakah SBMS is a web-based banking operations system built with Angular, Spr
 ### Access and administration
 
 - Username and password login followed by email OTP verification
-- Bearer-token sessions, logout, password change, and online-user tracking
+- JWT-based bearer sessions, logout, password change, and online-user tracking
 - User, role, permission, branch assignment, lock/unlock, and password reset
 - Route guards in the frontend and permission checks in the backend
 - Notifications, verification challenges, audit records, and security cases
@@ -76,7 +76,7 @@ Backend domain packages follow a consistent `controller`, `dto`, `entity`, `enum
 - MySQL Connector/J 8.0.33
 - Thymeleaf and OpenHTMLToPDF for HTML/PDF documents
 - Apache POI for Excel exports
-- BCrypt password hashing and bearer-session authorization
+- BCrypt password hashing, JJWT 0.9.1, and JWT-based bearer authorization
 
 ## Local Configuration
 
