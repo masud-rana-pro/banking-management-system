@@ -7,7 +7,7 @@ Al-Barakah SBMS is a web-based banking operations system built with Angular, Spr
 ### Access and administration
 
 - Username and password login followed by email OTP verification
-- JWT-based bearer sessions, logout, password change, and online-user tracking
+- Database-backed bearer sessions, logout, password change, and online-user tracking
 - User, role, permission, branch assignment, lock/unlock, and password reset
 - Route guards in the frontend and permission checks in the backend
 - Notifications, verification challenges, audit records, and security cases
@@ -72,13 +72,14 @@ Backend domain packages follow a consistent `controller`, `dto`, `entity`, `enum
 ### Backend
 
 - Java 17 and Spring Boot 4.0.5
-- Spring Web, Data JPA, Data JDBC, Validation, Mail, AOP, and Actuator
+- Spring Web, Spring Data JPA, Hibernate, Validation, Mail, AOP, and Actuator
+- JdbcTemplate for dashboard aggregate queries
 - MySQL Connector/J 8.0.33
 - Thymeleaf and OpenHTMLToPDF for HTML/PDF documents
 - Apache POI for Excel exports
-- BCrypt password hashing, JJWT 0.9.1, and JWT-based bearer authorization
+- BCrypt password hashing and permission-based bearer-session authorization
 
-## Local Configuration
+## Local Setup
 
 Create a MySQL database named `sbms`:
 
@@ -93,17 +94,7 @@ Copy-Item stable-sbms-backend\application-local.properties.example `
   stable-sbms-backend\application-local.properties
 ```
 
-Set the local database credentials and SMTP app password in `application-local.properties`. This file is excluded from Git. The same settings can be supplied with these environment variables:
-
-- `SBMS_DB_URL`
-- `SBMS_DB_USERNAME`
-- `SBMS_DB_PASSWORD`
-- `SBMS_MAIL_USERNAME`
-- `SBMS_MAIL_PASSWORD`
-- `SBMS_MAIL_FROM`
-- `SBMS_EMAIL_ENABLED`
-
-Hibernate is configured with `ddl-auto=update`. The public repository does not include operational users, customer records, uploaded documents, or database backups.
+Set the database connection and SMTP credentials in `application-local.properties`. The file is excluded from Git. These settings can also be supplied through the environment variables referenced in `application.properties`.
 
 ## Run the Application
 
