@@ -1,102 +1,99 @@
 # Al-Barakah Shariah Banking Management System
 
-Al-Barakah SBMS is a full-stack banking operations platform that models secure customer onboarding, account servicing, Islamic financing, transaction processing, profit management, reporting, and controlled back-office workflows.
+Al-Barakah SBMS is a web-based banking operations system built with Angular, Spring Boot, and MySQL. It covers customer onboarding, KYC, account operations, Islamic financing, profit processing, statements, reports, and permission-controlled back-office workflows.
 
-The project combines an Angular client, a Spring Boot API, and MySQL persistence in a modular architecture suitable for portfolio review, workflow demonstration, and further engineering development.
+## Implemented Workflows
 
-## Highlights
+### Access and administration
 
-- Password and email OTP authentication with JWT session handling
-- Role-based access control for administrators, branch staff, reviewers, and customers
-- Customer onboarding, KYC review, document handling, and account approval
-- Deposit, withdrawal, transfer, voucher, and statement workflows
-- Card and deposit-scheme management
-- End-to-end Islamic financing lifecycle: application, review, Shariah approval, sanction, disbursement, repayment, and profit posting
-- Branch operations, teller, vault, compliance, notification, audit, and security controls
-- Management dashboard with banking KPIs, portfolio analysis, profit and risk indicators
-- Printable banking documents and Excel/PDF report exports
-- Responsive interface with light and dark themes
+- Username and password login followed by email OTP verification
+- Bearer-token sessions, logout, password change, and online-user tracking
+- User, role, permission, branch assignment, lock/unlock, and password reset
+- Route guards in the frontend and permission checks in the backend
+- Notifications, verification challenges, audit records, and security cases
 
-## Architecture
+### Customer and account operations
 
-```text
-Angular SPA
-    |
-    | REST / JWT
-    v
-Spring Boot API
-    |-- controllers and request validation
-    |-- domain services and workflow rules
-    |-- repositories and persistence models
-    |-- security, OTP, audit, reporting, and document generation
-    v
-MySQL
-```
+- Customer registration, profile maintenance, and customer status management
+- KYC creation, document upload, review, approval, rejection, return, and history
+- Account types, account-opening requests, review, approval, and account status actions
+- Cash deposit, cash withdrawal, fund transfer, cheque clearing, standing instructions, and transaction reversal
+- Transaction voucher preview and download
+- Card, ATM terminal, cash-bin, replenishment, and reconciliation management
+- Deposit schemes, enrollment, installment schedules, maturity calculation, profit distribution, and certificate generation
 
-## Repository Structure
+### Islamic financing and profit
+
+- Financing products and applications
+- Application submission, asset verification, Shariah review, approval, rejection, and return
+- Disbursement to an active account, installment schedule generation, and repayment collection
+- Financing sanction-letter preview and download
+- Profit ratios, schedules, posting runs, and posting advice
+- Shariah review, contracts, zakat profiles, charity funds, beneficiaries, and payouts
+
+### Statements, reports, and monitoring
+
+- Customer and branch statement requests, preview, download, and export history
+- Operational, branch, KPI, growth, financing portfolio, PAR, loan recovery, and Shariah audit reports
+- Trial balance, ledger profit and loss, management profit and loss, profit distribution, and monthly closing
+- PDF document templates and Excel export support
+- General dashboard for account, transaction, financing, profit, branch, and control-queue summaries
+
+## Project Structure
 
 ```text
 banking-management-system/
-|-- stable-sbms-frontend/   Angular application
-|-- stable-sbms-backend/    Spring Boot application and document templates
-|-- .gitignore              Public-repository hygiene rules
-`-- README.md               Project overview and setup guide
+|-- stable-sbms-frontend/
+|   `-- src/app/
+|       |-- core/          authentication, guards, interceptors, and shared services
+|       |-- features/      lazy-loaded business modules
+|       `-- shared/        reusable components, models, and utilities
+|-- stable-sbms-backend/
+|   `-- src/main/
+|       |-- java/com/sbms/ domain packages
+|       `-- resources/
+|           |-- templates/ printable HTML templates
+|           `-- application.properties
+|-- .gitignore
+`-- README.md
 ```
 
-Runtime uploads, generated statements/reports, database dumps, test exports, credentials, and personal data are intentionally excluded from version control.
+Backend domain packages follow a consistent `controller`, `dto`, `entity`, `enums`, `repository`, and `service` structure. The Angular application is divided into lazy-loaded feature modules such as customer, KYC, accounts, transactions, financing, profit, statements, and reports.
 
-## Technology Stack
+## Technology
 
 ### Frontend
 
-- Angular 13, TypeScript, RxJS, and SCSS
+- Angular 13 and Angular CLI 13
+- TypeScript 4.4, RxJS 7.4, and SCSS
 - Bootstrap 5, Bootstrap Icons, and Font Awesome
-- SweetAlert2
-- jsPDF, jsPDF AutoTable, and XLSX
+- SweetAlert2, jsPDF, jsPDF AutoTable, SheetJS, and FileSaver
 
 ### Backend
 
-- Java 17 and Spring Boot
-- Spring Web, Data JPA/JDBC, Validation, and Security Crypto
-- JWT authentication and Java Mail
-- MySQL 8
-- Thymeleaf and OpenHTMLToPDF
-- Apache POI, WebSocket, Actuator, and Lombok
+- Java 17 and Spring Boot 4.0.5
+- Spring Web, Data JPA, Data JDBC, Validation, Mail, AOP, and Actuator
+- MySQL Connector/J 8.0.33
+- Thymeleaf and OpenHTMLToPDF for HTML/PDF documents
+- Apache POI for Excel exports
+- BCrypt password hashing and bearer-session authorization
 
-## Main Modules
+## Local Configuration
 
-- Authentication, OTP, users, roles, and permissions
-- Branch, staff, teller, vault, and operational controls
-- Customer, KYC, documents, and account lifecycle
-- Deposits, withdrawals, transfers, cards, and deposit schemes
-- Islamic financing and profit management
-- Shariah, zakat, compliance, workflow, and security cases
-- Statements, vouchers, reports, exports, and executive dashboard
-
-## Local Setup
-
-### Prerequisites
-
-- Java 17
-- Node.js and npm compatible with Angular 13
-- MySQL 8
-- Git
-
-### 1. Create the Database
-
-Create an empty local database. Hibernate creates or updates the schema during development.
+Create a MySQL database named `sbms`:
 
 ```sql
 CREATE DATABASE sbms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Database dumps and operational data are not published because they may contain customer or environment-specific information.
+Copy the local configuration template:
 
-### 2. Configure the Backend
+```powershell
+Copy-Item stable-sbms-backend\application-local.properties.example `
+  stable-sbms-backend\application-local.properties
+```
 
-The committed configuration reads sensitive values from environment variables. You may also copy `stable-sbms-backend/application-local.properties.example` to `stable-sbms-backend/application-local.properties` and fill in local values. The local file is ignored by Git.
-
-Required settings include:
+Set the local database credentials and SMTP app password in `application-local.properties`. This file is excluded from Git. The same settings can be supplied with these environment variables:
 
 - `SBMS_DB_URL`
 - `SBMS_DB_USERNAME`
@@ -104,19 +101,22 @@ Required settings include:
 - `SBMS_MAIL_USERNAME`
 - `SBMS_MAIL_PASSWORD`
 - `SBMS_MAIL_FROM`
+- `SBMS_EMAIL_ENABLED`
 
-Never commit real database passwords, SMTP app passwords, private keys, OTP values, or customer files.
+Hibernate is configured with `ddl-auto=update`. The public repository does not include operational users, customer records, uploaded documents, or database backups.
 
-### 3. Run the Backend
+## Run the Application
+
+Start the backend:
 
 ```powershell
 cd stable-sbms-backend
 .\mvnw.cmd spring-boot:run
 ```
 
-The API runs at `http://localhost:8080` by default.
+The API is available at `http://localhost:8080`.
 
-### 4. Run the Frontend
+Start the frontend in another terminal:
 
 ```powershell
 cd stable-sbms-frontend
@@ -124,38 +124,16 @@ npm install
 npm start
 ```
 
-The application runs at `http://localhost:4200` by default.
+The frontend is available at `http://localhost:4200` and uses `http://localhost:8080/api` in development.
 
-## Build and Verification
-
-Backend package:
+## Build
 
 ```powershell
 cd stable-sbms-backend
 .\mvnw.cmd -DskipTests package
 ```
 
-Frontend production build:
-
 ```powershell
 cd stable-sbms-frontend
 npm run build
 ```
-
-Before deployment, configure a managed secret store, disable development schema updates, restrict CORS, enforce HTTPS, review access policies, and run security, audit, privacy, and regulatory checks appropriate to the target institution.
-
-## Security and Data Policy
-
-This public repository contains application source code and reusable templates only. The following stay local and are ignored:
-
-- Environment credentials and email app passwords
-- Customer photos, KYC documents, and uploaded statements
-- Generated reports, vouchers, and account statements
-- Database backups and operational seed data
-- Test evidence, recordings, and presentation working files
-
-If a credential was ever committed, rotate it immediately; removing it from the latest revision does not invalidate copies in earlier Git history.
-
-## Scope
-
-This software is an educational and portfolio implementation of banking workflows. Production banking use requires independent security review, regulatory validation, infrastructure hardening, observability, disaster recovery, and institution-specific controls.
