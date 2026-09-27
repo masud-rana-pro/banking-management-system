@@ -73,6 +73,7 @@ Backend domain packages follow a consistent `controller`, `dto`, `entity`, `enum
 
 - Java 17 and Spring Boot 4.0.5
 - Spring Web, Spring Data JPA, Hibernate, Validation, Mail, AOP, and Actuator
+- Flyway database migrations
 - JdbcTemplate for dashboard aggregate queries
 - MySQL Connector/J 8.0.33
 - Thymeleaf and OpenHTMLToPDF for HTML/PDF documents
@@ -95,6 +96,8 @@ Copy-Item stable-sbms-backend\application-local.properties.example `
 ```
 
 Set the database connection and SMTP credentials in `application-local.properties`. The file is excluded from Git. These settings can also be supplied through the environment variables referenced in `application.properties`.
+
+On the first backend startup, Flyway applies the versioned baseline migration and loads the schema with the project's reference records. An existing non-empty database is registered at baseline version 1 and is not overwritten.
 
 ## Run the Application
 
